@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeluguCineCraft | Craft Breakdown</title>
+    <title>TeluguCineCraft | Movie Detail & Craft Breakdown</title>
+    <!-- Supabase JS Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
     <style>
         :root {
             --bg-color: #0B0F19;
@@ -12,6 +14,8 @@
             --text-main: #F8FAFC;
             --text-sub: #94A3B8;
             --border-color: #334155;
+            --hit-green: #22C55E;
+            --mvp-purple: #A855F7;
         }
 
         body {
@@ -30,6 +34,9 @@
             background-color: #0F172A;
             border-bottom: 1px solid var(--border-color);
             padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             box-sizing: border-box;
         }
 
@@ -43,63 +50,113 @@
         .container {
             width: 90%;
             max-width: 900px;
-            margin: 2.5rem 0;
+            margin: 2rem 0;
         }
 
         .back-link {
             color: var(--accent-gold);
             text-decoration: none;
-            font-weight: bold;
+            font-weight: 600;
             display: inline-block;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
         }
 
-        .movie-card {
+        .movie-header {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 2rem;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            margin-bottom: 2rem;
         }
 
         h1 {
             color: var(--accent-gold);
-            margin-top: 0;
+            margin: 0 0 0.5rem 0;
             font-size: 2.2rem;
         }
 
-        .craft-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-top: 2rem;
+        .meta {
+            color: var(--text-sub);
+            font-size: 1rem;
+            margin-bottom: 1rem;
         }
 
-        .craft-item {
-            background: #0F172A;
+        .craft-card {
+            background-color: var(--card-bg);
             border: 1px solid var(--border-color);
-            padding: 1.2rem;
-            border-radius: 8px;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
         }
 
         .craft-title {
-            color: var(--text-sub);
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .craft-score {
-            font-size: 1.5rem;
-            font-weight: bold;
+            font-size: 1.3rem;
             color: var(--accent-gold);
-            margin: 0.5rem 0;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
         }
 
-        .craft-desc {
-            font-size: 0.85rem;
+        .rating-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .rating-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.4rem;
+            font-weight: 600;
+        }
+
+        .rating-value {
+            color: var(--accent-gold);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--accent-gold);
+        }
+
+        textarea {
+            width: 100%;
+            background-color: #0F172A;
+            border: 1px solid var(--border-color);
             color: var(--text-main);
-            line-height: 1.4;
+            padding: 12px;
+            border-radius: 8px;
+            box-sizing: border-box;
+            resize: vertical;
+            min-height: 80px;
+            margin-top: 1rem;
+            outline: none;
+        }
+
+        .btn-submit {
+            background-color: var(--accent-gold);
+            color: #000;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 1rem;
+            transition: opacity 0.2s;
+        }
+
+        .btn-submit:hover {
+            opacity: 0.9;
+        }
+
+        .notice-box {
+            background-color: rgba(251, 191, 36, 0.1);
+            border: 1px solid var(--accent-gold);
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 0.85rem;
+            color: var(--text-sub);
+            margin-bottom: 1rem;
         }
     </style>
 </head>
@@ -110,69 +167,140 @@
     </nav>
 
     <div class="container">
-        <a href="index.html" class="back-link">← Back to Main Box Office Table</a>
+        <a href="index.html" class="back-link">← Back to Index</a>
 
-        <div class="movie-card">
-            <h1 id="movieTitle">Loading...</h1>
-            <p id="movieMeta" style="color: var(--text-sub);"></p>
-            <hr style="border-color: var(--border-color); margin: 1.5rem 0;">
+        <div class="movie-header" id="movieHeader">
+            <h1>Loading Movie Details...</h1>
+        </div>
 
-            <h3>Departmental 24-Craft Breakdown</h3>
-            <div class="craft-grid" id="craftGrid">
-                <!-- JavaScript loads craft scores here dynamically -->
+        <div class="craft-card">
+            <div class="craft-title">Submit Craft Rating</div>
+            <div class="notice-box">
+                <strong>Craft Integrity Rule:</strong> Once submitted, your craft rating is permanent to prevent review manipulation. Evaluate each department objectively.
             </div>
+
+            <form id="craftRatingForm">
+                <div class="rating-group">
+                    <div class="rating-label">
+                        <span>Direction & Screenplay</span>
+                        <span class="rating-value" id="val-dir">4.0 / 5.0</span>
+                    </div>
+                    <input type="range" id="score-dir" min="1.0" max="5.0" step="0.5" value="4.0" oninput="document.getElementById('val-dir').innerText = this.value + ' / 5.0'">
+                </div>
+
+                <div class="rating-group">
+                    <div class="rating-label">
+                        <span>Cinematography & Lighting</span>
+                        <span class="rating-value" id="val-cam">4.0 / 5.0</span>
+                    </div>
+                    <input type="range" id="score-cam" min="1.0" max="5.0" step="0.5" value="4.0" oninput="document.getElementById('val-cam').innerText = this.value + ' / 5.0'">
+                </div>
+
+                <div class="rating-group">
+                    <div class="rating-label">
+                        <span>Music & Background Score (BGM)</span>
+                        <span class="rating-value" id="val-music">4.0 / 5.0</span>
+                    </div>
+                    <input type="range" id="score-music" min="1.0" max="5.0" step="0.5" value="4.0" oninput="document.getElementById('val-music').innerText = this.value + ' / 5.0'">
+                </div>
+
+                <div class="rating-group">
+                    <div class="rating-label">
+                        <span>Action & Stunts</span>
+                        <span class="rating-value" id="val-stunts">4.0 / 5.0</span>
+                    </div>
+                    <input type="range" id="score-stunts" min="1.0" max="5.0" step="0.5" value="4.0" oninput="document.getElementById('val-stunts').innerText = this.value + ' / 5.0'">
+                </div>
+
+                <div class="rating-group">
+                    <div class="rating-label">
+                        <span>Visual Effects (VFX / CGI)</span>
+                        <span class="rating-value" id="val-vfx">4.0 / 5.0</span>
+                    </div>
+                    <input type="range" id="score-vfx" min="1.0" max="5.0" step="0.5" value="4.0" oninput="document.getElementById('val-vfx').innerText = this.value + ' / 5.0'">
+                </div>
+
+                <textarea id="reviewComment" placeholder="Write a short technical comment on the crafts (Optional)..."></textarea>
+
+                <button type="button" class="btn-submit" onclick="submitRating()">Submit Verified Craft Rating</button>
+            </form>
         </div>
     </div>
 
     <script>
-        const movieData = {
-            "peddi": {
-                title: "Peddi",
-                meta: "Starring: Ram Charan | Director: Buchi Babu | Music: AR Rahman",
-                crafts: [
-                    { craft: "Direction & World Building", score: "4.8 / 5", desc: "Authentic rustic atmosphere with exceptional dramatic pacing." },
-                    { craft: "Original Score & BGM", score: "4.7 / 5", desc: "AR Rahman delivers high-impact theater soundscapes." },
-                    { craft: "Cinematography", score: "4.9 / 5", desc: "Visually striking lighting design in action sequences." },
-                    { craft: "Stunts & Choreography", score: "4.6 / 5", desc: "Heavy physical impact grounded in narrative." }
-                ]
-            },
-            "manashankara": {
-                title: "Mana Shankara Vara Prasad Garu",
-                meta: "Starring: Chiranjeevi, Venkatesh | Director: Anil Ravipudi",
-                crafts: [
-                    { craft: "Lead Screen Timing", score: "4.6 / 5", desc: "Vintage Chiranjeevi comedy timing elevated theatrical engagement." },
-                    { craft: "Screenplay & Dialogue", score: "4.3 / 5", desc: "Sharp festive comedy writing with strong family appeal." },
-                    { craft: "Editing & Pacing", score: "4.1 / 5", desc: "Trim first-half structure with smooth comic transitions." }
-                ]
-            },
-            "rajasaab": {
-                title: "The Raja Saab",
-                meta: "Starring: Prabhas | Director: Maruthi | Music: Thaman S",
-                crafts: [
-                    { craft: "Visual Effects (VFX)", score: "3.9 / 5", desc: "Horror atmospheric sequences feature strong CGI work." },
-                    { craft: "Sound Design & BGM", score: "4.2 / 5", desc: "Thaman's score maintains high momentum during key set pieces." },
-                    { craft: "Screenplay Structure", score: "2.8 / 5", desc: "Inconsistent pacing across second-half narrative shifts." }
-                ]
-            }
-        };
+        const SUPABASE_URL = "https://eosgvjvpdwxmpxzerxit.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_FVXC4U8wUB2l1SmWLpmoeg_4RkydeLx";
+        let supabaseClient;
 
         const urlParams = new URLSearchParams(window.location.search);
         const movieId = urlParams.get('id') || 'peddi';
-        const data = movieData[movieId] || movieData['peddi'];
 
-        document.getElementById('movieTitle').innerText = data.title;
-        document.getElementById('movieMeta').innerText = data.meta;
-
-        const grid = document.getElementById('craftGrid');
-        data.crafts.forEach(c => {
-            grid.innerHTML += `
-                <div class="craft-item">
-                    <div class="craft-title">${c.craft}</div>
-                    <div class="craft-score">${c.score}</div>
-                    <div class="craft-desc">${c.desc}</div>
-                </div>
-            `;
+        document.addEventListener("DOMContentLoaded", async function() {
+            if (typeof supabase !== 'undefined') {
+                const { createClient } = supabase;
+                supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                fetchMovieDetails();
+            }
         });
+
+        async function fetchMovieDetails() {
+            const { data: movie, error } = await supabaseClient
+                .from('movies')
+                .select('*')
+                .eq('id', movieId)
+                .single();
+
+            const header = document.getElementById('movieHeader');
+            if (error || !movie) {
+                header.innerHTML = `<h1>Movie Not Found</h1><p class="meta">Please return to the main index.</p>`;
+                return;
+            }
+
+            header.innerHTML = `
+                <h1>${movie.title}</h1>
+                <div class="meta">Starring: <strong>${movie.starring || 'N/A'}</strong> | Director: <strong>${movie.director || 'N/A'}</strong></div>
+                <div class="meta">WW Box Office Gross: <strong style="color:var(--accent-gold);">${movie.ww_gross || 'TBD'}</strong> | Verdict: <strong>${movie.verdict || 'Tracked'}</strong></div>
+            `;
+        }
+
+        async function submitRating() {
+            if (!supabaseClient) return;
+
+            const dirScore = parseFloat(document.getElementById('score-dir').value);
+            const camScore = parseFloat(document.getElementById('score-cam').value);
+            const musicScore = parseFloat(document.getElementById('score-music').value);
+            const stuntsScore = parseFloat(document.getElementById('score-stunts').value);
+            const vfxScore = parseFloat(document.getElementById('score-vfx').value);
+            const comment = document.getElementById('reviewComment').value;
+
+            // Calculate overall average score across crafts
+            const overall = ((dirScore + camScore + musicScore + stuntsScore + vfxScore) / 5).toFixed(1);
+
+            // Anonymous demo UUID for initial testing before Auth lock
+            const demoUserId = "00000000-0000-0000-0000-000000000000";
+
+            const { data, error } = await supabaseClient.from('ratings').insert([
+                {
+                    movie_id: movieId,
+                    user_id: demoUserId,
+                    overall_score: parseFloat(overall),
+                    direction_score: dirScore,
+                    cinematography_score: camScore,
+                    music_score: musicScore,
+                    stunts_score: stuntsScore,
+                    vfx_score: vfxScore,
+                    review_comment: comment
+                }
+            ]);
+
+            if (error) {
+                alert("Error submitting rating: " + error.message);
+                console.error(error);
+            } else {
+                alert("Craft rating submitted permanently! Thank you for contributing to TFI craft analytics.");
+                document.getElementById('craftRatingForm').reset();
+            }
+        }
     </script>
 </body>
 </html>
