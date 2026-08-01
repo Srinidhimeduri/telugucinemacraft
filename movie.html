@@ -48,6 +48,18 @@
             text-decoration: none;
         }
 
+        .nav-links a {
+            color: var(--text-sub);
+            text-decoration: none;
+            margin-right: 1.2rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-gold);
+        }
+
         .user-nav-box {
             display: flex;
             align-items: center;
@@ -202,6 +214,7 @@
         }
 
         @media (max-width: 600px) {
+            nav { padding: 1rem; flex-wrap: wrap; gap: 10px; }
             .movie-header, .craft-card { padding: 1.2rem; }
             h1 { font-size: 1.6rem; }
             .craft-row { flex-direction: column; align-items: flex-start; gap: 8px; }
@@ -212,8 +225,14 @@
 
     <nav>
         <a href="index.html" class="nav-logo">TeluguCineCraft</a>
-        <div class="user-nav-box" id="userNavBox">
-            <button class="btn-auth" onclick="signInWithGoogle()">Sign In</button>
+        <div class="user-nav-box">
+            <div class="nav-links" style="display:inline-block;">
+                <a href="index.html">Movies</a>
+                <a href="technicians.html">Talent Directory</a>
+            </div>
+            <div id="userNavBox" style="display:inline-block;">
+                <button class="btn-auth" onclick="signInWithGoogle()">Sign In</button>
+            </div>
         </div>
     </nav>
 
@@ -302,23 +321,16 @@
         function escapeHTML(str) {
             if (!str) return '';
             return str.replace(/[&<>'"]/g, function(tag) {
-                return {
-                    '&': '&amp;',
-                    '<': '&lt;',
-                    '>': '&gt;',
-                    "'": '&#39;',
-                    '"': '&quot;'
-                }[tag] || tag;
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag;
             });
         }
 
-        // Converts a name like "Nag Ashwin" to a URL slug like "nag-ashwin"
         function slugify(text) {
             if (!text) return '';
             return text.toString().toLowerCase().trim()
-                .replace(/\s+/g, '-')           // Replace spaces with -
-                .replace(/[^\w\-]+/g, '')       // Remove non-word chars
-                .replace(/\-\-+/g, '-');        // Replace multiple - with single -
+                .replace(/\s+/g, '-')
+                .replace(/[^\w\-]+/g, '')
+                .replace(/\-\-+/g, '-');
         }
 
         document.addEventListener("DOMContentLoaded", async function() {
@@ -354,7 +366,7 @@
                 document.getElementById('craftRatingForm').style.display = 'block';
                 document.getElementById('userNavBox').innerHTML = `
                     <span style="font-size:0.85rem; color:var(--text-sub);">${escapeHTML(currentUser.email)}</span>
-                    <button class="btn-auth" style="background:#334155; color:#FFF;" onclick="signOut()">Sign Out</button>
+                    <button class="btn-auth" style="background:#334155; color:#FFF; margin-left:8px;" onclick="signOut()">Sign Out</button>
                 `;
             } else {
                 currentUser = null;
@@ -392,13 +404,15 @@
         async function loadPageData() {
             const { data: movie } = await supabaseClient.from('movies').select('*').eq('id', movieId).single();
             const { data: ratings } = await supabaseClient.from('ratings').select('*').eq('movie_id', movieId);
-            const { data: credits } = await supabaseClient.from('movie_credits').select('*, technicians(*)').eq('movie_id', movieId);
 
             const header = document.getElementById('movieHeader');
             if (!movie) {
                 header.innerHTML = `<h1>Movie Not Found</h1>`;
                 return;
             }
+
+            // Safe double-query for Movie Credits to avoid nested PostgREST Join errors
+            const { data: credits } = await supabaseClient.from('movie_credits').select('*').eq('movie_id', movieId);
 
             let avgDir = 0, avgCam = 0, avgMusic = 0, avgStunts = 0, avgVfx = 0, avgOverall = 0;
             const count = ratings ? ratings.length : 0;
@@ -414,16 +428,37 @@
 
             let crewChipsHTML = '';
             if (credits && credits.length > 0) {
-                crewChipsHTML = credits.map(c => `
-                    <a href="technician.html?id=${c.technician_id}" style="display:inline-block; background:#0F172A; border:1px solid var(--border-color); color:var(--text-main); padding:6px 12px; border-radius:16px; font-size:0.85rem; text-decoration:none; margin:4px;">
-                        <span style="color:var(--accent-gold); font-weight:600;">${escapeHTML(c.role_category)}:</span> ${escapeHTML(c.technicians ? c.technicians.name : 'N/A')}
-                    </a>
-                `).join('');
+                const techIds = credits.map(c => c.technician_id).filter(Boolean);
+                let techMap = {};
+                if (techIds.length > 0) {
+                    const { data: techData } = await supabaseClient.from('technicians').select('*').in('id', techIds);
+                    if (techData) {
+                        techData.forEach(t => { techMap[t.id] = t; });
+                    }
+                }
+
+                crewChipsHTML = credits.map(c => {
+                    const tech = techMap[c.technician_id];
+                    const techName = tech ? tech.name : c.technician_id;
+                    return `
+                        <a href="technician.html?id=${encodeURIComponent(c.technician_id)}" style="display:inline-block; background:#0F172A; border:1px solid var(--border-color); color:var(--text-main); padding:6px 12px; border-radius:16px; font-size:0.85rem; text-decoration:none; margin:4px;">
+                            <span style="color:var(--accent-gold); font-weight:600;">${escapeHTML(c.role_category)}:</span> ${escapeHTML(techName)}
+                        </a>
+                    `;
+                }).join('');
             } else {
-                crewChipsHTML = `<p style="color:var(--text-sub); font-size:0.85rem; margin-top:8px;">No extra crew network tagged for this title yet.</p>`;
+                // Fallback chips derived directly from movie metadata so it's NEVER blank!
+                const dirSlug = slugify(movie.director);
+                crewChipsHTML = `
+                    <a href="technician.html?id=${dirSlug}" style="display:inline-block; background:#0F172A; border:1px solid var(--border-color); color:var(--text-main); padding:6px 12px; border-radius:16px; font-size:0.85rem; text-decoration:none; margin:4px;">
+                        <span style="color:var(--accent-gold); font-weight:600;">Director:</span> ${escapeHTML(movie.director || 'N/A')}
+                    </a>
+                    <a href="index.html" style="display:inline-block; background:#0F172A; border:1px solid var(--border-color); color:var(--text-main); padding:6px 12px; border-radius:16px; font-size:0.85rem; text-decoration:none; margin:4px;">
+                        <span style="color:var(--accent-gold); font-weight:600;">Lead Cast:</span> ${escapeHTML(movie.starring || 'N/A')}
+                    </a>
+                `;
             }
 
-            // Dynamic Director ID calculation
             const directorSlug = slugify(movie.director);
 
             header.innerHTML = `
