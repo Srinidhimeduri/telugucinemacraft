@@ -3,29 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Talent Directory</title>
+    <title>Talent Directory Diagnostic</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root { 
-            --bg: #0B0E14; 
-            --card: #151921; 
-            --gold: #FFD700; 
-            --text: #E2E8F0; 
-            --border: #1F2937;
-        }
-        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; padding: 2rem; margin: 0; }
-        .container { max-width: 800px; margin: 0 auto; }
-        .card { background: var(--card); padding: 1.5rem; border-radius: 12px; margin-bottom: 1rem; cursor: pointer; border: 1px solid var(--border); transition: 0.2s; }
-        .card:hover { border-color: var(--gold); }
-        h1 { color: var(--gold); margin-bottom: 0.5rem; }
-        .subtitle { color: #94A3B8; margin-bottom: 2rem; }
+        body { background: #0B0E14; color: #fff; font-family: sans-serif; padding: 2rem; }
+        .card { background: #151921; padding: 15px; border-radius: 8px; margin: 10px 0; border: 1px solid #1F2937; }
+        .debug { background: #7f1d1d; padding: 20px; border-radius: 8px; color: #fecaca; margin-bottom: 20px; }
     </style>
 </head>
 <body>
-    <div class="container" id="content">Loading Talent...</div>
+    <div id="content">Loading...</div>
 
     <script>
-        // 1. SAFE INITIALIZATION: Prevents "Identifier already declared" error
+        // 1. SAFE INITIALIZATION
         if (!window.myFixedClient) {
             window.myFixedClient = window.supabase.createClient(
                 "https://eosgvjvpdwxmpxzerxit.supabase.co", 
@@ -34,17 +24,28 @@
         }
         const db = window.myFixedClient;
 
-        // 2. PARAMS: Get name and role from the URL
+        // 2. DIAGNOSTIC DEBUGGER
         const params = new URLSearchParams(window.location.search);
-        const talentName = decodeURIComponent(params.get('name') || '').toLowerCase();
-        const role = params.get('role'); // e.g., 'hero', 'director', 'music'
+        const talentName = params.get('name');
+        const role = params.get('role');
 
         async function init() {
+            // If data is missing, show the debug info instead of "Invalid Request"
             if (!talentName || !role) {
-                document.getElementById('content').innerHTML = "<h1>Invalid Request</h1>";
+                document.getElementById('content').innerHTML = `
+                    <div class="debug">
+                        <h1>Debug Mode: Missing Parameters</h1>
+                        <p>The system could not find the required data in your URL.</p>
+                        <p><strong>Detected Name:</strong> ${talentName}</p>
+                        <p><strong>Detected Role:</strong> ${role}</p>
+                        <hr>
+                        <p>This means your link generation in <code>movie.html</code> is likely broken.</p>
+                    </div>
+                `;
                 return;
             }
 
+            // 3. MAIN LOGIC (Only runs if params exist)
             const { data, error } = await db.from('box_office').select('*');
             
             if (error || !data) {
@@ -52,25 +53,21 @@
                 return;
             }
 
-            // 3. STRICT FILTERING: Only match the column relevant to the role
+            const cleanName = decodeURIComponent(talentName).toLowerCase();
             const films = data.filter(m => {
-                let targetColumn = "";
-                if (role === 'hero') targetColumn = m.starring || "";
-                else if (role === 'director') targetColumn = m.director || "";
-                else if (role === 'music') targetColumn = m.music_director || "";
-                
-                // Check if the talentName exists in the specific role column
-                return targetColumn.toLowerCase().includes(talentName);
+                let target = "";
+                if (role === 'hero') target = m.starring || "";
+                else if (role === 'director') target = m.director || "";
+                else if (role === 'music') target = m.music_director || "";
+                return target.toLowerCase().includes(cleanName);
             });
 
-            // 4. DISPLAY
             document.getElementById('content').innerHTML = `
                 <h1>${talentName.toUpperCase()}</h1>
-                <p class="subtitle">Role: ${role.toUpperCase()} | Total Credits: ${films.length}</p>
+                <p>Role: ${role.toUpperCase()} | Total: ${films.length}</p>
                 ${films.map(f => `
-                    <div class="card" onclick="location.href='movie.html?id=${f.movie_id}'">
-                        <div style="font-size:1.2rem; font-weight:600;">${f.movie_name}</div>
-                        <div style="color:var(--gold); font-size:0.9rem;">${f.verdict || 'N/A'}</div>
+                    <div class="card" onclick="location.href='movie.html?id=${f.movie_id}'" style="cursor:pointer">
+                        ${f.movie_name}
                     </div>
                 `).join('')}
             `;
