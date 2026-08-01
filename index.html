@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TeluguCineCraft | TFI Trade & Craft Analytics</title>
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
             --bg-color: #0B0F19;
@@ -54,6 +56,12 @@
             border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-signin:hover {
+            background-color: var(--accent-gold);
+            color: #000;
         }
 
         .container {
@@ -159,19 +167,6 @@
             color: var(--accent-gold);
         }
 
-        .craft-rating {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: #0F172A;
-            padding: 6px 12px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            font-weight: bold;
-        }
-
-        .star { color: var(--accent-gold); }
-
         .mvp-badge {
             display: inline-block;
             background-color: rgba(168, 85, 247, 0.15);
@@ -195,17 +190,19 @@
 
     <nav>
         <a href="index.html" class="nav-logo">TeluguCineCraft</a>
-        <button class="btn-signin" onclick="alert('Google Auth Integration Coming Soon!')">Sign In</button>
+        <div id="authContainer">
+            <button class="btn-signin" id="btnAuth" onclick="handleAuth()">Sign In with Google</button>
+        </div>
     </nav>
 
     <div class="container">
         <header>
             <h1>TFI Box Office & Craft Index</h1>
-            <p class="subtitle">Click any movie title for deep departmental craft breakdowns</p>
+            <p class="subtitle">Live cloud database integration via Supabase</p>
         </header>
 
         <div class="controls-bar">
-            <input type="text" id="searchInput" class="search-input" placeholder="Search by movie, actor, director, or craft..." onkeyup="filterTable()">
+            <input type="text" id="searchInput" class="search-input" placeholder="Search by movie, actor, director..." onkeyup="filterTable()">
         </div>
 
         <div class="table-card">
@@ -213,104 +210,63 @@
                 <thead>
                     <tr>
                         <th>Rank</th>
-                        <th>Movie Title (Click for Crafts)</th>
-                        <th>Craft Score</th>
-                        <th>Craft MVP (Who Saved/Scaled It)</th>
+                        <th>Movie Title</th>
+                        <th>Craft MVP</th>
                         <th>WW Gross</th>
                         <th>Verdict</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>01</td>
-                        <td>
-                            <a href="movie.html?id=peddi" class="movie-link">Peddi</a><br>
-                            <span style="font-size: 0.85rem; color: var(--text-sub);">Ram Charan / Buchi Babu</span>
-                        </td>
-                        <td><div class="craft-rating"><span class="star">★</span> 4.7 <span style="font-size:0.75rem; color:var(--text-sub);">/ 5</span></div></td>
-                        <td>
-                            <span class="mvp-badge">⚡ Direction & AR Rahman Score</span>
-                            <div class="mvp-reason">World-building & rustic BGM elevated the theatrical experience.</div>
-                        </td>
-                        <td class="gross">₹350+ Cr</td>
-                        <td><span class="tag blockbuster">Blockbuster</span></td>
-                    </tr>
-                    <tr>
-                        <td>02</td>
-                        <td>
-                            <a href="movie.html?id=manashankara" class="movie-link">Mana Shankara Vara Prasad Garu</a><br>
-                            <span style="font-size: 0.85rem; color: var(--text-sub);">Chiranjeevi / Anil Ravipudi</span>
-                        </td>
-                        <td><div class="craft-rating"><span class="star">★</span> 4.3 <span style="font-size:0.75rem; color:var(--text-sub);">/ 5</span></div></td>
-                        <td>
-                            <span class="mvp-badge">⚡ Vintage Chiranjeevi Timing</span>
-                            <div class="mvp-reason">Comedy writing & screen presence carried second-half pacing.</div>
-                        </td>
-                        <td class="gross">₹300+ Cr</td>
-                        <td><span class="tag blockbuster">Super Hit</span></td>
-                    </tr>
-                    <tr>
-                        <td>03</td>
-                        <td>
-                            <a href="movie.html?id=rajasaab" class="movie-link">The Raja Saab</a><br>
-                            <span style="font-size: 0.85rem; color: var(--text-sub);">Prabhas / Maruthi</span>
-                        </td>
-                        <td><div class="craft-rating"><span class="star">★</span> 3.4 <span style="font-size:0.75rem; color:var(--text-sub);">/ 5</span></div></td>
-                        <td>
-                            <span class="mvp-badge">⚡ Thaman BGM & VFX Team</span>
-                            <div class="mvp-reason">Horror visual effects & sound design kept interest alive.</div>
-                        </td>
-                        <td class="gross">₹209 Cr</td>
-                        <td><span class="tag average">Average</span></td>
-                    </tr>
-                    <tr>
-                        <td>04</td>
-                        <td>
-                            <a href="movie.html?id=anaganaga" class="movie-link">Anaganaga Oka Raju</a><br>
-                            <span style="font-size: 0.85rem; color: var(--text-sub);">Naveen Polishetty / Maari</span>
-                        </td>
-                        <td><div class="craft-rating"><span class="star">★</span> 4.1 <span style="font-size:0.75rem; color:var(--text-sub);">/ 5</span></div></td>
-                        <td>
-                            <span class="mvp-badge">⚡ Lead Performance & Writing</span>
-                            <div class="mvp-reason">High dialogue hit-rate in comedy sequences.</div>
-                        </td>
-                        <td class="gross">₹100 Cr</td>
-                        <td><span class="tag blockbuster">Hit</span></td>
-                    </tr>
-                    <tr>
-                        <td>05</td>
-                        <td>
-                            <a href="movie.html?id=maaintibangaaram" class="movie-link">Maa Inti Bangaaram</a><br>
-                            <span style="font-size: 0.85rem; color: var(--text-sub);">Samantha / Tralala Pictures</span>
-                        </td>
-                        <td><div class="craft-rating"><span class="star">★</span> 4.2 <span style="font-size:0.75rem; color:var(--text-sub);">/ 5</span></div></td>
-                        <td>
-                            <span class="mvp-badge">⚡ Emotional Arc & Screenplay</span>
-                            <div class="mvp-reason">Strong word-of-mouth narrative driving repeat audience.</div>
-                        </td>
-                        <td class="gross">₹100 Cr</td>
-                        <td><span class="tag blockbuster">Super Hit</span></td>
-                    </tr>
-                    <tr>
-                        <td>06</td>
-                        <td>
-                            <a href="movie.html?id=ustaad" class="movie-link">Ustaad Bhagat Singh</a><br>
-                            <span style="font-size: 0.85rem; color: var(--text-sub);">Pawan Kalyan / Harish Shankar</span>
-                        </td>
-                        <td><div class="craft-rating"><span class="star">★</span> 3.8 <span style="font-size:0.75rem; color:var(--text-sub);">/ 5</span></div></td>
-                        <td>
-                            <span class="mvp-badge">⚡ Mass Stunts & DSP BGM</span>
-                            <div class="mvp-reason">High energy mass intervals driving single-screen footfalls.</div>
-                        </td>
-                        <td class="gross">₹95 Cr</td>
-                        <td><span class="tag average">Average</span></td>
-                    </tr>
+                <tbody id="movieTableBody">
+                    <tr><td colspan="5" style="text-align:center; color: var(--text-sub);">Connecting to Supabase Database...</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
 
     <script>
+        // Initialize Supabase Client
+        const SUPABASE_URL = "https://eosgvjvpdwxmpxzerxit.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvc2d2anZwZHd4bXB4emVyeGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1Njk3MTMsImV4cCI6MjEwMTE0NTcxM30.fD14BdJBDPNqFUKGxS5DRgsDnN8CqYdWR4k8cuAbvcg";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Fetch Movies from Cloud Database
+        async function fetchMovies() {
+            const { data: movies, error } = await supabaseClient.from('movies').select('*');
+            const tbody = document.getElementById('movieTableBody');
+
+            if (error || !movies || movies.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No database records found. Run Seed Script in Supabase!</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = "";
+            movies.forEach((movie, index) => {
+                const rank = (index + 1).toString().padStart(2, '0');
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${rank}</td>
+                        <td>
+                            <a href="movie.html?id=${movie.id}" class="movie-link">${movie.title}</a><br>
+                            <span style="font-size: 0.85rem; color: var(--text-sub);">${movie.starring || ''} / ${movie.director || ''}</span>
+                        </td>
+                        <td>
+                            <span class="mvp-badge">${movie.mvp_badge || '⚡ Craft Spotlight'}</span>
+                            <div class="mvp-reason">${movie.mvp_reason || ''}</div>
+                        </td>
+                        <td class="gross">${movie.ww_gross || 'TBD'}</td>
+                        <td><span class="tag blockbuster">${movie.verdict || 'Tracked'}</span></td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Google Auth Handler Placeholder
+        async function handleAuth() {
+            const { data, error } = await supabaseClient.auth.signInWithOAuth({
+                provider: 'google',
+            });
+        }
+
         function filterTable() {
             const filter = document.getElementById("searchInput").value.toLowerCase();
             const tr = document.getElementById("movieTable").getElementsByTagName("tr");
@@ -318,6 +274,8 @@
                 tr[i].style.display = tr[i].innerText.toLowerCase().includes(filter) ? "" : "none";
             }
         }
+
+        fetchMovies();
     </script>
 </body>
 </html>
