@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeluguCineCraft | Technician Profile</title>
+    <!-- Supabase JS Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+    <style>
+        :root {
+            --bg-color: #0B0F19;
+            --card-bg: #1E293B;
+            --accent-gold: #FBBF24;
+            --text-main: #F8FAFC;
+            --text-sub: #94A3B8;
+            --border-color: #334155;
+            --badge-blue: #38BDF8;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        nav {
+            width: 100%;
+            background-color: #0F172A;
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        .nav-logo {
+            color: var(--accent-gold);
+            font-size: 1.4rem;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 900px;
+            margin: 2rem 0;
+        }
+
+        .back-link {
+            color: var(--accent-gold);
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .profile-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: #0F172A;
+            border: 2px solid var(--accent-gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: var(--accent-gold);
+            flex-shrink: 0;
+        }
+
+        .profile-info h1 {
+            margin: 0 0 0.4rem 0;
+            color: var(--accent-gold);
+            font-size: 2rem;
+        }
+
+        .craft-tag {
+            display: inline-block;
+            background-color: rgba(251, 191, 36, 0.15);
+            color: var(--accent-gold);
+            border: 1px solid var(--accent-gold);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+        }
+
+        .profile-bio {
+            color: var(--text-sub);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            color: var(--accent-gold);
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .filmography-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .film-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .film-row:last-child {
+            border-bottom: none;
+        }
+
+        .film-title {
+            color: var(--text-main);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .film-title:hover {
+            color: var(--accent-gold);
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="nav-logo">TeluguCineCraft</a>
+    </nav>
+
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to Index</a>
+
+        <div class="profile-card" id="profileCard">
+            <div class="profile-avatar">🎬</div>
+            <div class="profile-info">
+                <h1>Loading Profile...</h1>
+            </div>
+        </div>
+
+        <div class="filmography-card">
+            <div class="section-title">Verified Filmography & Craft Indexes</div>
+            <div id="filmList">
+                <p style="color:var(--text-sub);">Loading credits...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = "https://eosgvjvpdwxmpxzerxit.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_FVXC4U8wUB2l1SmWLpmoeg_4RkydeLx";
+        let supabaseClient;
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const techId = urlParams.get('id') || 'buchi-babu';
+
+        document.addEventListener("DOMContentLoaded", async function() {
+            if (typeof supabase !== 'undefined') {
+                const { createClient } = supabase;
+                supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                loadTechnicianData();
+            }
+        });
+
+        async function loadTechnicianData() {
+            const { data: tech } = await supabaseClient.from('technicians').select('*').eq('id', techId).single();
+            const { data: movies } = await supabaseClient.from('movies').select('*');
+
+            const profileCard = document.getElementById('profileCard');
+            const filmList = document.getElementById('filmList');
+
+            if (!tech) {
+                profileCard.innerHTML = `<div><h1>Technician Profile Not Found</h1></div>`;
+                return;
+            }
+
+            profileCard.innerHTML = `
+                <div class="profile-avatar">🎥</div>
+                <div class="profile-info">
+                    <h1>${tech.name}</h1>
+                    <span class="craft-tag">${tech.craft}</span>
+                    <p class="profile-bio">${tech.bio || 'Verified TFI Crew Member.'}</p>
+                </div>
+            `;
+
+            const creditedMovies = movies ? movies.filter(m => m.director && m.director.toLowerCase().includes(tech.name.toLowerCase())) : [];
+
+            if (creditedMovies.length === 0) {
+                filmList.innerHTML = `<p style="color:var(--text-sub);">No verified filmography linked yet.</p>`;
+            } else {
+                filmList.innerHTML = creditedMovies.map(m => `
+                    <div class="film-row">
+                        <a href="movie.html?id=${m.id}" class="film-title">${m.title}</a>
+                        <span style="color:var(--accent-gold); font-weight:bold;">Trade: ${m.ww_gross || 'TBD'}</span>
+                    </div>
+                `).join('');
+            }
+        }
+    </script>
+</body>
+</html>
