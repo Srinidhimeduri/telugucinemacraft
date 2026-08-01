@@ -299,6 +299,20 @@
         const movieId = urlParams.get('id') || 'peddi';
         const selectedRatings = { direction: 4, cinematography: 4, music: 4, stunts: 4, vfx: 4 };
 
+        // Security Helper: Sanitizes user strings to prevent XSS Attacks
+        function escapeHTML(str) {
+            if (!str) return '';
+            return str.replace(/[&<>'"]/g, function(tag) {
+                return {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    "'": '&#39;',
+                    '"': '&quot;'
+                }[tag] || tag;
+            });
+        }
+
         document.addEventListener("DOMContentLoaded", async function() {
             if (typeof supabase !== 'undefined') {
                 const { createClient } = supabase;
@@ -331,7 +345,7 @@
                 document.getElementById('authGate').style.display = 'none';
                 document.getElementById('craftRatingForm').style.display = 'block';
                 document.getElementById('userNavBox').innerHTML = `
-                    <span style="font-size:0.85rem; color:var(--text-sub);">${currentUser.email}</span>
+                    <span style="font-size:0.85rem; color:var(--text-sub);">${escapeHTML(currentUser.email)}</span>
                     <button class="btn-auth" style="background:#334155; color:#FFF;" onclick="signOut()">Sign Out</button>
                 `;
             } else {
@@ -390,14 +404,14 @@
             }
 
             header.innerHTML = `
-                <h1>${movie.title}</h1>
+                <h1>${escapeHTML(movie.title)}</h1>
                 <div class="meta-row">
-                    Starring: <strong>${movie.starring || 'N/A'}</strong> | 
-                    Director: <a href="technician.html?id=buchi-babu" class="tech-link">${movie.director || 'N/A'}</a>
+                    Starring: <strong>${escapeHTML(movie.starring || 'N/A')}</strong> | 
+                    Director: <a href="technician.html?id=buchi-babu" class="tech-link">${escapeHTML(movie.director || 'N/A')}</a>
                 </div>
                 <div class="meta-row">
-                    Trade Gross: <strong style="color:var(--accent-gold);">${movie.ww_gross || 'TBD'}</strong> 
-                    <span class="trade-badge">✓ ${movie.source_badge || 'Trade Consensus'}</span>
+                    Trade Gross: <strong style="color:var(--accent-gold);">${escapeHTML(movie.ww_gross || 'TBD')}</strong> 
+                    <span class="trade-badge">✓ ${escapeHTML(movie.source_badge || 'Trade Consensus')}</span>
                 </div>
 
                 <div class="scorecard-grid">
@@ -422,15 +436,15 @@
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:8px;">
                         <span style="font-size:0.9rem; color:var(--text-sub);">Audit Status:</span>
                         <span style="background:${badgeColor}20; color:${badgeColor}; border:1px solid ${badgeColor}; padding:4px 10px; border-radius:6px; font-weight:bold; font-size:0.8rem;">
-                            ${bo.dispute_status}
+                            ${escapeHTML(bo.dispute_status)}
                         </span>
                     </div>
                     <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap:10px; background:#0F172A; padding:1rem; border-radius:8px; border:1px solid var(--border-color);">
-                        <div><div style="font-size:0.75rem; color:var(--text-sub);">Producer Claim</div><div style="font-weight:bold; color:var(--accent-gold);">${bo.producer_gross || '-'}</div></div>
-                        <div><div style="font-size:0.75rem; color:var(--text-sub);">Trade Tracker</div><div style="font-weight:bold; color:var(--text-main);">${bo.trade_gross || '-'}</div></div>
-                        <div><div style="font-size:0.75rem; color:var(--text-sub);">Sacnilk / Ind.</div><div style="font-weight:bold; color:var(--text-main);">${bo.sacnilk_gross || '-'}</div></div>
-                        <div><div style="font-size:0.75rem; color:var(--text-sub);">Nizam Share</div><div style="font-weight:bold; color:var(--badge-blue);">${bo.nizam_share || '-'}</div></div>
-                        <div><div style="font-size:0.75rem; color:var(--text-sub);">Overseas Share</div><div style="font-weight:bold; color:var(--badge-blue);">${bo.overseas_share || '-'}</div></div>
+                        <div><div style="font-size:0.75rem; color:var(--text-sub);">Producer Claim</div><div style="font-weight:bold; color:var(--accent-gold);">${escapeHTML(bo.producer_gross || '-')}</div></div>
+                        <div><div style="font-size:0.75rem; color:var(--text-sub);">Trade Tracker</div><div style="font-weight:bold; color:var(--text-main);">${escapeHTML(bo.trade_gross || '-')}</div></div>
+                        <div><div style="font-size:0.75rem; color:var(--text-sub);">Sacnilk / Ind.</div><div style="font-weight:bold; color:var(--text-main);">${escapeHTML(bo.sacnilk_gross || '-')}</div></div>
+                        <div><div style="font-size:0.75rem; color:var(--text-sub);">Nizam Share</div><div style="font-weight:bold; color:var(--badge-blue);">${escapeHTML(bo.nizam_share || '-')}</div></div>
+                        <div><div style="font-size:0.75rem; color:var(--text-sub);">Overseas Share</div><div style="font-weight:bold; color:var(--badge-blue);">${escapeHTML(bo.overseas_share || '-')}</div></div>
                     </div>
                 `;
             } else {
@@ -444,7 +458,7 @@
                 return;
             }
 
-            const comment = document.getElementById('reviewComment').value;
+            const rawComment = document.getElementById('reviewComment').value;
             const overall = ((selectedRatings.direction + selectedRatings.cinematography + selectedRatings.music + selectedRatings.stunts + selectedRatings.vfx) / 5).toFixed(1);
 
             const { error } = await supabaseClient.from('ratings').insert([
@@ -457,7 +471,7 @@
                     music_score: selectedRatings.music,
                     stunts_score: selectedRatings.stunts,
                     vfx_score: selectedRatings.vfx,
-                    review_comment: comment
+                    review_comment: rawComment
                 }
             ]);
 
