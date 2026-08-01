@@ -299,7 +299,6 @@
         const movieId = urlParams.get('id') || 'peddi';
         const selectedRatings = { direction: 4, cinematography: 4, music: 4, stunts: 4, vfx: 4 };
 
-        // Security Helper: Sanitizes user strings to prevent XSS Attacks
         function escapeHTML(str) {
             if (!str) return '';
             return str.replace(/[&<>'"]/g, function(tag) {
@@ -384,6 +383,7 @@
         async function loadPageData() {
             const { data: movie } = await supabaseClient.from('movies').select('*').eq('id', movieId).single();
             const { data: ratings } = await supabaseClient.from('ratings').select('*').eq('movie_id', movieId);
+            const { data: credits } = await supabaseClient.from('movie_credits').select('*, technicians(*)').eq('movie_id', movieId);
 
             const header = document.getElementById('movieHeader');
             if (!movie) {
@@ -403,6 +403,17 @@
                 avgOverall = (ratings.reduce((acc, r) => acc + (parseFloat(r.overall_score) || 0), 0) / count).toFixed(1);
             }
 
+            let crewChipsHTML = '';
+            if (credits && credits.length > 0) {
+                crewChipsHTML = credits.map(c => `
+                    <a href="technician.html?id=${c.technician_id}" style="display:inline-block; background:#0F172A; border:1px solid var(--border-color); color:var(--text-main); padding:6px 12px; border-radius:16px; font-size:0.85rem; text-decoration:none; margin:4px;">
+                        <span style="color:var(--accent-gold); font-weight:600;">${escapeHTML(c.role_category)}:</span> ${escapeHTML(c.technicians ? c.technicians.name : 'N/A')}
+                    </a>
+                `).join('');
+            } else {
+                crewChipsHTML = `<p style="color:var(--text-sub); font-size:0.85rem; margin-top:8px;">No crew network tagged for this title yet.</p>`;
+            }
+
             header.innerHTML = `
                 <h1>${escapeHTML(movie.title)}</h1>
                 <div class="meta-row">
@@ -412,6 +423,11 @@
                 <div class="meta-row">
                     Trade Gross: <strong style="color:var(--accent-gold);">${escapeHTML(movie.ww_gross || 'TBD')}</strong> 
                     <span class="trade-badge">✓ ${escapeHTML(movie.source_badge || 'Trade Consensus')}</span>
+                </div>
+
+                <div style="margin-top:1.2rem; border-top:1px solid var(--border-color); padding-top:1rem;">
+                    <div style="font-size:0.85rem; color:var(--text-sub); margin-bottom:8px; font-weight:bold;">Full Craft & Crew Network (Click any name to view collaboration history):</div>
+                    <div>${crewChipsHTML}</div>
                 </div>
 
                 <div class="scorecard-grid">
