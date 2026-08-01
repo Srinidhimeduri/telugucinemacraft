@@ -6,38 +6,73 @@
     <title>Talent Directory</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { background: #0B0E14; color: #fff; font-family: sans-serif; padding: 2rem; }
-        .card { background: #151921; padding: 15px; border-radius: 8px; margin: 10px 0; border: 1px solid #1F2937; }
-        h1 { color: #FFD700; }
+        :root { 
+            --bg: #0B0E14; 
+            --card: #151921; 
+            --gold: #FFD700; 
+            --text: #E2E8F0; 
+            --border: #1F2937;
+        }
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; padding: 2rem; margin: 0; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .card { background: var(--card); padding: 1.5rem; border-radius: 12px; margin-bottom: 1rem; cursor: pointer; border: 1px solid var(--border); transition: 0.2s; }
+        .card:hover { border-color: var(--gold); }
+        h1 { color: var(--gold); margin-bottom: 0.5rem; }
+        .subtitle { color: #94A3B8; margin-bottom: 2rem; }
     </style>
 </head>
 <body>
-    <div id="content">Loading Talent...</div>
+    <div class="container" id="content">Loading Talent...</div>
+
     <script>
+        // 1. SAFE INITIALIZATION: Prevents "Identifier already declared" error
         if (!window.myFixedClient) {
-            window.myFixedClient = window.supabase.createClient("https://eosgvjvpdwxmpxzerxit.supabase.co", "sb_publishable_FVXC4U8wUB2l1SmWLpmoeg_4RkydeLx");
+            window.myFixedClient = window.supabase.createClient(
+                "https://eosgvjvpdwxmpxzerxit.supabase.co", 
+                "sb_publishable_FVXC4U8wUB2l1SmWLpmoeg_4RkydeLx"
+            );
         }
         const db = window.myFixedClient;
-        const searchName = decodeURIComponent(new URLSearchParams(window.location.search).get('name') || '').toLowerCase();
 
-        // Normalization: Removes dots/spaces for fuzzy matching
-        const normalize = (n) => n.toLowerCase().replace(/[^a-z]/g, '');
+        // 2. PARAMS: Get name and role from the URL
+        const params = new URLSearchParams(window.location.search);
+        const talentName = decodeURIComponent(params.get('name') || '').toLowerCase();
+        const role = params.get('role'); // e.g., 'hero', 'director', 'music'
 
         async function init() {
-            const { data } = await db.from('box_office').select('*');
+            if (!talentName || !role) {
+                document.getElementById('content').innerHTML = "<h1>Invalid Request</h1>";
+                return;
+            }
+
+            const { data, error } = await db.from('box_office').select('*');
             
-            // Deduplication logic: Keep only unique movie objects
-            const films = (data || []).filter(m => {
-                const crewArr = [m.director, m.producer, m.starring, m.supporting_cast].join(',').split(',');
-                return crewArr.some(n => normalize(n).includes(normalize(searchName)));
+            if (error || !data) {
+                document.getElementById('content').innerHTML = "<h1>Data Load Error</h1>";
+                return;
+            }
+
+            // 3. STRICT FILTERING: Only match the column relevant to the role
+            const films = data.filter(m => {
+                let targetColumn = "";
+                if (role === 'hero') targetColumn = m.starring || "";
+                else if (role === 'director') targetColumn = m.director || "";
+                else if (role === 'music') targetColumn = m.music_director || "";
+                
+                // Check if the talentName exists in the specific role column
+                return targetColumn.toLowerCase().includes(talentName);
             });
 
+            // 4. DISPLAY
             document.getElementById('content').innerHTML = `
-                <h1>${searchName.toUpperCase()}</h1>
-                <p>Total Credits: ${films.length}</p>
-                ${films.map(f => `<div class="card" onclick="location.href='movie.html?id=${f.movie_id}'" style="cursor:pointer">
-                    <div style="font-size:1.2rem;">${f.movie_name}</div>
-                </div>`).join('')}
+                <h1>${talentName.toUpperCase()}</h1>
+                <p class="subtitle">Role: ${role.toUpperCase()} | Total Credits: ${films.length}</p>
+                ${films.map(f => `
+                    <div class="card" onclick="location.href='movie.html?id=${f.movie_id}'">
+                        <div style="font-size:1.2rem; font-weight:600;">${f.movie_name}</div>
+                        <div style="color:var(--gold); font-size:0.9rem;">${f.verdict || 'N/A'}</div>
+                    </div>
+                `).join('')}
             `;
         }
         init();
