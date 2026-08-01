@@ -16,6 +16,10 @@
             --badge-blue: #38BDF8;
         }
 
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             background-color: var(--bg-color);
             color: var(--text-main);
@@ -31,24 +35,23 @@
             width: 100%;
             background-color: #0F172A;
             border-bottom: 1px solid var(--border-color);
-            padding: 1rem 2rem;
+            padding: 1rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-sizing: border-box;
         }
 
         .nav-logo {
             color: var(--accent-gold);
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             font-weight: bold;
             text-decoration: none;
         }
 
         .container {
-            width: 90%;
+            width: 92%;
             max-width: 900px;
-            margin: 2rem 0;
+            margin: 1.5rem 0;
         }
 
         .back-link {
@@ -57,37 +60,38 @@
             font-weight: 600;
             display: inline-block;
             margin-bottom: 1rem;
+            font-size: 0.9rem;
         }
 
         .profile-card {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
-            padding: 2rem;
-            margin-bottom: 2rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
             display: flex;
-            gap: 2rem;
+            gap: 1.5rem;
             align-items: center;
         }
 
         .profile-avatar {
-            width: 100px;
-            height: 100px;
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
             background-color: #0F172A;
             border: 2px solid var(--accent-gold);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2.5rem;
+            font-size: 2rem;
             color: var(--accent-gold);
             flex-shrink: 0;
         }
 
         .profile-info h1 {
-            margin: 0 0 0.4rem 0;
+            margin: 0 0 0.3rem 0;
             color: var(--accent-gold);
-            font-size: 2rem;
+            font-size: 1.6rem;
         }
 
         .craft-tag {
@@ -95,34 +99,34 @@
             background-color: rgba(251, 191, 36, 0.15);
             color: var(--accent-gold);
             border: 1px solid var(--accent-gold);
-            padding: 4px 10px;
+            padding: 3px 8px;
             border-radius: 6px;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 600;
-            margin-bottom: 0.8rem;
+            margin-bottom: 0.6rem;
         }
 
         .section-title {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             color: var(--accent-gold);
             margin-bottom: 1rem;
             border-bottom: 1px solid var(--border-color);
-            padding-bottom: 0.5rem;
+            padding-bottom: 0.4rem;
         }
 
         .card-box {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
+            padding: 1.2rem;
+            margin-bottom: 1.5rem;
         }
 
         .film-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 0;
+            padding: 10px 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
@@ -139,22 +143,25 @@
             color: var(--text-main);
             padding: 12px;
             border-radius: 8px;
-            box-sizing: border-box;
             resize: vertical;
-            min-height: 70px;
-            margin-top: 1rem;
+            min-height: 80px;
+            margin-top: 0.8rem;
             outline: none;
+            font-family: inherit;
+            font-size: 0.95rem;
         }
 
         .btn-submit {
             background-color: var(--accent-gold);
             color: #000;
             border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
+            padding: 12px 20px;
+            border-radius: 8px;
             font-weight: bold;
+            font-size: 0.95rem;
             cursor: pointer;
             margin-top: 0.8rem;
+            width: 100%;
         }
 
         .review-item {
@@ -163,6 +170,15 @@
             border-radius: 8px;
             border: 1px solid var(--border-color);
             margin-bottom: 0.8rem;
+        }
+
+        /* Mobile Layout Tweaks */
+        @media (max-width: 600px) {
+            .profile-card {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
         }
     </style>
 </head>
@@ -190,7 +206,7 @@
 
         <!-- Direct Industry Review Box -->
         <div class="card-box">
-            <div class="section-title">Submit Craft Review for Production & Casting Consideration</div>
+            <div class="section-title">Submit Craft Review for Production Consideration</div>
             <textarea id="crewReviewText" placeholder="Write a technical note regarding this technician's craft performance, efficiency, or potential for future projects..."></textarea>
             <button class="btn-submit" onclick="submitCrewReview()">Post Craft Endorsement</button>
         </div>
@@ -236,7 +252,7 @@
                 <div class="profile-info">
                     <h1>${tech.name}</h1>
                     <span class="craft-tag">${tech.craft}</span>
-                    <p style="color:var(--text-sub); margin:0;">${tech.bio || 'Verified TFI Crew Member.'}</p>
+                    <p style="color:var(--text-sub); margin:0; font-size:0.9rem; line-height:1.4;">${tech.bio || 'Verified TFI Crew Member.'}</p>
                 </div>
             `;
 
@@ -251,7 +267,7 @@
                 filmList.innerHTML = creditedMovies.map(m => `
                     <div class="film-row">
                         <a href="movie.html?id=${m.id}" class="film-title">${m.title}</a>
-                        <span style="color:var(--accent-gold); font-weight:bold;">${m.ww_gross || 'TBD'}</span>
+                        <span style="color:var(--accent-gold); font-weight:bold; font-size:0.9rem;">${m.ww_gross || 'TBD'}</span>
                     </div>
                 `).join('');
             }
@@ -264,7 +280,7 @@
             if (reviews && reviews.length > 0) {
                 reviewsList.innerHTML = reviews.map(r => `
                     <div class="review-item">
-                        <p style="margin:0; font-size:0.95rem;">"${r.review_text}"</p>
+                        <p style="margin:0; font-size:0.9rem;">"${r.review_text}"</p>
                         <span style="font-size:0.75rem; color:var(--text-sub); display:block; margin-top:6px;">— Industry Craft Note</span>
                     </div>
                 `).join('');
