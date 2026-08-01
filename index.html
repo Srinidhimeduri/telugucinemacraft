@@ -2,242 +2,63 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeluguCineCraft | TFI Craft Indexes & Box Office Hub</title>
-    <!-- Supabase JS Library -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+    <title>TeluguCineCraft | Box Office Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root {
-            --bg-color: #0B0F19;
-            --card-bg: #1E293B;
-            --accent-gold: #FBBF24;
-            --text-main: #F8FAFC;
-            --text-sub: #94A3B8;
-            --border-color: #334155;
-            --badge-blue: #38BDF8;
-        }
-
-        * { box-sizing: border-box; }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        nav {
-            width: 100%;
-            background-color: #0F172A;
-            border-bottom: 1px solid var(--border-color);
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .nav-logo {
-            color: var(--accent-gold);
-            font-size: 1.4rem;
-            font-weight: bold;
-            text-decoration: none;
-        }
-
-        .nav-links a {
-            color: var(--text-sub);
-            text-decoration: none;
-            margin-left: 1.5rem;
-            font-weight: 500;
-        }
-
-        .nav-links a.active {
-            color: var(--accent-gold);
-            font-weight: 600;
-        }
-
-        .container {
-            width: 92%;
-            max-width: 1000px;
-            margin: 2rem 0;
-        }
-
-        .hero {
-            text-align: center;
-            margin-bottom: 2.5rem;
-        }
-
-        .hero h1 {
-            color: var(--accent-gold);
-            font-size: 2.4rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .hero p {
-            color: var(--text-sub);
-            font-size: 1.05rem;
-            max-width: 650px;
-            margin: 0 auto 1.5rem auto;
-        }
-
-        .search-box {
-            width: 100%;
-            max-width: 500px;
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 14px 18px;
-            border-radius: 8px;
-            font-size: 1rem;
-            outline: none;
-        }
-
-        .search-box:focus {
-            border-color: var(--accent-gold);
-        }
-
-        .movie-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .movie-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 1.5rem;
-            text-decoration: none;
-            color: inherit;
-            transition: transform 0.2s, border-color 0.2s;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .movie-card:hover {
-            transform: translateY(-4px);
-            border-color: var(--accent-gold);
-        }
-
-        .movie-title {
-            font-size: 1.3rem;
-            font-weight: bold;
-            color: var(--accent-gold);
-            margin-bottom: 0.5rem;
-        }
-
-        .movie-meta {
-            font-size: 0.88rem;
-            color: var(--text-sub);
-            margin-bottom: 1rem;
-            line-height: 1.5;
-        }
-
-        .card-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            padding-top: 0.8rem;
-        }
-
-        .trade-text {
-            color: var(--badge-blue);
-            font-weight: bold;
-            font-size: 0.85rem;
-        }
-
-        @media (max-width: 600px) {
-            .hero h1 { font-size: 1.7rem; }
-            .movie-grid { grid-template-columns: 1fr; }
-        }
+        :root { --bg: #0B0E14; --gold: #FFD700; --text: #E2E8F0; --border: #1F2937; }
+        body { background: var(--bg); color: var(--text); font-family: sans-serif; padding: 2rem; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        table { width: 100%; border-collapse: collapse; background: #151921; border-radius: 8px; overflow: hidden; }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid var(--border); }
+        th { background: #1F2937; color: var(--gold); }
+        .hit { color: #4ade80; font-weight: bold; }
+        .flop { color: #f87171; font-weight: bold; }
+        .nav-links a { color: #38BDF8; text-decoration: none; margin-left: 20px; }
     </style>
 </head>
 <body>
-
-    <nav>
-   <a href="index.html" class="nav-logo">TeluguCineCraft</a>
-<div class="nav-links">
-    <a href="index.html" class="active">Movies</a>
-</div>
-    </nav>
-
     <div class="container">
-        <div class="hero">
-            <h1>TFI Craft Index & Trade Analytics</h1>
-            <p>Verified 24-craft audience ratings and multi-source box office trade audits for Telugu Cinema.</p>
-            <input type="text" id="searchInput" class="search-box" placeholder="Search by title, star cast, or director..." oninput="filterMovies()">
-        </div>
+        <nav style="display:flex; justify-content:space-between; margin-bottom:2rem;">
+            <h1 style="color:white;">TeluguCineCraft</h1>
+            <div class="nav-links"><a href="index.html">Movies</a></div>
+        </nav>
 
-        <div class="movie-grid" id="movieGrid">
-            <p style="color:var(--text-sub); text-align:center;">Loading verified index...</p>
-        </div>
+        <div id="content">Loading Box Office Data...</div>
     </div>
 
     <script>
-        const SUPABASE_URL = "https://eosgvjvpdwxmpxzerxit.supabase.co";
-        const SUPABASE_ANON_KEY = "sb_publishable_FVXC4U8wUB2l1SmWLpmoeg_4RkydeLx";
-        let supabaseClient;
-        let allMovies = [];
-
-        function escapeHTML(str) {
-            if (!str) return '';
-            return str.replace(/[&<>'"]/g, function(tag) {
-                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag;
-            });
+        if (!window.myFixedClient) {
+            window.myFixedClient = window.supabase.createClient(
+                "https://eosgvjvpdwxmpxzerxit.supabase.co", 
+                "sb_publishable_FVXC4U8wUB2l1SmWLpmoeg_4RkydeLx"
+            );
         }
+        const db = window.myFixedClient;
 
-        document.addEventListener("DOMContentLoaded", async function() {
-            if (typeof supabase !== 'undefined') {
-                const { createClient } = supabase;
-                supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                loadMovies();
-            }
-        });
-
-        async function loadMovies() {
-            const { data: movies } = await supabaseClient.from('movies').select('*');
-            allMovies = movies || [];
-            renderMovies(allMovies);
-        }
-
-        function renderMovies(moviesList) {
-            const grid = document.getElementById('movieGrid');
-            if (!moviesList || moviesList.length === 0) {
-                grid.innerHTML = `<p style="color:var(--text-sub); grid-column:1/-1; text-align:center;">No movies found matching your search.</p>`;
+        async function init() {
+            const { data, error } = await db.from('box_office').select('*');
+            
+            if (error || !data) {
+                document.getElementById('content').innerHTML = "<h1>Error loading data</h1>";
                 return;
             }
 
-            grid.innerHTML = moviesList.map(m => `
-                <a href="movie.html?id=${m.id}" class="movie-card">
-                    <div>
-                        <div class="movie-title">${escapeHTML(m.title)}</div>
-                        <div class="movie-meta">
-                            <strong>Starring:</strong> ${escapeHTML(m.starring || 'N/A')}<br>
-                            <strong>Director:</strong> ${escapeHTML(m.director || 'N/A')}
-                        </div>
-                    </div>
-                    <div class="card-footer">
-                        <span class="trade-text">Gross: ${escapeHTML(m.ww_gross || 'TBD')}</span>
-                        <span style="font-size:0.8rem; color:var(--accent-gold);">View Craft Score →</span>
-                    </div>
-                </a>
-            `).join('');
+            let html = `<table><tr><th>Movie</th><th>Budget</th><th>Collection</th><th>Verdict</th></tr>`;
+            
+            data.forEach(m => {
+                const verdictClass = m.verdict?.toLowerCase().includes('hit') ? 'hit' : 'flop';
+                html += `<tr>
+                    <td><a href="movie.html?id=${m.movie_id}" style="color:#38BDF8; text-decoration:none;">${m.movie_name}</a></td>
+                    <td>${m.budget || '-'}</td>
+                    <td>${m.collection || '-'}</td>
+                    <td class="${verdictClass}">${m.verdict || '-'}</td>
+                </tr>`;
+            });
+            
+            html += `</table>`;
+            document.getElementById('content').innerHTML = html;
         }
-
-        function filterMovies() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = allMovies.filter(m => 
-                (m.title && m.title.toLowerCase().includes(query)) ||
-                (m.starring && m.starring.toLowerCase().includes(query)) ||
-                (m.director && m.director.toLowerCase().includes(query))
-            );
-            renderMovies(filtered);
-        }
+        init();
     </script>
 </body>
 </html>
