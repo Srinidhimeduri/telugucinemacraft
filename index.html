@@ -104,20 +104,65 @@
             box-shadow: 0 0 15px var(--gold-glow);
         }
 
-        /* Section Header */
+        /* Dashboard Header & Search Controls */
         .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
             margin-bottom: 2rem;
+            gap: 1.5rem;
+            flex-wrap: wrap;
         }
 
-        .dashboard-header h2 {
+        .header-text h2 {
             font-size: 1.8rem;
             font-weight: 700;
             margin-bottom: 0.5rem;
         }
 
-        .dashboard-header p {
+        .header-text p {
             color: var(--text-muted);
             font-size: 0.95rem;
+        }
+
+        /* Search Bar Box */
+        .search-box-wrapper {
+            position: relative;
+            min-width: 380px;
+            flex-grow: 1;
+            max-width: 500px;
+        }
+
+        .search-box-wrapper i.search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1rem;
+            transition: color 0.2s ease;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.85rem 1rem 0.85rem 2.8rem;
+            background: var(--bg-glass);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: var(--gold-accent);
+            box-shadow: 0 0 15px var(--gold-glow);
+        }
+
+        .search-input:focus + i.search-icon {
+            color: var(--gold-accent);
         }
 
         /* Dashboard Table */
@@ -168,7 +213,7 @@
             text-decoration: none;
             transition: color 0.2s ease;
             display: block;
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.35rem;
         }
 
         .movie-title-link:hover {
@@ -178,13 +223,21 @@
         .crew-preview {
             display: flex;
             flex-direction: column;
-            gap: 2px;
+            gap: 3px;
             font-size: 0.85rem;
             color: var(--text-muted);
         }
 
         .crew-preview span strong {
-            color: rgba(248, 250, 252, 0.8);
+            color: rgba(248, 250, 252, 0.85);
+        }
+
+        /* Highlight matching term in search results */
+        mark.highlight {
+            background: rgba(255, 199, 0, 0.25);
+            color: #FFF;
+            border-radius: 2px;
+            padding: 0 2px;
         }
 
         /* Badges & Metrics */
@@ -228,8 +281,8 @@
             font-size: 0.95rem;
         }
 
-        /* Loader */
-        .loading-state {
+        /* Loader & Empty States */
+        .loading-state, .empty-state {
             text-align: center;
             padding: 4rem 2rem;
             color: var(--text-muted);
@@ -266,10 +319,23 @@
             </div>
         </nav>
 
-        <!-- Header -->
+        <!-- Dashboard Header with Universal Search Bar -->
         <div class="dashboard-header">
-            <h2>Box Office & Industry Insights</h2>
-            <p>Verified collections, budget breakdowns, and aggregated industry reviews.</p>
+            <div class="header-text">
+                <h2>Box Office & Industry Insights</h2>
+                <p>Search cast, crew, DOPs, directors, or collections instantly.</p>
+            </div>
+            
+            <div class="search-box-wrapper">
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    class="search-input" 
+                    placeholder="Search movie, hero, heroine, director, DOP, side roles..." 
+                    oninput="handleSearch()"
+                />
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            </div>
         </div>
 
         <!-- Main Dashboard Table -->
@@ -284,6 +350,9 @@
     </div>
 
     <script>
+        // Global raw dataset memory for instant client-side searching
+        let moviesData = [];
+
         // Initialize Supabase Client
         if (!window.myFixedClient) {
             window.myFixedClient = window.supabase.createClient(
@@ -304,9 +373,8 @@
             if (error) alert("Error logging in: " + error.message);
         }
 
-        // Initialize Dashboard
+        // Initialize Dashboard Data
         async function init() {
-            // Fetch box office data along with crew and ratings
             const { data, error } = await db.from('box_office').select('*');
             
             if (error || !data) {
@@ -318,20 +386,37 @@
                 return;
             }
 
+            moviesData = data;
+            renderTable(moviesData);
+        }
+
+        // Render Table based on dataset or filtered results
+        function renderTable(dataset, query = '') {
+            if (dataset.length === 0) {
+                document.getElementById('content').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fa-solid fa-film" style="font-size: 2.5rem; margin-bottom: 1rem; opacity: 0.4;"></i>
+                        <p style="font-size: 1.1rem; font-weight: 600;">No matching movies or crew found</p>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Try searching for another hero, heroine, director, or DOP name.</p>
+                    </div>`;
+                return;
+            }
+
             let html = `
                 <table>
                     <thead>
                         <tr>
-                            <th>Movie & Crew Details</th>
+                            <th>Movie & Key Crew Details</th>
+                            <th>DOP & Supporting Cast</th>
                             <th>Rating</th>
                             <th>Budget</th>
-                            <th>World Wide Gross</th>
+                            <th>Collection</th>
                             <th>Verdict</th>
                         </tr>
                     </thead>
                     <tbody>`;
             
-            data.forEach(m => {
+            dataset.forEach(m => {
                 const verdictClass = (m.verdict || '').toLowerCase().includes('hit') ? 'hit' : 'flop';
                 const verdictIcon = verdictClass === 'hit' ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down';
 
@@ -342,8 +427,15 @@
                                 ${m.movie_name || 'Untitled Project'} <i class="fa-solid fa-chevron-right" style="font-size:0.75rem; margin-left:4px;"></i>
                             </a>
                             <div class="crew-preview">
-                                <span><strong>Cast:</strong> ${m.starring || 'N/A'}</span>
-                                <span><strong>Director:</strong> ${m.director || 'N/A'} | <strong>Producer:</strong> ${m.producer || 'N/A'}</span>
+                                <span><strong>Hero / Cast:</strong> ${m.starring || 'N/A'}</span>
+                                <span><strong>Director:</strong> ${m.director || 'N/A'}</span>
+                                <span><strong>Producer:</strong> ${m.producer || 'N/A'}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="crew-preview">
+                                <span><strong>DOP:</strong> ${m.dop || m.cinematography || 'N/A'}</span>
+                                <span><strong>Supporting Cast:</strong> ${m.side_characters || m.supporting_cast || 'N/A'}</span>
                             </div>
                         </td>
                         <td>
@@ -365,6 +457,36 @@
             
             html += `</tbody></table>`;
             document.getElementById('content').innerHTML = html;
+        }
+
+        // Live Real-Time Search Handler across all cast & crew attributes
+        function handleSearch() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+
+            if (!query) {
+                renderTable(moviesData);
+                return;
+            }
+
+            const filtered = moviesData.filter(m => {
+                const movieName = (m.movie_name || '').toLowerCase();
+                const starring = (m.starring || '').toLowerCase();
+                const director = (m.director || '').toLowerCase();
+                const producer = (m.producer || '').toLowerCase();
+                const dop = (m.dop || m.cinematography || '').toLowerCase();
+                const sideRoles = (m.side_characters || m.supporting_cast || '').toLowerCase();
+                const verdict = (m.verdict || '').toLowerCase();
+
+                return movieName.includes(query) || 
+                       starring.includes(query) || 
+                       director.includes(query) || 
+                       producer.includes(query) || 
+                       dop.includes(query) || 
+                       sideRoles.includes(query) || 
+                       verdict.includes(query);
+            });
+
+            renderTable(filtered, query);
         }
 
         init();
