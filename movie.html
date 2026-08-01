@@ -2,62 +2,46 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeluguCineCraft - Final Fix</title>
+    <title>TeluguCineCraft Debug</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root { --bg: #0B0E14; --card: #151921; --gold: #FFD700; --text: #E2E8F0; --blue: #38BDF8; }
-        body { background: var(--bg); color: var(--text); font-family: sans-serif; padding: 2rem; }
-        .card { background: var(--card); padding: 2rem; border-radius: 12px; }
-        .row { display: flex; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid #1F2937; }
-        .link { color: var(--blue); text-decoration: none; margin-left: 10px; }
+        body { background: #0B0E14; color: #fff; font-family: sans-serif; padding: 2rem; }
+        .row { padding: 10px 0; border-bottom: 1px solid #333; }
     </style>
 </head>
 <body>
-    <div id="content">Loading Movie...</div>
+    <div id="content">Loading...</div>
     <script>
-        // Cache Buster: Increment this version number if changes don't show up
-        const VERSION = "1.0.3"; 
-        
         if (!window.myFixedClient) {
-            window.myFixedClient = window.supabase.createClient(
-                "https://eosgvjvpdwxmpxzerxit.supabase.co", 
-                "sb_publishable_FVXC4U8wUB2l1SmWLpmoeg_4RkydeLx"
-            );
+            window.myFixedClient = window.supabase.createClient("https://eosgvjvpdwxmpxzerxit.supabase.co", "sb_publishable_FVXC4U8wUB2l1SmWLpmoeg_4RkydeLx");
         }
         const db = window.myFixedClient;
-
-        function renderLink(names, role) {
-            if (!names || names === 'N/A') return 'N/A';
-            const links = names.split(',').map(name => {
-                const cleanName = name.trim();
-                const url = `technician.html?name=${encodeURIComponent(cleanName)}&role=${role}`;
-                return `<a class="link" href="${url}">${cleanName}</a>`;
-            }).join(', ');
-            
-            // Debugging: Log to console to see what we built
-            console.log("Generated Links for " + role + ":", links);
-            return links;
-        }
 
         async function init() {
             const movieId = new URLSearchParams(window.location.search).get('id');
             const { data } = await db.from('box_office').select('*').eq('movie_id', movieId).maybeSingle();
             
+            // DEBUG: This will show in your Console (F12)
+            console.log("Movie Data Loaded:", data);
+
             if (!data) {
-                document.getElementById('content').innerHTML = "<h1>Movie Not Found</h1>";
+                document.getElementById('content').innerHTML = "<h1>Error: Movie not found in database</h1>";
                 return;
             }
 
+            // Helper to generate links safely
+            const buildLink = (name, role) => {
+                if(!name) return "N/A";
+                // URL encode the name to ensure it doesn't break the link
+                return `<a href="technician.html?name=${encodeURIComponent(name.trim())}&role=${role}">${name}</a>`;
+            };
+
             document.getElementById('content').innerHTML = `
-                <div class="card">
-                    <h1>${data.movie_name}</h1>
-                    <div class="row"><span>Director</span><span>${renderLink(data.director, 'director')}</span></div>
-                    <div class="row"><span>Starring</span><span>${renderLink(data.starring, 'hero')}</span></div>
-                    <div class="row"><span>Music</span><span>${renderLink(data.music_director, 'music')}</span></div>
-                </div>
+                <h1>${data.movie_name}</h1>
+                <div class="row">Director: ${buildLink(data.director, 'director')}</div>
+                <div class="row">Starring: ${buildLink(data.starring, 'hero')}</div>
+                <div class="row">Music: ${buildLink(data.music_director, 'music')}</div>
             `;
-            console.log("Movie Loaded Version:", VERSION);
         }
         init();
     </script>
