@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeluguCineCraft | TFI Trade Analytics</title>
+    <title>TeluguCineCraft | TFI Trade & Craft Analytics</title>
     <style>
         :root {
             --bg-color: #0B0F19;
@@ -14,6 +14,7 @@
             --border-color: #334155;
             --hit-green: #22C55E;
             --verdict-orange: #F97316;
+            --mvp-purple: #A855F7;
         }
 
         body {
@@ -36,7 +37,6 @@
             color: var(--accent-gold);
             font-size: 2.5rem;
             margin: 0 0 0.5rem 0;
-            letter-spacing: -0.5px;
         }
 
         p.subtitle {
@@ -47,14 +47,14 @@
 
         .container {
             width: 100%;
-            max-width: 1000px;
+            max-width: 1150px;
         }
 
         .table-card {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
-            overflow: hidden;
+            overflow-x: auto;
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
         }
 
@@ -79,10 +79,7 @@
             border-bottom: 1px solid var(--border-color);
             color: var(--text-main);
             font-size: 0.95rem;
-        }
-
-        tr:last-child td {
-            border-bottom: none;
+            vertical-align: top;
         }
 
         tr:hover {
@@ -115,13 +112,48 @@
             font-weight: 600;
             color: var(--accent-gold);
         }
+
+        /* Craft Score Badge */
+        .craft-rating {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #0F172A;
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            font-weight: bold;
+        }
+
+        .star {
+            color: var(--accent-gold);
+        }
+
+        /* Craft MVP / Hardwork Recognition Styling */
+        .mvp-badge {
+            display: inline-block;
+            background-color: rgba(168, 85, 247, 0.15);
+            color: #C084FC;
+            border: 1px solid var(--mvp-purple);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .mvp-reason {
+            font-size: 0.8rem;
+            color: var(--text-sub);
+            line-height: 1.3;
+        }
     </style>
 </head>
 <body>
 
     <header>
         <h1>TeluguCineCraft</h1>
-        <p class="subtitle">The TFI Box Office Command Center</p>
+        <p class="subtitle">TFI Box Office & Craftsman Rating Index</p>
     </header>
 
     <div class="container">
@@ -131,39 +163,66 @@
                     <tr>
                         <th>Rank</th>
                         <th>Movie Title</th>
-                        <th>Starring / Director</th>
+                        <th>Craft Score</th>
+                        <th>Craft MVP (Who Saved/Scaled It)</th>
                         <th>WW Gross</th>
-                        <th>Trade Verdict</th>
+                        <th>Verdict</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>01</td>
-                        <td><strong>Peddi</strong></td>
-                        <td>Ram Charan / Buchi Babu</td>
+                        <td>
+                            <strong>Peddi</strong><br>
+                            <span style="font-size: 0.85rem; color: var(--text-sub);">Ram Charan / Buchi Babu</span>
+                        </td>
+                        <td>
+                            <div class="craft-rating">
+                                <span class="star">★</span> 4.7 <span style="font-size:0.75rem; color:var(--text-sub);">/ 5</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="mvp-badge">⚡ Direction & AR Rahman Score</span>
+                            <div class="mvp-reason">Buchi Babu's world-building paired with high-impact rustic BGM elevated the entire theatrical experience.</div>
+                        </td>
                         <td class="gross">₹350+ Cr</td>
                         <td><span class="tag blockbuster">Blockbuster</span></td>
                     </tr>
                     <tr>
                         <td>02</td>
-                        <td><strong>Mana Shankara Vara Prasad Garu</strong></td>
-                        <td>Chiranjeevi / Anil Ravipudi</td>
+                        <td>
+                            <strong>Mana Shankara Vara Prasad Garu</strong><br>
+                            <span style="font-size: 0.85rem; color: var(--text-sub);">Chiranjeevi / Anil Ravipudi</span>
+                        </td>
+                        <td>
+                            <div class="craft-rating">
+                                <span class="star">★</span> 4.3 <span style="font-size:0.75rem; color:var(--text-sub);">/ 5</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="mvp-badge">⚡ Vintage Chiranjeevi Timing</span>
+                            <div class="mvp-reason">Comedy writing & screen presence carried the narrative through weaker second-half segments.</div>
+                        </td>
                         <td class="gross">₹300+ Cr</td>
                         <td><span class="tag blockbuster">Super Hit</span></td>
                     </tr>
                     <tr>
                         <td>03</td>
-                        <td><strong>The Raja Saab</strong></td>
-                        <td>Prabhas / Maruthi</td>
+                        <td>
+                            <strong>The Raja Saab</strong><br>
+                            <span style="font-size: 0.85rem; color: var(--text-sub);">Prabhas / Maruthi</span>
+                        </td>
+                        <td>
+                            <div class="craft-rating">
+                                <span class="star">★</span> 3.4 <span style="font-size:0.75rem; color:var(--text-sub);">/ 5</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="mvp-badge">⚡ Thaman BGM & VFX Team</span>
+                            <div class="mvp-reason">Despite screenplay flaws, the horror visual effects and Thaman's sound design kept audience interest alive.</div>
+                        </td>
                         <td class="gross">₹209 Cr</td>
                         <td><span class="tag average">Average</span></td>
-                    </tr>
-                    <tr>
-                        <td>04</td>
-                        <td><strong>Anaganaga Oka Raju</strong></td>
-                        <td>Naveen Polishetty / Maari</td>
-                        <td class="gross">₹100 Cr</td>
-                        <td><span class="tag blockbuster">Hit</span></td>
                     </tr>
                 </tbody>
             </table>
