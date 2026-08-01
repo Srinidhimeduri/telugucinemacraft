@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeluguCineCraft | Technician Profile</title>
-    <!-- Supabase JS Library -->
+    <title>TeluguCineCraft | Technician Profile & Talent Review</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
     <style>
         :root {
@@ -72,15 +71,15 @@
         }
 
         .profile-avatar {
-            width: 120px;
-            height: 120px;
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
             background-color: #0F172A;
             border: 2px solid var(--accent-gold);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 3rem;
+            font-size: 2.5rem;
             color: var(--accent-gold);
             flex-shrink: 0;
         }
@@ -103,26 +102,20 @@
             margin-bottom: 0.8rem;
         }
 
-        .profile-bio {
-            color: var(--text-sub);
-            font-size: 0.95rem;
-            line-height: 1.5;
-            margin: 0;
-        }
-
         .section-title {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             color: var(--accent-gold);
             margin-bottom: 1rem;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 0.5rem;
         }
 
-        .filmography-card {
+        .card-box {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 1.5rem;
+            margin-bottom: 2rem;
         }
 
         .film-row {
@@ -133,18 +126,43 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .film-row:last-child {
-            border-bottom: none;
-        }
-
         .film-title {
             color: var(--text-main);
             font-weight: 600;
             text-decoration: none;
         }
 
-        .film-title:hover {
-            color: var(--accent-gold);
+        textarea {
+            width: 100%;
+            background-color: #0F172A;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 12px;
+            border-radius: 8px;
+            box-sizing: border-box;
+            resize: vertical;
+            min-height: 70px;
+            margin-top: 1rem;
+            outline: none;
+        }
+
+        .btn-submit {
+            background-color: var(--accent-gold);
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 0.8rem;
+        }
+
+        .review-item {
+            background-color: #0F172A;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 0.8rem;
         }
     </style>
 </head>
@@ -155,20 +173,32 @@
     </nav>
 
     <div class="container">
-        <a href="index.html" class="back-link">← Back to Index</a>
+        <a href="technicians.html" class="back-link">← Back to Talent Directory</a>
 
         <div class="profile-card" id="profileCard">
             <div class="profile-avatar">🎬</div>
             <div class="profile-info">
-                <h1>Loading Profile...</h1>
+                <h1>Loading...</h1>
             </div>
         </div>
 
-        <div class="filmography-card">
-            <div class="section-title">Verified Filmography & Craft Indexes</div>
-            <div id="filmList">
-                <p style="color:var(--text-sub);">Loading credits...</p>
-            </div>
+        <!-- Verified Filmography -->
+        <div class="card-box">
+            <div class="section-title">Verified TFI Credits</div>
+            <div id="filmList"><p style="color:var(--text-sub);">Loading credits...</p></div>
+        </div>
+
+        <!-- Direct Industry Review Box -->
+        <div class="card-box">
+            <div class="section-title">Submit Craft Review for Production & Casting Consideration</div>
+            <textarea id="crewReviewText" placeholder="Write a technical note regarding this technician's craft performance, efficiency, or potential for future projects..."></textarea>
+            <button class="btn-submit" onclick="submitCrewReview()">Post Craft Endorsement</button>
+        </div>
+
+        <!-- Community & Producer Reviews -->
+        <div class="card-box">
+            <div class="section-title">Verified Industry & Audience Reviews</div>
+            <div id="reviewsList"><p style="color:var(--text-sub);">Loading reviews...</p></div>
         </div>
     </div>
 
@@ -184,11 +214,12 @@
             if (typeof supabase !== 'undefined') {
                 const { createClient } = supabase;
                 supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                loadTechnicianData();
+                loadProfile();
+                loadReviews();
             }
         });
 
-        async function loadTechnicianData() {
+        async function loadProfile() {
             const { data: tech } = await supabaseClient.from('technicians').select('*').eq('id', techId).single();
             const { data: movies } = await supabaseClient.from('movies').select('*');
 
@@ -196,7 +227,7 @@
             const filmList = document.getElementById('filmList');
 
             if (!tech) {
-                profileCard.innerHTML = `<div><h1>Technician Profile Not Found</h1></div>`;
+                profileCard.innerHTML = `<h1>Technician Not Found</h1>`;
                 return;
             }
 
@@ -205,11 +236,14 @@
                 <div class="profile-info">
                     <h1>${tech.name}</h1>
                     <span class="craft-tag">${tech.craft}</span>
-                    <p class="profile-bio">${tech.bio || 'Verified TFI Crew Member.'}</p>
+                    <p style="color:var(--text-sub); margin:0;">${tech.bio || 'Verified TFI Crew Member.'}</p>
                 </div>
             `;
 
-            const creditedMovies = movies ? movies.filter(m => m.director && m.director.toLowerCase().includes(tech.name.toLowerCase())) : [];
+            const creditedMovies = movies ? movies.filter(m => 
+                (m.director && m.director.toLowerCase().includes(tech.name.toLowerCase())) ||
+                (m.starring && m.starring.toLowerCase().includes(tech.name.toLowerCase()))
+            ) : [];
 
             if (creditedMovies.length === 0) {
                 filmList.innerHTML = `<p style="color:var(--text-sub);">No verified filmography linked yet.</p>`;
@@ -217,9 +251,45 @@
                 filmList.innerHTML = creditedMovies.map(m => `
                     <div class="film-row">
                         <a href="movie.html?id=${m.id}" class="film-title">${m.title}</a>
-                        <span style="color:var(--accent-gold); font-weight:bold;">Trade: ${m.ww_gross || 'TBD'}</span>
+                        <span style="color:var(--accent-gold); font-weight:bold;">${m.ww_gross || 'TBD'}</span>
                     </div>
                 `).join('');
+            }
+        }
+
+        async function loadReviews() {
+            const { data: reviews } = await supabaseClient.from('crew_reviews').select('*').eq('technician_id', techId);
+            const reviewsList = document.getElementById('reviewsList');
+
+            if (reviews && reviews.length > 0) {
+                reviewsList.innerHTML = reviews.map(r => `
+                    <div class="review-item">
+                        <p style="margin:0; font-size:0.95rem;">"${r.review_text}"</p>
+                        <span style="font-size:0.75rem; color:var(--text-sub); display:block; margin-top:6px;">— Industry Craft Note</span>
+                    </div>
+                `).join('');
+            } else {
+                reviewsList.innerHTML = `<p style="color:var(--text-sub);">No craft reviews posted yet. Be the first to endorse!</p>`;
+            }
+        }
+
+        async function submitCrewReview() {
+            const text = document.getElementById('crewReviewText').value;
+            if (!text.trim()) {
+                alert("Please enter a review note.");
+                return;
+            }
+
+            const { error } = await supabaseClient.from('crew_reviews').insert([
+                { technician_id: techId, review_text: text, rating: 5.0 }
+            ]);
+
+            if (error) {
+                alert("Error submitting review: " + error.message);
+            } else {
+                alert("Craft review posted!");
+                document.getElementById('crewReviewText').value = '';
+                loadReviews();
             }
         }
     </script>

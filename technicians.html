@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeluguCineCraft | TFI Technician Directory & Talent Hub</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+    <style>
+        :root {
+            --bg-color: #0B0F19;
+            --card-bg: #1E293B;
+            --accent-gold: #FBBF24;
+            --text-main: #F8FAFC;
+            --text-sub: #94A3B8;
+            --border-color: #334155;
+            --badge-green: #34D399;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        nav {
+            width: 100%;
+            background-color: #0F172A;
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        .nav-logo {
+            color: var(--accent-gold);
+            font-size: 1.4rem;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .nav-links a {
+            color: var(--text-sub);
+            text-decoration: none;
+            margin-left: 1.5rem;
+            font-weight: 500;
+        }
+
+        .nav-links a.active {
+            color: var(--accent-gold);
+            font-weight: 600;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            margin: 2rem 0;
+        }
+
+        .header-title {
+            color: var(--accent-gold);
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header-desc {
+            color: var(--text-sub);
+            margin-bottom: 2rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .tech-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: transform 0.2s, border-color 0.2s;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .tech-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent-gold);
+        }
+
+        .tech-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--accent-gold);
+            margin-bottom: 0.3rem;
+        }
+
+        .craft-tag {
+            display: inline-block;
+            background-color: rgba(251, 191, 36, 0.15);
+            color: var(--accent-gold);
+            border: 1px solid var(--accent-gold);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+        }
+
+        .tech-bio {
+            color: var(--text-sub);
+            font-size: 0.88rem;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .verified-badge {
+            margin-top: 1rem;
+            font-size: 0.75rem;
+            color: var(--badge-green);
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="nav-logo">TeluguCineCraft</a>
+        <div class="nav-links">
+            <a href="index.html">Movies</a>
+            <a href="technicians.html" class="active">Talent Directory</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 class="header-title">TFI Craft & Technician Directory</h1>
+        <p class="header-desc">Empowering film production houses and directors to discover verified TFI talent—from visionaries to unsung behind-the-scenes heroes.</p>
+
+        <div class="grid" id="techGrid">
+            <p style="color:var(--text-sub);">Loading technicians index...</p>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = "https://eosgvjvpdwxmpxzerxit.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_FVXC4U8wUB2l1SmWLpmoeg_4RkydeLx";
+
+        document.addEventListener("DOMContentLoaded", async function() {
+            if (typeof supabase !== 'undefined') {
+                const { createClient } = supabase;
+                const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                
+                const { data: techs } = await supabaseClient.from('technicians').select('*');
+                const techGrid = document.getElementById('techGrid');
+
+                if (techs && techs.length > 0) {
+                    techGrid.innerHTML = techs.map(t => `
+                        <a href="technician.html?id=${t.id}" class="tech-card">
+                            <div class="tech-name">${t.name}</div>
+                            <span class="craft-tag">${t.craft}</span>
+                            <p class="tech-bio">${t.bio || 'Verified TFI Technician.'}</p>
+                            <div class="verified-badge">✓ Verified TFI Index</div>
+                        </a>
+                    `).join('');
+                } else {
+                    techGrid.innerHTML = `<p style="color:var(--text-sub);">No technicians indexed yet.</p>`;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
