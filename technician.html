@@ -6,14 +6,18 @@
     <title>Talent Directory</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { background: #070B14; color: #fff; font-family: sans-serif; padding: 2rem; }
-        .card { background: #111827; padding: 15px; border-radius: 8px; margin: 10px 0; border: 1px solid #1F2937; }
+        :root { --bg: #0B0E14; --card: #151921; --gold: #FFD700; --text: #E2E8F0; }
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; padding: 2rem; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .profile-title { color: var(--gold); font-size: 2rem; margin-bottom: 1.5rem; }
+        .movie-list { display: grid; gap: 0.8rem; }
+        .movie-item { background: var(--card); padding: 1rem; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+        .movie-item:hover { background: #1E293B; }
     </style>
 </head>
 <body>
-    <div id="content">Loading Talent...</div>
+    <div class="container" id="content">Loading Talent...</div>
     <script>
-        // Force-refreshing the client variable to bypass cache
         if (!window.myFixedClient) {
             window.myFixedClient = window.supabase.createClient("https://eosgvjvpdwxmpxzerxit.supabase.co", "sb_publishable_FVXC4U8wUB2l1SmWLpmoeg_4RkydeLx");
         }
@@ -22,24 +26,14 @@
 
         async function init() {
             const { data } = await db.from('box_office').select('*');
-            if (!data) return;
-
-            const films = data.filter(m => {
-                const crew = [m.director, m.producer, m.starring, m.supporting_cast].join(',').toLowerCase();
-                return crew.includes(talentName);
-            });
-
-            if (films.length === 0) {
-                document.getElementById('content').innerHTML = `<h1>No films found for "${talentName}"</h1>`;
-            } else {
-                document.getElementById('content').innerHTML = `
-                    <h1>${talentName.toUpperCase()}</h1>
-                    ${films.map(f => `<div class="card">
-                        <div style="font-size:1.2rem; color:#FBBF24;">${f.movie_name}</div>
-                        <div>${f.verdict || 'N/A'}</div>
-                    </div>`).join('')}
-                `;
-            }
+            const films = (data || []).filter(m => [m.director, m.producer, m.starring].join(',').toLowerCase().includes(talentName));
+            
+            document.getElementById('content').innerHTML = `
+                <h1 class="profile-title">${talentName.toUpperCase()}</h1>
+                <div class="movie-list">
+                    ${films.map(f => `<div class="movie-item" onclick="location.href='movie.html?id=${f.movie_id}'">${f.movie_name}</div>`).join('')}
+                </div>
+            `;
         }
         init();
     </script>
