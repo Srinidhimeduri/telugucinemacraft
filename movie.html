@@ -18,6 +18,8 @@
             --badge-blue: #38BDF8;
         }
 
+        * { box-sizing: border-box; }
+
         body {
             background-color: var(--bg-color);
             color: var(--text-main);
@@ -37,7 +39,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-sizing: border-box;
         }
 
         .nav-logo {
@@ -64,7 +65,7 @@
         }
 
         .container {
-            width: 90%;
+            width: 92%;
             max-width: 900px;
             margin: 2rem 0;
         }
@@ -77,7 +78,7 @@
             margin-bottom: 1rem;
         }
 
-        .movie-header {
+        .movie-header, .craft-card {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
@@ -117,7 +118,7 @@
 
         .scorecard-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
             gap: 1rem;
             background-color: #0F172A;
             padding: 1.2rem;
@@ -126,30 +127,9 @@
             margin-top: 1.5rem;
         }
 
-        .score-box {
-            text-align: center;
-        }
-
-        .score-box .label {
-            font-size: 0.75rem;
-            color: var(--text-sub);
-            text-transform: uppercase;
-            margin-bottom: 4px;
-        }
-
-        .score-box .val {
-            font-size: 1.4rem;
-            font-weight: bold;
-            color: var(--accent-gold);
-        }
-
-        .craft-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-        }
+        .score-box { text-align: center; }
+        .score-box .label { font-size: 0.75rem; color: var(--text-sub); text-transform: uppercase; margin-bottom: 4px; }
+        .score-box .val { font-size: 1.4rem; font-weight: bold; color: var(--accent-gold); }
 
         .craft-title {
             font-size: 1.3rem;
@@ -167,27 +147,10 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .craft-name {
-            font-weight: 600;
-            font-size: 1.05rem;
-        }
-
-        .star-rating {
-            display: flex;
-            gap: 6px;
-        }
-
-        .star {
-            font-size: 1.8rem;
-            color: var(--star-inactive);
-            cursor: pointer;
-            transition: color 0.15s ease;
-            user-select: none;
-        }
-
-        .star.active {
-            color: var(--accent-gold);
-        }
+        .craft-name { font-weight: 600; font-size: 1.05rem; }
+        .star-rating { display: flex; gap: 6px; }
+        .star { font-size: 1.8rem; color: var(--star-inactive); cursor: pointer; user-select: none; }
+        .star.active { color: var(--accent-gold); }
 
         textarea {
             width: 100%;
@@ -196,7 +159,6 @@
             color: var(--text-main);
             padding: 12px;
             border-radius: 8px;
-            box-sizing: border-box;
             resize: vertical;
             min-height: 80px;
             margin-top: 1.5rem;
@@ -225,14 +187,9 @@
             border: 1px solid var(--border-color);
         }
 
-        .auth-gate-box p {
-            color: var(--text-sub);
-            margin-bottom: 1.5rem;
-        }
-
         .btn-google {
             background-color: #FFFFFF;
-            color: #000000;
+            color: #000;
             border: none;
             padding: 12px 24px;
             border-radius: 8px;
@@ -242,7 +199,12 @@
             display: inline-flex;
             align-items: center;
             gap: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        @media (max-width: 600px) {
+            .movie-header, .craft-card { padding: 1.2rem; }
+            h1 { font-size: 1.6rem; }
+            .craft-row { flex-direction: column; align-items: flex-start; gap: 8px; }
         }
     </style>
 </head>
@@ -263,6 +225,14 @@
             <h1>Loading Movie Details...</h1>
         </div>
 
+        <!-- Stage 5: Box Office Audit & Trade Analytics Widget -->
+        <div class="craft-card" id="boxOfficeWidget">
+            <div class="craft-title">Trade Analytics & Box Office Audit</div>
+            <div id="boxOfficeDetails">
+                <p style="color:var(--text-sub);">Loading collection audit...</p>
+            </div>
+        </div>
+
         <!-- Screen 2: Rating Section (Protected by Google Auth) -->
         <div class="craft-card">
             <div class="craft-title">Rate the Crafts</div>
@@ -270,7 +240,7 @@
             <!-- Shown when Logged Out -->
             <div id="authGate" class="auth-gate-box">
                 <h3>Verified Audience Rating</h3>
-                <p>To preserve craft integrity and prevent bot manipulation, sign in with Google to submit your verified rating.</p>
+                <p style="color:var(--text-sub);">To preserve craft integrity and prevent bot manipulation, sign in with Google to submit your verified rating.</p>
                 <button class="btn-google" onclick="signInWithGoogle()">
                     <span>Sign In with Google</span>
                 </button>
@@ -281,60 +251,39 @@
                 <div class="craft-row">
                     <span class="craft-name">Direction & Screenplay</span>
                     <div class="star-rating" data-craft="direction">
-                        <span class="star" data-value="1">★</span>
-                        <span class="star" data-value="2">★</span>
-                        <span class="star" data-value="3">★</span>
-                        <span class="star" data-value="4">★</span>
-                        <span class="star" data-value="5">★</span>
+                        <span class="star" data-value="1">★</span><span class="star" data-value="2">★</span><span class="star" data-value="3">★</span><span class="star" data-value="4">★</span><span class="star" data-value="5">★</span>
                     </div>
                 </div>
 
                 <div class="craft-row">
                     <span class="craft-name">Cinematography & Lighting</span>
                     <div class="star-rating" data-craft="cinematography">
-                        <span class="star" data-value="1">★</span>
-                        <span class="star" data-value="2">★</span>
-                        <span class="star" data-value="3">★</span>
-                        <span class="star" data-value="4">★</span>
-                        <span class="star" data-value="5">★</span>
+                        <span class="star" data-value="1">★</span><span class="star" data-value="2">★</span><span class="star" data-value="3">★</span><span class="star" data-value="4">★</span><span class="star" data-value="5">★</span>
                     </div>
                 </div>
 
                 <div class="craft-row">
                     <span class="craft-name">Music & Background Score (BGM)</span>
                     <div class="star-rating" data-craft="music">
-                        <span class="star" data-value="1">★</span>
-                        <span class="star" data-value="2">★</span>
-                        <span class="star" data-value="3">★</span>
-                        <span class="star" data-value="4">★</span>
-                        <span class="star" data-value="5">★</span>
+                        <span class="star" data-value="1">★</span><span class="star" data-value="2">★</span><span class="star" data-value="3">★</span><span class="star" data-value="4">★</span><span class="star" data-value="5">★</span>
                     </div>
                 </div>
 
                 <div class="craft-row">
                     <span class="craft-name">Action & Stunts</span>
                     <div class="star-rating" data-craft="stunts">
-                        <span class="star" data-value="1">★</span>
-                        <span class="star" data-value="2">★</span>
-                        <span class="star" data-value="3">★</span>
-                        <span class="star" data-value="4">★</span>
-                        <span class="star" data-value="5">★</span>
+                        <span class="star" data-value="1">★</span><span class="star" data-value="2">★</span><span class="star" data-value="3">★</span><span class="star" data-value="4">★</span><span class="star" data-value="5">★</span>
                     </div>
                 </div>
 
                 <div class="craft-row">
                     <span class="craft-name">Visual Effects (VFX / CGI)</span>
                     <div class="star-rating" data-craft="vfx">
-                        <span class="star" data-value="1">★</span>
-                        <span class="star" data-value="2">★</span>
-                        <span class="star" data-value="3">★</span>
-                        <span class="star" data-value="4">★</span>
-                        <span class="star" data-value="5">★</span>
+                        <span class="star" data-value="1">★</span><span class="star" data-value="2">★</span><span class="star" data-value="3">★</span><span class="star" data-value="4">★</span><span class="star" data-value="5">★</span>
                     </div>
                 </div>
 
                 <textarea id="reviewComment" placeholder="Write a technical note on the crafts (Optional)..."></textarea>
-
                 <button type="button" class="btn-submit" onclick="submitRating()">Submit Verified Craft Rating</button>
             </form>
         </div>
@@ -348,7 +297,6 @@
 
         const urlParams = new URLSearchParams(window.location.search);
         const movieId = urlParams.get('id') || 'peddi';
-
         const selectedRatings = { direction: 4, cinematography: 4, music: 4, stunts: 4, vfx: 4 };
 
         document.addEventListener("DOMContentLoaded", async function() {
@@ -358,6 +306,7 @@
                 
                 await checkUserSession();
                 loadPageData();
+                loadBoxOfficeData();
             }
 
             document.querySelectorAll('.star-rating').forEach(group => {
@@ -398,9 +347,7 @@
         async function signInWithGoogle() {
             const { error } = await supabaseClient.auth.signInWithOAuth({
                 provider: 'google',
-                options: {
-                    redirectTo: window.location.href
-                }
+                options: { redirectTo: window.location.href }
             });
             if (error) alert("Auth error: " + error.message);
         }
@@ -464,6 +411,33 @@
             `;
         }
 
+        async function loadBoxOfficeData() {
+            const { data: bo } = await supabaseClient.from('box_office').select('*').eq('movie_id', movieId).single();
+            const boContainer = document.getElementById('boxOfficeDetails');
+
+            if (bo) {
+                let badgeColor = bo.dispute_status === 'Consensus Verified' ? '#34D399' : (bo.dispute_status === 'Minor Variance' ? '#FBBF24' : '#EF4444');
+                
+                boContainer.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:8px;">
+                        <span style="font-size:0.9rem; color:var(--text-sub);">Audit Status:</span>
+                        <span style="background:${badgeColor}20; color:${badgeColor}; border:1px solid ${badgeColor}; padding:4px 10px; border-radius:6px; font-weight:bold; font-size:0.8rem;">
+                            ${bo.dispute_status}
+                        </span>
+                    </div>
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap:10px; background:#0F172A; padding:1rem; border-radius:8px; border:1px solid var(--border-color);">
+                        <div><div style="font-size:0.75rem; color:var(--text-sub);">Producer Claim</div><div style="font-weight:bold; color:var(--accent-gold);">${bo.producer_gross || '-'}</div></div>
+                        <div><div style="font-size:0.75rem; color:var(--text-sub);">Trade Tracker</div><div style="font-weight:bold; color:var(--text-main);">${bo.trade_gross || '-'}</div></div>
+                        <div><div style="font-size:0.75rem; color:var(--text-sub);">Sacnilk / Ind.</div><div style="font-weight:bold; color:var(--text-main);">${bo.sacnilk_gross || '-'}</div></div>
+                        <div><div style="font-size:0.75rem; color:var(--text-sub);">Nizam Share</div><div style="font-weight:bold; color:var(--badge-blue);">${bo.nizam_share || '-'}</div></div>
+                        <div><div style="font-size:0.75rem; color:var(--text-sub);">Overseas Share</div><div style="font-weight:bold; color:var(--badge-blue);">${bo.overseas_share || '-'}</div></div>
+                    </div>
+                `;
+            } else {
+                boContainer.innerHTML = `<p style="color:var(--text-sub);">Trade audit pending verification for this title.</p>`;
+            }
+        }
+
         async function submitRating() {
             if (!supabaseClient || !currentUser) {
                 alert("Please sign in with Google first.");
@@ -490,7 +464,7 @@
             if (error) {
                 alert("Error: " + error.message);
             } else {
-                alert("Verified Craft rating submitted! Aggregate scores updated.");
+                alert("Verified Craft rating submitted!");
                 loadPageData();
             }
         }
