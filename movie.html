@@ -312,6 +312,15 @@
             });
         }
 
+        // Converts a name like "Nag Ashwin" to a URL slug like "nag-ashwin"
+        function slugify(text) {
+            if (!text) return '';
+            return text.toString().toLowerCase().trim()
+                .replace(/\s+/g, '-')           // Replace spaces with -
+                .replace(/[^\w\-]+/g, '')       // Remove non-word chars
+                .replace(/\-\-+/g, '-');        // Replace multiple - with single -
+        }
+
         document.addEventListener("DOMContentLoaded", async function() {
             if (typeof supabase !== 'undefined') {
                 const { createClient } = supabase;
@@ -411,14 +420,17 @@
                     </a>
                 `).join('');
             } else {
-                crewChipsHTML = `<p style="color:var(--text-sub); font-size:0.85rem; margin-top:8px;">No crew network tagged for this title yet.</p>`;
+                crewChipsHTML = `<p style="color:var(--text-sub); font-size:0.85rem; margin-top:8px;">No extra crew network tagged for this title yet.</p>`;
             }
+
+            // Dynamic Director ID calculation
+            const directorSlug = slugify(movie.director);
 
             header.innerHTML = `
                 <h1>${escapeHTML(movie.title)}</h1>
                 <div class="meta-row">
                     Starring: <strong>${escapeHTML(movie.starring || 'N/A')}</strong> | 
-                    Director: <a href="technician.html?id=buchi-babu" class="tech-link">${escapeHTML(movie.director || 'N/A')}</a>
+                    Director: <a href="technician.html?id=${directorSlug}" class="tech-link">${escapeHTML(movie.director || 'N/A')}</a>
                 </div>
                 <div class="meta-row">
                     Trade Gross: <strong style="color:var(--accent-gold);">${escapeHTML(movie.ww_gross || 'TBD')}</strong> 
