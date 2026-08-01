@@ -28,7 +28,6 @@
             align-items: center;
         }
 
-        /* Top Navigation Bar */
         nav {
             width: 100%;
             background-color: #0F172A;
@@ -45,13 +44,6 @@
             font-size: 1.4rem;
             font-weight: bold;
             text-decoration: none;
-            letter-spacing: -0.5px;
-        }
-
-        .nav-actions {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
         }
 
         .btn-signin {
@@ -62,15 +54,8 @@
             border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s ease;
         }
 
-        .btn-signin:hover {
-            background-color: var(--accent-gold);
-            color: #000;
-        }
-
-        /* Main Layout */
         .container {
             width: 90%;
             max-width: 1150px;
@@ -94,17 +79,14 @@
             margin: 0;
         }
 
-        /* Search & Filter Bar Controls */
         .controls-bar {
             display: flex;
             gap: 1rem;
             margin-bottom: 1.5rem;
-            flex-wrap: wrap;
         }
 
         .search-input {
             flex: 1;
-            min-width: 260px;
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
             color: var(--text-main);
@@ -112,10 +94,6 @@
             border-radius: 8px;
             font-size: 0.95rem;
             outline: none;
-        }
-
-        .search-input:focus {
-            border-color: var(--accent-gold);
         }
 
         .table-card {
@@ -138,20 +116,29 @@
             padding: 16px;
             font-size: 0.85rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
             border-bottom: 1px solid var(--border-color);
         }
 
         td {
             padding: 16px;
             border-bottom: 1px solid var(--border-color);
-            color: var(--text-main);
-            font-size: 0.95rem;
             vertical-align: top;
         }
 
         tr:hover {
             background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        .movie-link {
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.05rem;
+        }
+
+        .movie-link:hover {
+            color: var(--accent-gold);
+            text-decoration: underline;
         }
 
         .tag {
@@ -162,17 +149,8 @@
             display: inline-block;
         }
 
-        .tag.blockbuster {
-            background-color: rgba(34, 197, 94, 0.15);
-            color: var(--hit-green);
-            border: 1px solid var(--hit-green);
-        }
-
-        .tag.average {
-            background-color: rgba(249, 115, 22, 0.15);
-            color: var(--verdict-orange);
-            border: 1px solid var(--verdict-orange);
-        }
+        .tag.blockbuster { background-color: rgba(34, 197, 94, 0.15); color: var(--hit-green); border: 1px solid var(--hit-green); }
+        .tag.average { background-color: rgba(249, 115, 22, 0.15); color: var(--verdict-orange); border: 1px solid var(--verdict-orange); }
 
         .gross {
             font-family: monospace;
@@ -192,9 +170,7 @@
             font-weight: bold;
         }
 
-        .star {
-            color: var(--accent-gold);
-        }
+        .star { color: var(--accent-gold); }
 
         .mvp-badge {
             display: inline-block;
@@ -217,29 +193,19 @@
 </head>
 <body>
 
-    <!-- Navigation Header -->
     <nav>
-        <a href="#" class="nav-logo">TeluguCineCraft</a>
-        <div class="nav-actions">
-            <button class="btn-signin" onclick="alert('Google Auth Integration Coming in Phase 2!')">Sign In with Google</button>
-        </div>
+        <a href="index.html" class="nav-logo">TeluguCineCraft</a>
+        <button class="btn-signin" onclick="alert('Google Auth Integration Coming Soon!')">Sign In</button>
     </nav>
 
     <div class="container">
         <header>
             <h1>TFI Box Office & Craft Index</h1>
-            <p class="subtitle">Real-time trade figures, craft scores, and contributor spotlights</p>
+            <p class="subtitle">Click any movie title for deep departmental craft breakdowns</p>
         </header>
 
-        <!-- Real-time Filter Bar -->
         <div class="controls-bar">
-            <input 
-                type="text" 
-                id="searchInput" 
-                class="search-input" 
-                placeholder="Search by movie title, actor, director, or craft (e.g. Prabhas, Thaman, VFX)..." 
-                onkeyup="filterTable()"
-            >
+            <input type="text" id="searchInput" class="search-input" placeholder="Search by movie, actor, director, or craft..." onkeyup="filterTable()">
         </div>
 
         <div class="table-card">
@@ -247,7 +213,7 @@
                 <thead>
                     <tr>
                         <th>Rank</th>
-                        <th>Movie Title</th>
+                        <th>Movie Title (Click for Crafts)</th>
                         <th>Craft Score</th>
                         <th>Craft MVP (Who Saved/Scaled It)</th>
                         <th>WW Gross</th>
@@ -258,17 +224,13 @@
                     <tr>
                         <td>01</td>
                         <td>
-                            <strong>Peddi</strong><br>
+                            <a href="movie.html?id=peddi" class="movie-link">Peddi</a><br>
                             <span style="font-size: 0.85rem; color: var(--text-sub);">Ram Charan / Buchi Babu</span>
                         </td>
-                        <td>
-                            <div class="craft-rating">
-                                <span class="star">★</span> 4.7 <span style="font-size:0.75rem; color:var(--text-sub);">/ 5</span>
-                            </div>
-                        </td>
+                        <td><div class="craft-rating"><span class="star">★</span> 4.7 <span style="font-size:0.75rem; color:var(--text-sub);">/ 5</span></div></td>
                         <td>
                             <span class="mvp-badge">⚡ Direction & AR Rahman Score</span>
-                            <div class="mvp-reason">Buchi Babu's world-building paired with high-impact rustic BGM elevated the entire theatrical experience.</div>
+                            <div class="mvp-reason">World-building & rustic BGM elevated the theatrical experience.</div>
                         </td>
                         <td class="gross">₹350+ Cr</td>
                         <td><span class="tag blockbuster">Blockbuster</span></td>
@@ -276,17 +238,13 @@
                     <tr>
                         <td>02</td>
                         <td>
-                            <strong>Mana Shankara Vara Prasad Garu</strong><br>
+                            <a href="movie.html?id=manashankara" class="movie-link">Mana Shankara Vara Prasad Garu</a><br>
                             <span style="font-size: 0.85rem; color: var(--text-sub);">Chiranjeevi / Anil Ravipudi</span>
                         </td>
-                        <td>
-                            <div class="craft-rating">
-                                <span class="star">★</span> 4.3 <span style="font-size:0.75rem; color:var(--text-sub);">/ 5</span>
-                            </div>
-                        </td>
+                        <td><div class="craft-rating"><span class="star">★</span> 4.3 <span style="font-size:0.75rem; color:var(--text-sub);">/ 5</span></div></td>
                         <td>
                             <span class="mvp-badge">⚡ Vintage Chiranjeevi Timing</span>
-                            <div class="mvp-reason">Comedy writing & screen presence carried the narrative through weaker second-half segments.</div>
+                            <div class="mvp-reason">Comedy writing & screen presence carried second-half pacing.</div>
                         </td>
                         <td class="gross">₹300+ Cr</td>
                         <td><span class="tag blockbuster">Super Hit</span></td>
@@ -294,19 +252,57 @@
                     <tr>
                         <td>03</td>
                         <td>
-                            <strong>The Raja Saab</strong><br>
+                            <a href="movie.html?id=rajasaab" class="movie-link">The Raja Saab</a><br>
                             <span style="font-size: 0.85rem; color: var(--text-sub);">Prabhas / Maruthi</span>
                         </td>
-                        <td>
-                            <div class="craft-rating">
-                                <span class="star">★</span> 3.4 <span style="font-size:0.75rem; color:var(--text-sub);">/ 5</span>
-                            </div>
-                        </td>
+                        <td><div class="craft-rating"><span class="star">★</span> 3.4 <span style="font-size:0.75rem; color:var(--text-sub);">/ 5</span></div></td>
                         <td>
                             <span class="mvp-badge">⚡ Thaman BGM & VFX Team</span>
-                            <div class="mvp-reason">Despite screenplay flaws, the horror visual effects and Thaman's sound design kept audience interest alive.</div>
+                            <div class="mvp-reason">Horror visual effects & sound design kept interest alive.</div>
                         </td>
                         <td class="gross">₹209 Cr</td>
+                        <td><span class="tag average">Average</span></td>
+                    </tr>
+                    <tr>
+                        <td>04</td>
+                        <td>
+                            <a href="movie.html?id=anaganaga" class="movie-link">Anaganaga Oka Raju</a><br>
+                            <span style="font-size: 0.85rem; color: var(--text-sub);">Naveen Polishetty / Maari</span>
+                        </td>
+                        <td><div class="craft-rating"><span class="star">★</span> 4.1 <span style="font-size:0.75rem; color:var(--text-sub);">/ 5</span></div></td>
+                        <td>
+                            <span class="mvp-badge">⚡ Lead Performance & Writing</span>
+                            <div class="mvp-reason">High dialogue hit-rate in comedy sequences.</div>
+                        </td>
+                        <td class="gross">₹100 Cr</td>
+                        <td><span class="tag blockbuster">Hit</span></td>
+                    </tr>
+                    <tr>
+                        <td>05</td>
+                        <td>
+                            <a href="movie.html?id=maaintibangaaram" class="movie-link">Maa Inti Bangaaram</a><br>
+                            <span style="font-size: 0.85rem; color: var(--text-sub);">Samantha / Tralala Pictures</span>
+                        </td>
+                        <td><div class="craft-rating"><span class="star">★</span> 4.2 <span style="font-size:0.75rem; color:var(--text-sub);">/ 5</span></div></td>
+                        <td>
+                            <span class="mvp-badge">⚡ Emotional Arc & Screenplay</span>
+                            <div class="mvp-reason">Strong word-of-mouth narrative driving repeat audience.</div>
+                        </td>
+                        <td class="gross">₹100 Cr</td>
+                        <td><span class="tag blockbuster">Super Hit</span></td>
+                    </tr>
+                    <tr>
+                        <td>06</td>
+                        <td>
+                            <a href="movie.html?id=ustaad" class="movie-link">Ustaad Bhagat Singh</a><br>
+                            <span style="font-size: 0.85rem; color: var(--text-sub);">Pawan Kalyan / Harish Shankar</span>
+                        </td>
+                        <td><div class="craft-rating"><span class="star">★</span> 3.8 <span style="font-size:0.75rem; color:var(--text-sub);">/ 5</span></div></td>
+                        <td>
+                            <span class="mvp-badge">⚡ Mass Stunts & DSP BGM</span>
+                            <div class="mvp-reason">High energy mass intervals driving single-screen footfalls.</div>
+                        </td>
+                        <td class="gross">₹95 Cr</td>
                         <td><span class="tag average">Average</span></td>
                     </tr>
                 </tbody>
@@ -314,24 +310,14 @@
         </div>
     </div>
 
-    <!-- Client-Side Search Engine Script -->
     <script>
         function filterTable() {
-            const input = document.getElementById("searchInput");
-            const filter = input.value.toLowerCase();
-            const table = document.getElementById("movieTable");
-            const tr = table.getElementsByTagName("tr");
-
+            const filter = document.getElementById("searchInput").value.toLowerCase();
+            const tr = document.getElementById("movieTable").getElementsByTagName("tr");
             for (let i = 1; i < tr.length; i++) {
-                let rowText = tr[i].innerText.toLowerCase();
-                if (rowText.indexOf(filter) > -1) {
-                    tr[i].style.display = "";
-                } else {
-                    tr[i].style.display = "none";
-                }
+                tr[i].style.display = tr[i].innerText.toLowerCase().includes(filter) ? "" : "none";
             }
         }
     </script>
-
 </body>
 </html>

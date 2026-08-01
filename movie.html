@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeluguCineCraft | Craft Breakdown</title>
+    <style>
+        :root {
+            --bg-color: #0B0F19;
+            --card-bg: #1E293B;
+            --accent-gold: #FBBF24;
+            --text-main: #F8FAFC;
+            --text-sub: #94A3B8;
+            --border-color: #334155;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        nav {
+            width: 100%;
+            background-color: #0F172A;
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            box-sizing: border-box;
+        }
+
+        .nav-logo {
+            color: var(--accent-gold);
+            font-size: 1.4rem;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 900px;
+            margin: 2.5rem 0;
+        }
+
+        .back-link {
+            color: var(--accent-gold);
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 1.5rem;
+        }
+
+        .movie-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: var(--accent-gold);
+            margin-top: 0;
+            font-size: 2.2rem;
+        }
+
+        .craft-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .craft-item {
+            background: #0F172A;
+            border: 1px solid var(--border-color);
+            padding: 1.2rem;
+            border-radius: 8px;
+        }
+
+        .craft-title {
+            color: var(--text-sub);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .craft-score {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent-gold);
+            margin: 0.5rem 0;
+        }
+
+        .craft-desc {
+            font-size: 0.85rem;
+            color: var(--text-main);
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="nav-logo">TeluguCineCraft</a>
+    </nav>
+
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to Main Box Office Table</a>
+
+        <div class="movie-card">
+            <h1 id="movieTitle">Loading...</h1>
+            <p id="movieMeta" style="color: var(--text-sub);"></p>
+            <hr style="border-color: var(--border-color); margin: 1.5rem 0;">
+
+            <h3>Departmental 24-Craft Breakdown</h3>
+            <div class="craft-grid" id="craftGrid">
+                <!-- JavaScript loads craft scores here dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const movieData = {
+            "peddi": {
+                title: "Peddi",
+                meta: "Starring: Ram Charan | Director: Buchi Babu | Music: AR Rahman",
+                crafts: [
+                    { craft: "Direction & World Building", score: "4.8 / 5", desc: "Authentic rustic atmosphere with exceptional dramatic pacing." },
+                    { craft: "Original Score & BGM", score: "4.7 / 5", desc: "AR Rahman delivers high-impact theater soundscapes." },
+                    { craft: "Cinematography", score: "4.9 / 5", desc: "Visually striking lighting design in action sequences." },
+                    { craft: "Stunts & Choreography", score: "4.6 / 5", desc: "Heavy physical impact grounded in narrative." }
+                ]
+            },
+            "manashankara": {
+                title: "Mana Shankara Vara Prasad Garu",
+                meta: "Starring: Chiranjeevi, Venkatesh | Director: Anil Ravipudi",
+                crafts: [
+                    { craft: "Lead Screen Timing", score: "4.6 / 5", desc: "Vintage Chiranjeevi comedy timing elevated theatrical engagement." },
+                    { craft: "Screenplay & Dialogue", score: "4.3 / 5", desc: "Sharp festive comedy writing with strong family appeal." },
+                    { craft: "Editing & Pacing", score: "4.1 / 5", desc: "Trim first-half structure with smooth comic transitions." }
+                ]
+            },
+            "rajasaab": {
+                title: "The Raja Saab",
+                meta: "Starring: Prabhas | Director: Maruthi | Music: Thaman S",
+                crafts: [
+                    { craft: "Visual Effects (VFX)", score: "3.9 / 5", desc: "Horror atmospheric sequences feature strong CGI work." },
+                    { craft: "Sound Design & BGM", score: "4.2 / 5", desc: "Thaman's score maintains high momentum during key set pieces." },
+                    { craft: "Screenplay Structure", score: "2.8 / 5", desc: "Inconsistent pacing across second-half narrative shifts." }
+                ]
+            }
+        };
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const movieId = urlParams.get('id') || 'peddi';
+        const data = movieData[movieId] || movieData['peddi'];
+
+        document.getElementById('movieTitle').innerText = data.title;
+        document.getElementById('movieMeta').innerText = data.meta;
+
+        const grid = document.getElementById('craftGrid');
+        data.crafts.forEach(c => {
+            grid.innerHTML += `
+                <div class="craft-item">
+                    <div class="craft-title">${c.craft}</div>
+                    <div class="craft-score">${c.score}</div>
+                    <div class="craft-desc">${c.desc}</div>
+                </div>
+            `;
+        });
+    </script>
+</body>
+</html>
