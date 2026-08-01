@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeluguCineCraft | Craft Ratings</title>
+    <title>TeluguCineCraft | Movie Detail & Craft Index</title>
     <!-- Supabase JS Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
     <style>
@@ -15,6 +15,8 @@
             --text-sub: #94A3B8;
             --border-color: #334155;
             --star-inactive: #475569;
+            --hit-green: #22C55E;
+            --badge-blue: #38BDF8;
         }
 
         body {
@@ -48,7 +50,7 @@
 
         .container {
             width: 90%;
-            max-width: 800px;
+            max-width: 900px;
             margin: 2rem 0;
         }
 
@@ -74,10 +76,51 @@
             font-size: 2.2rem;
         }
 
-        .meta {
+        .meta-row {
             color: var(--text-sub);
             font-size: 1rem;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .trade-badge {
+            display: inline-block;
+            background-color: rgba(56, 189, 248, 0.15);
+            color: var(--badge-blue);
+            border: 1px solid var(--badge-blue);
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-left: 6px;
+        }
+
+        /* Craft Scorecard Matrix (Above the Fold) */
+        .scorecard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+            background-color: #0F172A;
+            padding: 1.2rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin-top: 1.5rem;
+        }
+
+        .score-box {
+            text-align: center;
+        }
+
+        .score-box .label {
+            font-size: 0.75rem;
+            color: var(--text-sub);
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .score-box .val {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: var(--accent-gold);
         }
 
         .craft-card {
@@ -112,23 +155,18 @@
         .star-rating {
             display: flex;
             gap: 6px;
-            direction: ltr;
         }
 
         .star {
             font-size: 1.8rem;
             color: var(--star-inactive);
             cursor: pointer;
-            transition: color 0.15s ease, transform 0.1s ease;
+            transition: color 0.15s ease;
             user-select: none;
         }
 
-        .star:hover, .star.active {
+        .star.active {
             color: var(--accent-gold);
-        }
-
-        .star:active {
-            transform: scale(1.2);
         }
 
         textarea {
@@ -157,21 +195,6 @@
             cursor: pointer;
             width: 100%;
             margin-top: 1.2rem;
-            transition: opacity 0.2s;
-        }
-
-        .btn-submit:hover {
-            opacity: 0.9;
-        }
-
-        .notice-box {
-            background-color: rgba(251, 191, 36, 0.1);
-            border: 1px solid var(--accent-gold);
-            border-radius: 8px;
-            padding: 12px;
-            font-size: 0.85rem;
-            color: var(--text-sub);
-            margin-bottom: 1.5rem;
         }
     </style>
 </head>
@@ -184,18 +207,16 @@
     <div class="container">
         <a href="index.html" class="back-link">← Back to Index</a>
 
+        <!-- Screen 1: Header + Verified Trade Data + Live Aggregate Scorecard -->
         <div class="movie-header" id="movieHeader">
             <h1>Loading Movie Details...</h1>
         </div>
 
+        <!-- Screen 2: Interactive Rating Form -->
         <div class="craft-card">
             <div class="craft-title">Rate the Crafts</div>
-            <div class="notice-box">
-                <strong>Craft Integrity Rule:</strong> Once submitted, your craft ratings are permanent to prevent review manipulation. Evaluate each department objectively.
-            </div>
 
             <form id="craftRatingForm">
-                <!-- Direction -->
                 <div class="craft-row">
                     <span class="craft-name">Direction & Screenplay</span>
                     <div class="star-rating" data-craft="direction">
@@ -207,7 +228,6 @@
                     </div>
                 </div>
 
-                <!-- Cinematography -->
                 <div class="craft-row">
                     <span class="craft-name">Cinematography & Lighting</span>
                     <div class="star-rating" data-craft="cinematography">
@@ -219,7 +239,6 @@
                     </div>
                 </div>
 
-                <!-- Music -->
                 <div class="craft-row">
                     <span class="craft-name">Music & Background Score (BGM)</span>
                     <div class="star-rating" data-craft="music">
@@ -231,7 +250,6 @@
                     </div>
                 </div>
 
-                <!-- Stunts -->
                 <div class="craft-row">
                     <span class="craft-name">Action & Stunts</span>
                     <div class="star-rating" data-craft="stunts">
@@ -243,7 +261,6 @@
                     </div>
                 </div>
 
-                <!-- VFX -->
                 <div class="craft-row">
                     <span class="craft-name">Visual Effects (VFX / CGI)</span>
                     <div class="star-rating" data-craft="vfx">
@@ -255,7 +272,7 @@
                     </div>
                 </div>
 
-                <textarea id="reviewComment" placeholder="Write a short technical note on the crafts (Optional)..."></textarea>
+                <textarea id="reviewComment" placeholder="Write a technical note on the crafts (Optional)..."></textarea>
 
                 <button type="button" class="btn-submit" onclick="submitRating()">Submit Verified Craft Rating</button>
             </form>
@@ -270,28 +287,18 @@
         const urlParams = new URLSearchParams(window.location.search);
         const movieId = urlParams.get('id') || 'peddi';
 
-        // Object to store craft star values (default to 4 stars each)
-        const selectedRatings = {
-            direction: 4,
-            cinematography: 4,
-            music: 4,
-            stunts: 4,
-            vfx: 4
-        };
+        const selectedRatings = { direction: 4, cinematography: 4, music: 4, stunts: 4, vfx: 4 };
 
         document.addEventListener("DOMContentLoaded", function() {
             if (typeof supabase !== 'undefined') {
                 const { createClient } = supabase;
                 supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                fetchMovieDetails();
+                loadPageData();
             }
 
-            // Initialize star rating interactions
             document.querySelectorAll('.star-rating').forEach(group => {
                 const craft = group.dataset.craft;
                 const stars = group.querySelectorAll('.star');
-
-                // Set initial default visual state
                 updateStarVisuals(stars, selectedRatings[craft]);
 
                 stars.forEach(star => {
@@ -314,23 +321,48 @@
             });
         }
 
-        async function fetchMovieDetails() {
-            const { data: movie, error } = await supabaseClient
-                .from('movies')
-                .select('*')
-                .eq('id', movieId)
-                .single();
+        async function loadPageData() {
+            // Fetch Movie Info
+            const { data: movie } = await supabaseClient.from('movies').select('*').eq('id', movieId).single();
+            
+            // Fetch All Craft Ratings to Calculate Aggregate Averages
+            const { data: ratings } = await supabaseClient.from('ratings').select('*').eq('movie_id', movieId);
 
             const header = document.getElementById('movieHeader');
-            if (error || !movie) {
-                header.innerHTML = `<h1>Movie Not Found</h1><p class="meta">Please return to the main index.</p>`;
+            if (!movie) {
+                header.innerHTML = `<h1>Movie Not Found</h1>`;
                 return;
+            }
+
+            // Calculate Averages
+            let avgDir = 0, avgCam = 0, avgMusic = 0, avgStunts = 0, avgVfx = 0, avgOverall = 0;
+            const count = ratings ? ratings.length : 0;
+
+            if (count > 0) {
+                avgDir = (ratings.reduce((acc, r) => acc + (parseFloat(r.direction_score) || 0), 0) / count).toFixed(1);
+                avgCam = (ratings.reduce((acc, r) => acc + (parseFloat(r.cinematography_score) || 0), 0) / count).toFixed(1);
+                avgMusic = (ratings.reduce((acc, r) => acc + (parseFloat(r.music_score) || 0), 0) / count).toFixed(1);
+                avgStunts = (ratings.reduce((acc, r) => acc + (parseFloat(r.stunts_score) || 0), 0) / count).toFixed(1);
+                avgVfx = (ratings.reduce((acc, r) => acc + (parseFloat(r.vfx_score) || 0), 0) / count).toFixed(1);
+                avgOverall = (ratings.reduce((acc, r) => acc + (parseFloat(r.overall_score) || 0), 0) / count).toFixed(1);
             }
 
             header.innerHTML = `
                 <h1>${movie.title}</h1>
-                <div class="meta">Starring: <strong>${movie.starring || 'N/A'}</strong> | Director: <strong>${movie.director || 'N/A'}</strong></div>
-                <div class="meta">WW Box Office Gross: <strong style="color:var(--accent-gold);">${movie.ww_gross || 'TBD'}</strong> | Verdict: <strong>${movie.verdict || 'Tracked'}</strong></div>
+                <div class="meta-row">Starring: <strong>${movie.starring || 'N/A'}</strong> | Director: <strong>${movie.director || 'N/A'}</strong></div>
+                <div class="meta-row">
+                    Trade Gross: <strong style="color:var(--accent-gold);">${movie.ww_gross || 'TBD'}</strong> 
+                    <span class="trade-badge">✓ ${movie.source_badge || 'Trade Consensus'}</span>
+                </div>
+
+                <div class="scorecard-grid">
+                    <div class="score-box"><div class="label">Overall Score</div><div class="val">${count > 0 ? avgOverall + ' ★' : 'N/A'}</div></div>
+                    <div class="score-box"><div class="label">Direction</div><div class="val">${count > 0 ? avgDir : '-'}</div></div>
+                    <div class="score-box"><div class="label">Lighting / DOP</div><div class="val">${count > 0 ? avgCam : '-'}</div></div>
+                    <div class="score-box"><div class="label">Music / BGM</div><div class="val">${count > 0 ? avgMusic : '-'}</div></div>
+                    <div class="score-box"><div class="label">Stunts</div><div class="val">${count > 0 ? avgStunts : '-'}</div></div>
+                    <div class="score-box"><div class="label">VFX</div><div class="val">${count > 0 ? avgVfx : '-'}</div></div>
+                </div>
             `;
         }
 
@@ -339,10 +371,9 @@
 
             const comment = document.getElementById('reviewComment').value;
             const overall = ((selectedRatings.direction + selectedRatings.cinematography + selectedRatings.music + selectedRatings.stunts + selectedRatings.vfx) / 5).toFixed(1);
-
             const demoUserId = "00000000-0000-0000-0000-000000000000";
 
-            const { data, error } = await supabaseClient.from('ratings').insert([
+            const { error } = await supabaseClient.from('ratings').insert([
                 {
                     movie_id: movieId,
                     user_id: demoUserId,
@@ -357,10 +388,10 @@
             ]);
 
             if (error) {
-                alert("Error submitting rating: " + error.message);
+                alert("Error: " + error.message);
             } else {
-                alert("Craft rating submitted successfully! Thank you for contributing to TFI craft analytics.");
-                document.getElementById('craftRatingForm').reset();
+                alert("Craft rating submitted! Aggregate scores updated.");
+                loadPageData(); // Refresh aggregate scorecard live
             }
         }
     </script>
