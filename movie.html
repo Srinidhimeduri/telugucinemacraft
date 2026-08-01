@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeluguCineCraft | Movie Detail & Craft Breakdown</title>
+    <title>TeluguCineCraft | Craft Ratings</title>
     <!-- Supabase JS Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
     <style>
@@ -14,8 +14,7 @@
             --text-main: #F8FAFC;
             --text-sub: #94A3B8;
             --border-color: #334155;
-            --hit-green: #22C55E;
-            --mvp-purple: #A855F7;
+            --star-inactive: #475569;
         }
 
         body {
@@ -49,7 +48,7 @@
 
         .container {
             width: 90%;
-            max-width: 900px;
+            max-width: 800px;
             margin: 2rem 0;
         }
 
@@ -78,7 +77,7 @@
         .meta {
             color: var(--text-sub);
             font-size: 1rem;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
         }
 
         .craft-card {
@@ -97,24 +96,39 @@
             padding-bottom: 0.5rem;
         }
 
-        .rating-group {
-            margin-bottom: 1.2rem;
-        }
-
-        .rating-label {
+        .craft-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 0.4rem;
-            font-weight: 600;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .rating-value {
+        .craft-name {
+            font-weight: 600;
+            font-size: 1.05rem;
+        }
+
+        .star-rating {
+            display: flex;
+            gap: 6px;
+            direction: ltr;
+        }
+
+        .star {
+            font-size: 1.8rem;
+            color: var(--star-inactive);
+            cursor: pointer;
+            transition: color 0.15s ease, transform 0.1s ease;
+            user-select: none;
+        }
+
+        .star:hover, .star.active {
             color: var(--accent-gold);
         }
 
-        input[type="range"] {
-            width: 100%;
-            accent-color: var(--accent-gold);
+        .star:active {
+            transform: scale(1.2);
         }
 
         textarea {
@@ -127,21 +141,22 @@
             box-sizing: border-box;
             resize: vertical;
             min-height: 80px;
-            margin-top: 1rem;
+            margin-top: 1.5rem;
             outline: none;
+            font-family: inherit;
         }
 
         .btn-submit {
             background-color: var(--accent-gold);
             color: #000;
             border: none;
-            padding: 12px 24px;
+            padding: 14px 24px;
             border-radius: 8px;
             font-weight: bold;
             font-size: 1rem;
             cursor: pointer;
             width: 100%;
-            margin-top: 1rem;
+            margin-top: 1.2rem;
             transition: opacity 0.2s;
         }
 
@@ -156,7 +171,7 @@
             padding: 12px;
             font-size: 0.85rem;
             color: var(--text-sub);
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
         }
     </style>
 </head>
@@ -174,53 +189,73 @@
         </div>
 
         <div class="craft-card">
-            <div class="craft-title">Submit Craft Rating</div>
+            <div class="craft-title">Rate the Crafts</div>
             <div class="notice-box">
-                <strong>Craft Integrity Rule:</strong> Once submitted, your craft rating is permanent to prevent review manipulation. Evaluate each department objectively.
+                <strong>Craft Integrity Rule:</strong> Once submitted, your craft ratings are permanent to prevent review manipulation. Evaluate each department objectively.
             </div>
 
             <form id="craftRatingForm">
-                <div class="rating-group">
-                    <div class="rating-label">
-                        <span>Direction & Screenplay</span>
-                        <span class="rating-value" id="val-dir">4.0 / 5.0</span>
+                <!-- Direction -->
+                <div class="craft-row">
+                    <span class="craft-name">Direction & Screenplay</span>
+                    <div class="star-rating" data-craft="direction">
+                        <span class="star" data-value="1">★</span>
+                        <span class="star" data-value="2">★</span>
+                        <span class="star" data-value="3">★</span>
+                        <span class="star" data-value="4">★</span>
+                        <span class="star" data-value="5">★</span>
                     </div>
-                    <input type="range" id="score-dir" min="1.0" max="5.0" step="0.5" value="4.0" oninput="document.getElementById('val-dir').innerText = this.value + ' / 5.0'">
                 </div>
 
-                <div class="rating-group">
-                    <div class="rating-label">
-                        <span>Cinematography & Lighting</span>
-                        <span class="rating-value" id="val-cam">4.0 / 5.0</span>
+                <!-- Cinematography -->
+                <div class="craft-row">
+                    <span class="craft-name">Cinematography & Lighting</span>
+                    <div class="star-rating" data-craft="cinematography">
+                        <span class="star" data-value="1">★</span>
+                        <span class="star" data-value="2">★</span>
+                        <span class="star" data-value="3">★</span>
+                        <span class="star" data-value="4">★</span>
+                        <span class="star" data-value="5">★</span>
                     </div>
-                    <input type="range" id="score-cam" min="1.0" max="5.0" step="0.5" value="4.0" oninput="document.getElementById('val-cam').innerText = this.value + ' / 5.0'">
                 </div>
 
-                <div class="rating-group">
-                    <div class="rating-label">
-                        <span>Music & Background Score (BGM)</span>
-                        <span class="rating-value" id="val-music">4.0 / 5.0</span>
+                <!-- Music -->
+                <div class="craft-row">
+                    <span class="craft-name">Music & Background Score (BGM)</span>
+                    <div class="star-rating" data-craft="music">
+                        <span class="star" data-value="1">★</span>
+                        <span class="star" data-value="2">★</span>
+                        <span class="star" data-value="3">★</span>
+                        <span class="star" data-value="4">★</span>
+                        <span class="star" data-value="5">★</span>
                     </div>
-                    <input type="range" id="score-music" min="1.0" max="5.0" step="0.5" value="4.0" oninput="document.getElementById('val-music').innerText = this.value + ' / 5.0'">
                 </div>
 
-                <div class="rating-group">
-                    <div class="rating-label">
-                        <span>Action & Stunts</span>
-                        <span class="rating-value" id="val-stunts">4.0 / 5.0</span>
+                <!-- Stunts -->
+                <div class="craft-row">
+                    <span class="craft-name">Action & Stunts</span>
+                    <div class="star-rating" data-craft="stunts">
+                        <span class="star" data-value="1">★</span>
+                        <span class="star" data-value="2">★</span>
+                        <span class="star" data-value="3">★</span>
+                        <span class="star" data-value="4">★</span>
+                        <span class="star" data-value="5">★</span>
                     </div>
-                    <input type="range" id="score-stunts" min="1.0" max="5.0" step="0.5" value="4.0" oninput="document.getElementById('val-stunts').innerText = this.value + ' / 5.0'">
                 </div>
 
-                <div class="rating-group">
-                    <div class="rating-label">
-                        <span>Visual Effects (VFX / CGI)</span>
-                        <span class="rating-value" id="val-vfx">4.0 / 5.0</span>
+                <!-- VFX -->
+                <div class="craft-row">
+                    <span class="craft-name">Visual Effects (VFX / CGI)</span>
+                    <div class="star-rating" data-craft="vfx">
+                        <span class="star" data-value="1">★</span>
+                        <span class="star" data-value="2">★</span>
+                        <span class="star" data-value="3">★</span>
+                        <span class="star" data-value="4">★</span>
+                        <span class="star" data-value="5">★</span>
                     </div>
-                    <input type="range" id="score-vfx" min="1.0" max="5.0" step="0.5" value="4.0" oninput="document.getElementById('val-vfx').innerText = this.value + ' / 5.0'">
                 </div>
 
-                <textarea id="reviewComment" placeholder="Write a short technical comment on the crafts (Optional)..."></textarea>
+                <textarea id="reviewComment" placeholder="Write a short technical note on the crafts (Optional)..."></textarea>
 
                 <button type="button" class="btn-submit" onclick="submitRating()">Submit Verified Craft Rating</button>
             </form>
@@ -235,13 +270,49 @@
         const urlParams = new URLSearchParams(window.location.search);
         const movieId = urlParams.get('id') || 'peddi';
 
-        document.addEventListener("DOMContentLoaded", async function() {
+        // Object to store craft star values (default to 4 stars each)
+        const selectedRatings = {
+            direction: 4,
+            cinematography: 4,
+            music: 4,
+            stunts: 4,
+            vfx: 4
+        };
+
+        document.addEventListener("DOMContentLoaded", function() {
             if (typeof supabase !== 'undefined') {
                 const { createClient } = supabase;
                 supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                 fetchMovieDetails();
             }
+
+            // Initialize star rating interactions
+            document.querySelectorAll('.star-rating').forEach(group => {
+                const craft = group.dataset.craft;
+                const stars = group.querySelectorAll('.star');
+
+                // Set initial default visual state
+                updateStarVisuals(stars, selectedRatings[craft]);
+
+                stars.forEach(star => {
+                    star.addEventListener('click', () => {
+                        const val = parseInt(star.dataset.value);
+                        selectedRatings[craft] = val;
+                        updateStarVisuals(stars, val);
+                    });
+                });
+            });
         });
+
+        function updateStarVisuals(stars, value) {
+            stars.forEach(s => {
+                if (parseInt(s.dataset.value) <= value) {
+                    s.classList.add('active');
+                } else {
+                    s.classList.remove('active');
+                }
+            });
+        }
 
         async function fetchMovieDetails() {
             const { data: movie, error } = await supabaseClient
@@ -266,17 +337,9 @@
         async function submitRating() {
             if (!supabaseClient) return;
 
-            const dirScore = parseFloat(document.getElementById('score-dir').value);
-            const camScore = parseFloat(document.getElementById('score-cam').value);
-            const musicScore = parseFloat(document.getElementById('score-music').value);
-            const stuntsScore = parseFloat(document.getElementById('score-stunts').value);
-            const vfxScore = parseFloat(document.getElementById('score-vfx').value);
             const comment = document.getElementById('reviewComment').value;
+            const overall = ((selectedRatings.direction + selectedRatings.cinematography + selectedRatings.music + selectedRatings.stunts + selectedRatings.vfx) / 5).toFixed(1);
 
-            // Calculate overall average score across crafts
-            const overall = ((dirScore + camScore + musicScore + stuntsScore + vfxScore) / 5).toFixed(1);
-
-            // Anonymous demo UUID for initial testing before Auth lock
             const demoUserId = "00000000-0000-0000-0000-000000000000";
 
             const { data, error } = await supabaseClient.from('ratings').insert([
@@ -284,20 +347,19 @@
                     movie_id: movieId,
                     user_id: demoUserId,
                     overall_score: parseFloat(overall),
-                    direction_score: dirScore,
-                    cinematography_score: camScore,
-                    music_score: musicScore,
-                    stunts_score: stuntsScore,
-                    vfx_score: vfxScore,
+                    direction_score: selectedRatings.direction,
+                    cinematography_score: selectedRatings.cinematography,
+                    music_score: selectedRatings.music,
+                    stunts_score: selectedRatings.stunts,
+                    vfx_score: selectedRatings.vfx,
                     review_comment: comment
                 }
             ]);
 
             if (error) {
                 alert("Error submitting rating: " + error.message);
-                console.error(error);
             } else {
-                alert("Craft rating submitted permanently! Thank you for contributing to TFI craft analytics.");
+                alert("Craft rating submitted successfully! Thank you for contributing to TFI craft analytics.");
                 document.getElementById('craftRatingForm').reset();
             }
         }
