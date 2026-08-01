@@ -15,7 +15,6 @@
             --text-sub: #94A3B8;
             --border-color: #334155;
             --star-inactive: #475569;
-            --hit-green: #22C55E;
             --badge-blue: #38BDF8;
         }
 
@@ -46,6 +45,22 @@
             font-size: 1.4rem;
             font-weight: bold;
             text-decoration: none;
+        }
+
+        .user-nav-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-auth {
+            background-color: var(--accent-gold);
+            color: #000;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
         }
 
         .container {
@@ -82,6 +97,12 @@
             margin-bottom: 0.8rem;
         }
 
+        .tech-link {
+            color: var(--accent-gold);
+            text-decoration: underline;
+            font-weight: bold;
+        }
+
         .trade-badge {
             display: inline-block;
             background-color: rgba(56, 189, 248, 0.15);
@@ -94,7 +115,6 @@
             margin-left: 6px;
         }
 
-        /* Craft Scorecard Matrix (Above the Fold) */
         .scorecard-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -196,27 +216,68 @@
             width: 100%;
             margin-top: 1.2rem;
         }
+
+        .auth-gate-box {
+            text-align: center;
+            padding: 2rem;
+            background-color: #0F172A;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .auth-gate-box p {
+            color: var(--text-sub);
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-google {
+            background-color: #FFFFFF;
+            color: #000000;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
     </style>
 </head>
 <body>
 
     <nav>
         <a href="index.html" class="nav-logo">TeluguCineCraft</a>
+        <div class="user-nav-box" id="userNavBox">
+            <button class="btn-auth" onclick="signInWithGoogle()">Sign In</button>
+        </div>
     </nav>
 
     <div class="container">
         <a href="index.html" class="back-link">← Back to Index</a>
 
-        <!-- Screen 1: Header + Verified Trade Data + Live Aggregate Scorecard -->
+        <!-- Screen 1: Header + Aggregate Scorecard -->
         <div class="movie-header" id="movieHeader">
             <h1>Loading Movie Details...</h1>
         </div>
 
-        <!-- Screen 2: Interactive Rating Form -->
+        <!-- Screen 2: Rating Section (Protected by Google Auth) -->
         <div class="craft-card">
             <div class="craft-title">Rate the Crafts</div>
 
-            <form id="craftRatingForm">
+            <!-- Shown when Logged Out -->
+            <div id="authGate" class="auth-gate-box">
+                <h3>Verified Audience Rating</h3>
+                <p>To preserve craft integrity and prevent bot manipulation, sign in with Google to submit your verified rating.</p>
+                <button class="btn-google" onclick="signInWithGoogle()">
+                    <span>Sign In with Google</span>
+                </button>
+            </div>
+
+            <!-- Shown when Logged In -->
+            <form id="craftRatingForm" style="display: none;">
                 <div class="craft-row">
                     <span class="craft-name">Direction & Screenplay</span>
                     <div class="star-rating" data-craft="direction">
@@ -283,16 +344,19 @@
         const SUPABASE_URL = "https://eosgvjvpdwxmpxzerxit.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_FVXC4U8wUB2l1SmWLpmoeg_4RkydeLx";
         let supabaseClient;
+        let currentUser = null;
 
         const urlParams = new URLSearchParams(window.location.search);
         const movieId = urlParams.get('id') || 'peddi';
 
         const selectedRatings = { direction: 4, cinematography: 4, music: 4, stunts: 4, vfx: 4 };
 
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", async function() {
             if (typeof supabase !== 'undefined') {
                 const { createClient } = supabase;
                 supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                
+                await checkUserSession();
                 loadPageData();
             }
 
@@ -311,6 +375,41 @@
             });
         });
 
+        async function checkUserSession() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) {
+                currentUser = session.user;
+                document.getElementById('authGate').style.display = 'none';
+                document.getElementById('craftRatingForm').style.display = 'block';
+                document.getElementById('userNavBox').innerHTML = `
+                    <span style="font-size:0.85rem; color:var(--text-sub);">${currentUser.email}</span>
+                    <button class="btn-auth" style="background:#334155; color:#FFF;" onclick="signOut()">Sign Out</button>
+                `;
+            } else {
+                currentUser = null;
+                document.getElementById('authGate').style.display = 'block';
+                document.getElementById('craftRatingForm').style.display = 'none';
+                document.getElementById('userNavBox').innerHTML = `
+                    <button class="btn-auth" onclick="signInWithGoogle()">Sign In</button>
+                `;
+            }
+        }
+
+        async function signInWithGoogle() {
+            const { error } = await supabaseClient.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo: window.location.href
+                }
+            });
+            if (error) alert("Auth error: " + error.message);
+        }
+
+        async function signOut() {
+            await supabaseClient.auth.signOut();
+            window.location.reload();
+        }
+
         function updateStarVisuals(stars, value) {
             stars.forEach(s => {
                 if (parseInt(s.dataset.value) <= value) {
@@ -322,10 +421,7 @@
         }
 
         async function loadPageData() {
-            // Fetch Movie Info
             const { data: movie } = await supabaseClient.from('movies').select('*').eq('id', movieId).single();
-            
-            // Fetch All Craft Ratings to Calculate Aggregate Averages
             const { data: ratings } = await supabaseClient.from('ratings').select('*').eq('movie_id', movieId);
 
             const header = document.getElementById('movieHeader');
@@ -334,7 +430,6 @@
                 return;
             }
 
-            // Calculate Averages
             let avgDir = 0, avgCam = 0, avgMusic = 0, avgStunts = 0, avgVfx = 0, avgOverall = 0;
             const count = ratings ? ratings.length : 0;
 
@@ -349,7 +444,10 @@
 
             header.innerHTML = `
                 <h1>${movie.title}</h1>
-                <div class="meta-row">Starring: <strong>${movie.starring || 'N/A'}</strong> | Director: <strong>${movie.director || 'N/A'}</strong></div>
+                <div class="meta-row">
+                    Starring: <strong>${movie.starring || 'N/A'}</strong> | 
+                    Director: <a href="technician.html?id=buchi-babu" class="tech-link">${movie.director || 'N/A'}</a>
+                </div>
                 <div class="meta-row">
                     Trade Gross: <strong style="color:var(--accent-gold);">${movie.ww_gross || 'TBD'}</strong> 
                     <span class="trade-badge">✓ ${movie.source_badge || 'Trade Consensus'}</span>
@@ -367,16 +465,18 @@
         }
 
         async function submitRating() {
-            if (!supabaseClient) return;
+            if (!supabaseClient || !currentUser) {
+                alert("Please sign in with Google first.");
+                return;
+            }
 
             const comment = document.getElementById('reviewComment').value;
             const overall = ((selectedRatings.direction + selectedRatings.cinematography + selectedRatings.music + selectedRatings.stunts + selectedRatings.vfx) / 5).toFixed(1);
-            const demoUserId = "00000000-0000-0000-0000-000000000000";
 
             const { error } = await supabaseClient.from('ratings').insert([
                 {
                     movie_id: movieId,
-                    user_id: demoUserId,
+                    user_id: currentUser.id,
                     overall_score: parseFloat(overall),
                     direction_score: selectedRatings.direction,
                     cinematography_score: selectedRatings.cinematography,
@@ -390,8 +490,8 @@
             if (error) {
                 alert("Error: " + error.message);
             } else {
-                alert("Craft rating submitted! Aggregate scores updated.");
-                loadPageData(); // Refresh aggregate scorecard live
+                alert("Verified Craft rating submitted! Aggregate scores updated.");
+                loadPageData();
             }
         }
     </script>
