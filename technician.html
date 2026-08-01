@@ -3,354 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeluguCineCraft | Technician Profile & Craft Network</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+    <title>Talent Directory</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root {
-            --bg-color: #0B0F19;
-            --card-bg: #1E293B;
-            --accent-gold: #FBBF24;
-            --text-main: #F8FAFC;
-            --text-sub: #94A3B8;
-            --border-color: #334155;
-            --badge-blue: #38BDF8;
-        }
-
-        * { box-sizing: border-box; }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        nav {
-            width: 100%;
-            background-color: #0F172A;
-            border-bottom: 1px solid var(--border-color);
-            padding: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .nav-logo {
-            color: var(--accent-gold);
-            font-size: 1.2rem;
-            font-weight: bold;
-            text-decoration: none;
-        }
-
-        .container {
-            width: 92%;
-            max-width: 900px;
-            margin: 1.5rem 0;
-        }
-
-        .back-link {
-            color: var(--accent-gold);
-            text-decoration: none;
-            font-weight: 600;
-            display: inline-block;
-            margin-bottom: 1rem;
-            font-size: 0.9rem;
-        }
-
-        .profile-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            display: flex;
-            gap: 1.5rem;
-            align-items: center;
-        }
-
-        .profile-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background-color: #0F172A;
-            border: 2px solid var(--accent-gold);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            color: var(--accent-gold);
-            flex-shrink: 0;
-        }
-
-        .profile-info h1 {
-            margin: 0 0 0.3rem 0;
-            color: var(--accent-gold);
-            font-size: 1.6rem;
-        }
-
-        .craft-tag {
-            display: inline-block;
-            background-color: rgba(251, 191, 36, 0.15);
-            color: var(--accent-gold);
-            border: 1px solid var(--accent-gold);
-            padding: 3px 8px;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-bottom: 0.6rem;
-        }
-
-        .stat-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-            gap: 10px;
-            background: #0F172A;
-            padding: 1rem;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            margin-top: 1rem;
-        }
-
-        .stat-box { text-align: center; }
-        .stat-label { font-size: 0.75rem; color: var(--text-sub); }
-        .stat-val { font-size: 1.2rem; font-weight: bold; color: var(--accent-gold); }
-
-        .section-title {
-            font-size: 1.1rem;
-            color: var(--accent-gold);
-            margin-bottom: 1rem;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 0.4rem;
-        }
-
-        .card-box {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 1.2rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .film-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .film-title {
-            color: var(--text-main);
-            font-weight: 600;
-            text-decoration: none;
-        }
-
-        .collab-chip {
-            display: inline-block;
-            background: #0F172A;
-            border: 1px solid var(--border-color);
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            margin: 4px;
-            color: var(--text-main);
-        }
-
-        .collab-count {
-            color: var(--accent-gold);
-            font-weight: bold;
-            margin-left: 4px;
-        }
-
-        textarea {
-            width: 100%;
-            background-color: #0F172A;
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 12px;
-            border-radius: 8px;
-            resize: vertical;
-            min-height: 80px;
-            margin-top: 0.8rem;
-            outline: none;
-            font-family: inherit;
-        }
-
-        .btn-submit {
-            background-color: var(--accent-gold);
-            color: #000;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 0.8rem;
-            width: 100%;
-        }
-
-        @media (max-width: 600px) {
-            .profile-card { flex-direction: column; text-align: center; gap: 1rem; }
-        }
+        body { background: #070B14; color: #fff; font-family: sans-serif; padding: 2rem; }
+        .card { background: #111827; padding: 15px; border-radius: 8px; margin: 10px 0; border: 1px solid #1F2937; }
     </style>
 </head>
 <body>
-
-    <nav>
-        <a href="index.html" class="nav-logo">TeluguCineCraft</a>
-    </nav>
-
-    <div class="container">
-        <a href="technicians.html" class="back-link">← Back to Talent Directory</a>
-
-        <div class="profile-card" id="profileCard">
-            <div class="profile-avatar">🎬</div>
-            <div class="profile-info">
-                <h1>Loading Profile...</h1>
-            </div>
-        </div>
-
-        <!-- Collaboration Frequency Network -->
-        <div class="card-box">
-            <div class="section-title">Frequent Collaborators (TFI Network)</div>
-            <div id="collabNetwork"><p style="color:var(--text-sub);">Analyzing collaboration metrics...</p></div>
-        </div>
-
-        <!-- Verified Filmography & Song List -->
-        <div class="card-box">
-            <div class="section-title" id="filmographyHeader">Verified TFI Credits</div>
-            <div id="filmList"><p style="color:var(--text-sub);">Loading credits...</p></div>
-        </div>
-
-        <!-- Direct Industry Review Box -->
-        <div class="card-box">
-            <div class="section-title">Submit Craft Review for Production Consideration</div>
-            <textarea id="crewReviewText" placeholder="Write a technical note regarding performance, efficiency, or project potential..."></textarea>
-            <button class="btn-submit" onclick="submitCrewReview()">Post Craft Endorsement</button>
-        </div>
-    </div>
-
+    <div id="content">Loading Talent...</div>
     <script>
-        const SUPABASE_URL = "https://eosgvjvpdwxmpxzerxit.supabase.co";
-        const SUPABASE_ANON_KEY = "sb_publishable_FVXC4U8wUB2l1SmWLpmoeg_4RkydeLx";
-        let supabaseClient;
+        // Force-refreshing the client variable to bypass cache
+        if (!window.myFixedClient) {
+            window.myFixedClient = window.supabase.createClient("https://eosgvjvpdwxmpxzerxit.supabase.co", "sb_publishable_FVXC4U8wUB2l1SmWLpmoeg_4RkydeLx");
+        }
+        const db = window.myFixedClient;
+        const talentName = decodeURIComponent(new URLSearchParams(window.location.search).get('name') || '').toLowerCase();
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const techId = urlParams.get('id') || 'buchi-babu';
+        async function init() {
+            const { data } = await db.from('box_office').select('*');
+            if (!data) return;
 
-        function escapeHTML(str) {
-            if (!str) return '';
-            return str.replace(/[&<>'"]/g, function(tag) {
-                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag;
+            const films = data.filter(m => {
+                const crew = [m.director, m.producer, m.starring, m.supporting_cast].join(',').toLowerCase();
+                return crew.includes(talentName);
             });
-        }
 
-        document.addEventListener("DOMContentLoaded", async function() {
-            if (typeof supabase !== 'undefined') {
-                const { createClient } = supabase;
-                supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                loadProfile();
-            }
-        });
-
-        async function loadProfile() {
-            const { data: tech } = await supabaseClient.from('technicians').select('*').eq('id', techId).single();
-            const { data: credits } = await supabaseClient.from('movie_credits').select('*, movies(*)').eq('technician_id', techId);
-
-            const profileCard = document.getElementById('profileCard');
-            const filmList = document.getElementById('filmList');
-            const collabNetwork = document.getElementById('collabNetwork');
-
-            if (!tech) {
-                profileCard.innerHTML = `<h1>Technician Not Found</h1>`;
-                return;
-            }
-
-            const totalFilms = credits ? credits.length : 0;
-
-            profileCard.innerHTML = `
-                <div class="profile-avatar">🎥</div>
-                <div class="profile-info" style="width:100%;">
-                    <h1>${escapeHTML(tech.name)}</h1>
-                    <span class="craft-tag">${escapeHTML(tech.craft)}</span>
-                    <p style="color:var(--text-sub); margin:0; font-size:0.9rem;">${escapeHTML(tech.bio || 'Verified TFI Crew Member.')}</p>
-                    
-                    <div class="stat-grid">
-                        <div class="stat-box"><div class="stat-label">Total Films</div><div class="stat-val">${totalFilms}</div></div>
-                        <div class="stat-box"><div class="stat-label">Primary Craft</div><div class="stat-val" style="font-size:0.9rem; color:var(--badge-blue);">${escapeHTML(tech.craft)}</div></div>
-                    </div>
-                </div>
-            `;
-
-            // 1. Render Filmography
-            if (!credits || credits.length === 0) {
-                filmList.innerHTML = `<p style="color:var(--text-sub);">No verified credits indexed yet.</p>`;
+            if (films.length === 0) {
+                document.getElementById('content').innerHTML = `<h1>No films found for "${talentName}"</h1>`;
             } else {
-                filmList.innerHTML = credits.map(c => `
-                    <div class="film-row">
-                        <div>
-                            <a href="movie.html?id=${c.movie_id}" class="film-title">${escapeHTML(c.movies ? c.movies.title : c.movie_id)}</a>
-                            <span style="font-size:0.8rem; color:var(--text-sub); display:block;">Role: ${escapeHTML(c.role_title || c.role_category)}</span>
-                        </div>
-                        <span style="color:var(--accent-gold); font-weight:bold; font-size:0.85rem;">${escapeHTML(c.movies ? c.movies.ww_gross : 'TBD')}</span>
-                    </div>
-                `).join('');
-            }
-
-            // 2. Fetch Collaboration Overlaps (Find other technicians in the same movies)
-            if (credits && credits.length > 0) {
-                const movieIds = credits.map(c => c.movie_id);
-                const { data: allMovieCredits } = await supabaseClient.from('movie_credits').select('*, technicians(*)').in('movie_id', movieIds);
-
-                const collabCounts = {};
-                if (allMovieCredits) {
-                    allMovieCredits.forEach(mc => {
-                        if (mc.technician_id !== techId && mc.technicians) {
-                            const name = mc.technicians.name;
-                            const role = mc.technicians.craft;
-                            const key = `${name} (${role})`;
-                            collabCounts[key] = (collabCounts[key] || 0) + 1;
-                        }
-                    });
-                }
-
-                const collabEntries = Object.entries(collabCounts).sort((a, b) => b[1] - a[1]);
-
-                if (collabEntries.length > 0) {
-                    collabNetwork.innerHTML = collabEntries.map(([collabName, count]) => `
-                        <div class="collab-chip">
-                            ${escapeHTML(collabName)}: <span class="collab-count">${count} ${count === 1 ? 'Film' : 'Films'}</span>
-                        </div>
-                    `).join('');
-                } else {
-                    collabNetwork.innerHTML = `<p style="color:var(--text-sub);">No recurring collaboration overlaps found yet.</p>`;
-                }
-            } else {
-                collabNetwork.innerHTML = `<p style="color:var(--text-sub);">No collaboration network data available.</p>`;
+                document.getElementById('content').innerHTML = `
+                    <h1>${talentName.toUpperCase()}</h1>
+                    ${films.map(f => `<div class="card">
+                        <div style="font-size:1.2rem; color:#FBBF24;">${f.movie_name}</div>
+                        <div>${f.verdict || 'N/A'}</div>
+                    </div>`).join('')}
+                `;
             }
         }
-
-        async function submitCrewReview() {
-            const text = document.getElementById('crewReviewText').value;
-            if (!text.trim()) {
-                alert("Please enter a review note.");
-                return;
-            }
-
-            const { error } = await supabaseClient.from('crew_reviews').insert([
-                { technician_id: techId, review_text: text, rating: 5.0 }
-            ]);
-
-            if (error) {
-                alert("Error submitting review: " + error.message);
-            } else {
-                alert("Craft review posted!");
-                document.getElementById('crewReviewText').value = '';
-            }
-        }
+        init();
     </script>
 </body>
 </html>

@@ -1,0 +1,63 @@
+[33m26fe7fc[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m Final stable fix: Unified supabase initialization and robust navigation logic
+[33m0e0ae62[m Final stable fix for navigation and search logic
+[33m196cde6[m Fixed JavaScript error: Added DOMContentLoaded check and ensured content div exists
+[33m569a177[m Fixed duplicate records, corrected talent directory navigation, and enhanced premium UI
+[33mbd88f72[m Fixed navigation links and film count math in movie.html
+[33md777eef[m Restored full movie.html code to resolve JavaScript syntax freeze
+[33m9fe0211[m Fixed missing data crash and added fallback error UI
+[33m5f7dc21[m Fixed film counting math and upgraded Talent Directory to search all craft columns
+[33m799f805[m Restored Google Auth, 5-star ratings, reviews, and smart hyperlinked crew counts
+[33me19a578[m Updated movie.html to render full craft details, stunt masters, VFX, and accolades
+[33ma3f1a92[m Restored project to exactly how it was before the API
+[33m5c6f65f[m Fixed missing titles by formatting movie_id
+[33m9e79fd6[m Fixed homepage crash, restored instant-load movie grid and search bar
+[33mbb4cb50[m Restored classic list
+[33madbbbd6[m Restored premium aesthetic UI, Google Login, Box Office, and Hyperlinks
+[33mc137f6f[m Complete API detox: Unlinked TMDB API from all pages, switched entirely to Supabase
+[33m9cc3338[m Updated movie.html with curated rich crew and trade fields
+[33m1f1691b[m Fixed SyntaxError: Single declaration of supabase client
+[33ma8148db[m Force-debug version
+[33me68ea6b[m Fixed duplicate supabase declaration error
+[33m628b101[m Fixed syntax error: removed duplicate supabase declaration
+[33ma5620cd[m API Detox: Removed TMDB API, switched to manual Supabase curation
+[33md6cf28b[m Restored full craft/crew details and trade data
+[33m129da3b[m Fixed TMDB search and added language filter
+[33m4b5c7e6[m Removed language restriction filter
+[33m61d4a56[m Fixed supabase error and added language filtering
+[33me57c2fa[m Integrated live TMDB API with mandatory attribution
+[33m9e7c315[m Added career hit flop strike rate tracking for technicians and heroes
+[33mc1cda58[m Updated all files with comprehensive navigation including My Profile link
+[33m30bccba[m Added User Profile and Ratings History Dashboard
+[33m92b4398[m Added secure admin dashboard for easy data management
+[33m4625615[m Restored full movie.html fixing javascript string escaping issues
+[33m69542c0[m Fixed broken inline comments in loadBoxOfficeData and ordered DOM sequence
+[33m3dcc464[m Fixed column typo in loadBoxOfficeData from movieId to movie_id
+[33m6f24b00[m Added Chart.js Craft Strength Radar Pentagons and Box Office Recovery Progress Gauges
+[33m23617e3[m Fixed film count logic to include direct movie credits and starring roles
+[33m7be1725[m Converted Starring cast names into clickable profile hyperlinks across all movie pages
+[33m5ee22d2[m Added missing directors to DB and added smart dynamic back navigation history
+[33md309bc5[m Applied global fuzzy deduplication engine across Producers and Stunts tabs
+[33mea74860[m Fixed category filter leak for Music Directors and added client deduplication
+[33m838de14[m Added category filter tabs for Directors, Cast, Music, DOPs, Stunts, and Producers
+[33madf6dc3[m Updated movie card label from Hero to Starring for cleaner display
+[33m15039dc[m Restored technicians.html and hardened movie.html full crew network chips
+[33m681c791[m Fixed dynamic director routing bug in movie.html
+[33md5482b5[m Updated full movie.html with dynamic crew chips and collaboration links
+[33me57a55a[m Added live search and dynamic movie grid to index.html
+[33md2df196[m Updated complete movie.html with XSS security and box office audit
+[33md8d99b7[m Integrated Stage 5 Box Office Audit Engine
+[33mcf17948[m Made platform 100% glitch-free and responsive on mobile and desktop
+[33mffd4edb[m Added TFI Talent Directory and Crew Reviews
+[33me3b75b6[m Restored movie.html and added technician link
+[33m721b850[m Added Stage 4 Technician Profile page
+[33meb5c5ac[m Added live aggregate Craft Scorecard and Trade Verification Badges
+[33md0b78f3[m Replaced sliders with interactive star ratings for better UX
+[33m1d37ae0[m Integrated 24-Craft Rating Engine on movie detail page
+[33m3b5a277[m Updated homepage header with core brand tagline
+[33mbb9709e[m Updated Supabase key to publishable key to fix 401 error
+[33m7bfa695[m Connected to Supabase
+[33m2614061[m Added movie detail sub-page
+[33mee5e119[m Added navigation bar, search engine, and auth placeholder
+[33m30dbbb8[m Added Craft MVP and hardwork recognition column
+[33m559c670[m Added Box Office tracking table
+[33mc400fd2[m First commit: Dark mode landing page
