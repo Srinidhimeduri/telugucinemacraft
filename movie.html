@@ -14,10 +14,10 @@
         .dashboard-grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: 2rem; }
         .card { background: var(--bg-glass); backdrop-filter: blur(12px); border: 1px solid var(--border-glass); border-radius: 20px; padding: 2rem; margin-bottom: 1.5rem; }
         .section-title { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--cyan-accent); margin: 1.5rem 0 1rem 0; font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.5rem; }
-        .rating-input { background: rgba(0,0,0,0.3); border: 1px solid var(--border-glass); border-radius: 12px; padding: 1rem; margin-top: 1rem; color: white; width: 100%; }
-        .star-rating { display: flex; flex-direction: row-reverse; gap: 10px; cursor: pointer; margin: 1rem 0; }
-        .star-rating i { font-size: 1.5rem; color: #333; transition: 0.2s; }
-        .star-rating i:hover, .star-rating i:hover ~ i, .star-rating input:checked ~ i { color: var(--gold-accent); }
+        .crew-tag { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.04); padding: 0.6rem 1rem; border-radius: 12px; margin: 5px; text-decoration: none; color: white; border: 1px solid rgba(255,255,255,0.1); }
+        .badge { font-size: 0.6rem; background: rgba(255,199,0,0.2); color: var(--gold-accent); padding: 2px 6px; border-radius: 6px; font-weight: 700; }
+        .finance-box { background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 14px; margin-bottom: 1rem; text-align: center; border: 1px solid var(--border-glass); }
+        .val { font-size: 1.7rem; font-weight: 800; color: var(--gold-accent); }
     </style>
 </head>
 <body>
@@ -28,45 +28,43 @@
 
     <script>
         const db = window.supabase.createClient("https://eosgvjvpdwxmpxzerxit.supabase.co", "sb_publishable_FVXC4U8wUB2l1SmWLpmoeg_4RkydeLx", { auth: { flowType: 'pkce' } });
+        const awards = { "S.S. Rajamouli": "National Award", "Prabhas": "Nandi Award", "Allu Arjun": "National Award", "M.M. Keeravani": "Oscar" };
 
         async function init() {
             const id = new URLSearchParams(window.location.search).get('id');
             const { data } = await db.from('box_office').select('*');
             const m = data.find(x => x.movie_id == id);
-            const { data: { user } } = await db.auth.getUser();
+            
+            function getCount(n) { return data.filter(x => [x.starring, x.director, x.producer, x.dop, x.stunts, x.supporting_cast].join(',').includes(n)).length; }
+            function buildTags(str, role) { 
+                if (!str || str === 'N/A' || str === '-') return '';
+                return str.split(',').map(n => {
+                    const name = n.trim();
+                    const award = awards[name] ? `<span class="badge" style="background:rgba(16,185,129,0.2); color:var(--success)">${awards[name]}</span>` : '';
+                    return `<a href="index.html?search=${name}" class="crew-tag"><div><div style="font-size:0.6rem; color:var(--text-muted)">${role}</div><strong>${name}</strong></div><span class="badge">${getCount(name)} Films</span>${award}</a>`;
+                }).join('');
+            }
 
             document.getElementById('content').innerHTML = `
                 <div class="card"><h1>${m.movie_name}</h1><p style="color:var(--cyan-accent)">Verdict: ${m.verdict}</p></div>
                 <div class="dashboard-grid">
                     <div class="card">
-                        <div class="section-title">Finance & Stats</div>
-                        <div class="finance-box"><div style="font-size:0.7rem; color:var(--text-muted)">Budget</div><div class="val">${m.budget || 'TBA'}</div></div>
-                        <div class="finance-box"><div style="font-size:0.7rem; color:var(--text-muted)">Worldwide Gross</div><div class="val">${m.trade_gross || 'TBA'}</div></div>
+                        <div class="section-title">Cast & Crew Network</div>
+                        ${buildTags(m.starring, 'Starring')}
+                        ${buildTags(m.director, 'Director')}
+                        ${buildTags(m.producer, 'Producer')}
+                        ${buildTags(m.dop, 'DOP')}
+                        ${buildTags(m.stunts, 'Stunts')}
+                        ${buildTags(m.supporting_cast, 'Supporting')}
                     </div>
-                    <div class="card" id="rating-section">
-                        <div class="section-title">Rate this Movie</div>
-                        ${user ? `
-                            <form id="reviewForm">
-                                <div class="star-rating">
-                                    ${[5,4,3,2,1].map(n => `<input type="radio" name="stars" value="${n}" id="star${n}" style="display:none;"><label for="star${n}"><i class="fa-solid fa-star"></i></label>`).join('')}
-                                </div>
-                                <textarea id="reviewText" class="rating-input" placeholder="Write a review (optional)..."></textarea>
-                                <button type="submit" style="margin-top:1rem; cursor:pointer;" class="auth-btn">Submit Rating</button>
-                            </form>
-                        ` : `<p style="color:var(--text-muted)">Please sign in to submit your rating.</p>`}
+                    <div>
+                        <div class="card">
+                            <div class="finance-box"><div style="font-size:0.7rem; color:var(--text-muted)">Budget</div><div class="val">${m.budget || 'TBA'}</div></div>
+                            <div class="finance-box"><div style="font-size:0.7rem; color:var(--text-muted)">Worldwide Gross</div><div class="val">${m.trade_gross || 'TBA'}</div></div>
+                        </div>
                     </div>
                 </div>
             `;
-
-            if (user) {
-                document.getElementById('reviewForm').onsubmit = async (e) => {
-                    e.preventDefault();
-                    const stars = document.querySelector('input[name="stars"]:checked')?.value;
-                    if (!stars) return alert("Please select stars!");
-                    await db.from('movie_reviews').insert([{ user_id: user.id, movie_id: id, rating: stars, review: document.getElementById('reviewText').value }]);
-                    alert("Rating submitted!");
-                };
-            }
         }
         init();
     </script>
