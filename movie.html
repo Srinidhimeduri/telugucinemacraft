@@ -4,31 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Movie Details | TeluguCineCraft</title>
-    <!-- CSS and Scripts remain untouched for consistency -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* AESTHETIC ONLY: No data logic here */
         :root { --bg-base: #05070A; --bg-glass: rgba(15, 20, 28, 0.7); --cyan-accent: #38BDF8; --gold-accent: #FFC700; }
         body { background-color: var(--bg-base); color: #F8FAFC; font-family: 'Plus Jakarta Sans', sans-serif; padding: 2rem; }
         .container { max-width: 1200px; margin: 0 auto; }
         .dashboard-grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: 2rem; }
-        .card { background: var(--bg-glass); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 2rem; margin-bottom: 1.5rem; }
-        .section-header { font-size: 0.75rem; color: var(--cyan-accent); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem; }
-        .crew-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
-        .crew-tag { background: rgba(255,255,255,0.03); padding: 1rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); text-decoration: none; color: white; transition: 0.3s; }
-        .badge { font-size: 0.6rem; padding: 2px 8px; border-radius: 6px; background: rgba(255,255,255,0.1); margin-top: 5px; display: inline-block; }
+        .card { background: var(--bg-glass); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 1.5rem; margin-bottom: 1rem; }
+        .section-header { font-size: 0.7rem; color: var(--cyan-accent); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.3rem; }
+        /* Grid-based tags to prevent vertical scrolling */
+        .crew-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; margin-bottom: 1.5rem; }
+        .crew-tag { background: rgba(255,255,255,0.03); padding: 0.6rem; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); text-decoration: none; color: white; font-size: 0.8rem; }
+        .badge { font-size: 0.55rem; background: rgba(255,255,255,0.1); padding: 2px 5px; border-radius: 4px; display: block; width: fit-content; margin-top: 4px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <a href="index.html" style="color:var(--cyan-accent); text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back to Dashboard</a>
+        <a href="index.html" style="color:var(--cyan-accent); text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Back</a>
         <div id="content" style="margin-top:2rem;"></div>
     </div>
 
     <script>
-        // DATA LOGIC: DO NOT ALTER
         const db = window.supabase.createClient("https://eosgvjvpdwxmpxzerxit.supabase.co", "sb_publishable_FVXC4U8wUB2l1SmWLpmoeg_4RkydeLx", { auth: { flowType: 'pkce' } });
         const awards = { "S.S. Rajamouli": "National Award", "Prabhas": "Nandi Award" };
 
@@ -37,23 +35,20 @@
             const { data } = await db.from('box_office').select('*');
             const m = data.find(x => x.movie_id == id);
             
-            // DATA INTEGRITY: Counters based purely on existing table data
             function getCount(n) { return data.filter(x => [x.starring, x.director, x.producer, x.dop, x.stunts, x.supporting_cast].join(',').includes(n)).length; }
             
-            // RENDERING: Only modifying how HTML is built, not the data itself
             function renderSection(names, role) {
-                if (!names) return '';
-                let html = `<div class="section-header">${role}</div><div class="crew-grid">`;
+                if (!names || names === 'N/A' || names === '-') return '';
+                let html = `<div class="section-header">${role}</div><div class="crew-container">`;
                 names.split(',').forEach(n => {
                     const name = n.trim();
                     const award = awards[name] ? `<span class="badge" style="color:var(--gold-accent)">${awards[name]}</span>` : '';
                     html += `<a href="index.html?search=${name}" class="crew-tag">
-                        <div style="font-size:0.65rem; color:#94A3B8;">${role}</div>
-                        <div style="font-weight:700; margin-bottom:5px;">${name}</div>
+                        <div style="font-weight:600;">${name}</div>
                         <span class="badge">${getCount(name)} Films</span> ${award}
                     </a>`;
                 });
-                return html + `</div><br>`;
+                return html + `</div>`;
             }
 
             document.getElementById('content').innerHTML = `
@@ -64,8 +59,8 @@
                     </div>
                     <div>
                         <div class="card">
-                            <div style="margin-bottom:1rem;"><div style="font-size:0.7rem; color:#94A3B8">Budget</div><div style="font-size:1.5rem; font-weight:800; color:var(--gold-accent)">${m.budget}</div></div>
-                            <div><div style="font-size:0.7rem; color:#94A3B8">Worldwide Gross</div><div style="font-size:1.5rem; font-weight:800; color:var(--gold-accent)">${m.trade_gross}</div></div>
+                            <div style="margin-bottom:1rem;"><div style="font-size:0.6rem; color:#94A3B8">Budget</div><div style="font-size:1.2rem; font-weight:700; color:var(--gold-accent)">${m.budget || 'TBA'}</div></div>
+                            <div><div style="font-size:0.6rem; color:#94A3B8">Worldwide Gross</div><div style="font-size:1.2rem; font-weight:700; color:var(--gold-accent)">${m.trade_gross || 'TBA'}</div></div>
                         </div>
                     </div>
                 </div>
