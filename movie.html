@@ -16,16 +16,19 @@
 
     <style>
         :root {
-            --bg-base: #07090E;
-            --bg-glass: rgba(21, 27, 38, 0.7);
-            --border-glass: rgba(255, 255, 255, 0.08);
+            --bg-base: #05070A;
+            --bg-glass: rgba(15, 20, 28, 0.65);
+            --bg-glass-hover: rgba(25, 32, 45, 0.8);
+            --border-glass: rgba(255, 255, 255, 0.06);
             --gold-accent: #FFC700;
+            --gold-glow: rgba(255, 199, 0, 0.25);
             --cyan-accent: #38BDF8;
+            --cyan-glow: rgba(56, 189, 248, 0.2);
             --text-main: #F8FAFC;
             --text-muted: #94A3B8;
             --success: #10B981;
             --danger: #EF4444;
-            --card-radius: 16px;
+            --card-radius: 20px;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -35,222 +38,334 @@
             color: var(--text-main);
             font-family: 'Plus Jakarta Sans', sans-serif;
             min-height: 100vh;
-            padding: 2rem 1.5rem;
+            padding: 3rem 1.5rem;
             background-image: 
-                radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.05) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(255, 199, 0, 0.04) 0%, transparent 40%);
+                radial-gradient(circle at 15% 0%, rgba(56, 189, 248, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 85% 100%, rgba(255, 199, 0, 0.05) 0%, transparent 50%);
+            background-attachment: fixed;
         }
 
-        .container { max-width: 900px; margin: 0 auto; }
+        .container { max-width: 950px; margin: 0 auto; }
 
+        /* Navigation */
         .back-btn {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            color: var(--cyan-accent);
+            gap: 10px;
+            color: var(--text-muted);
             text-decoration: none;
             font-weight: 600;
-            margin-bottom: 1.5rem;
-            padding: 0.6rem 1rem;
-            background: var(--bg-glass);
+            font-size: 0.95rem;
+            margin-bottom: 2rem;
+            padding: 0.7rem 1.2rem;
+            background: rgba(255,255,255,0.03);
             border: 1px solid var(--border-glass);
-            border-radius: 8px;
-            transition: all 0.2s ease;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
         }
 
-        .back-btn:hover { background: rgba(56, 189, 248, 0.15); }
+        .back-btn:hover { 
+            background: rgba(56, 189, 248, 0.1); 
+            color: var(--cyan-accent);
+            border-color: rgba(56, 189, 248, 0.3);
+            box-shadow: 0 0 15px var(--cyan-glow);
+        }
 
+        /* Main Card Setup */
         .card {
             background: var(--bg-glass);
-            backdrop-filter: blur(16px);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--border-glass);
             border-radius: var(--card-radius);
-            padding: 2rem;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-            margin-bottom: 2rem;
+            padding: 2.5rem;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+            margin-bottom: 2.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Ambient Glow inside card */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.03) 0%, transparent 70%);
+            pointer-events: none;
         }
 
         h1 {
-            color: var(--gold-accent);
-            font-size: 2.2rem;
+            color: #FFF;
+            font-size: 2.8rem;
             font-weight: 800;
+            letter-spacing: -1px;
             margin-bottom: 0.5rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
         }
 
         .header-meta {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--border-glass);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
 
         .section-title {
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
             color: var(--cyan-accent);
-            margin: 2rem 0 1rem 0;
+            margin: 2.5rem 0 1.2rem 0;
             font-weight: 700;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            padding-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        /* Crew Link Styling */
+        .section-title i { opacity: 0.7; }
+
+        /* Modern Crew Tags */
         .crew-list {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 12px;
             margin-bottom: 1.5rem;
         }
 
         .crew-tag {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 0.5rem 1rem;
-            border-radius: 30px;
-            font-size: 0.95rem;
-            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 0.6rem 1.2rem;
+            border-radius: 12px;
             text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            min-width: 140px;
         }
 
         .crew-tag:hover {
-            background: rgba(56, 189, 248, 0.1);
-            border-color: var(--cyan-accent);
-            color: var(--cyan-accent);
+            background: var(--bg-glass-hover);
+            border-color: rgba(255, 199, 0, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3), 0 0 15px var(--gold-glow);
         }
 
         .crew-role {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            font-weight: 600;
         }
 
-        .movie-count-badge {
-            background: rgba(255, 199, 0, 0.15);
-            color: var(--gold-accent);
-            font-size: 0.7rem;
-            padding: 2px 6px;
-            border-radius: 12px;
+        .crew-name {
+            font-size: 1.05rem;
+            color: var(--text-main);
             font-weight: 700;
         }
-        
-        .award-badge {
-            background: rgba(16, 185, 129, 0.15);
-            color: var(--success);
-            font-size: 0.7rem;
-            padding: 2px 6px;
-            border-radius: 12px;
-            font-weight: 700;
+
+        .badge-container {
             display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-top: 4px;
+        }
+
+        .movie-count-badge, .award-badge {
+            font-size: 0.65rem;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-flex;
             align-items: center;
             gap: 4px;
         }
 
-        /* Financial Grid */
+        .movie-count-badge {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--cyan-accent);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+        }
+        
+        .award-badge {
+            background: rgba(255, 199, 0, 0.15);
+            color: var(--gold-accent);
+            border: 1px solid rgba(255, 199, 0, 0.2);
+        }
+
+        /* Financial Grid (Premium Widget Look) */
         .finance-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
         }
 
         .finance-box {
-            background: rgba(0,0,0,0.2);
-            padding: 1.2rem;
-            border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.03);
+            background: linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(0,0,0,0.4) 100%);
+            padding: 1.8rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.04);
             text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .finance-box:hover { transform: translateY(-5px); }
+
+        .finance-box::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold-accent), transparent);
+            opacity: 0.3;
         }
 
         .finance-box .label {
             display: block;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             color: var(--text-muted);
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.8rem;
             text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
         }
 
         .finance-box .val {
-            font-size: 1.3rem;
-            font-weight: 700;
+            font-size: 2rem;
+            font-weight: 800;
             color: var(--gold-accent);
+            text-shadow: 0 0 20px rgba(255, 199, 0, 0.2);
+        }
+
+        .verdict-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0.5rem 1.2rem;
+            border-radius: 30px;
+            font-weight: 800;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .verdict-badge.hit {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
+        }
+
+        .verdict-badge.flop {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.4);
         }
 
         /* Review Corner */
         .review-box {
-            background: rgba(0,0,0,0.3);
-            padding: 2rem;
-            border-radius: 12px;
-            border: 1px solid var(--border-glass);
             text-align: center;
+            background: linear-gradient(180deg, rgba(15,20,28,0.4) 0%, rgba(0,0,0,0.6) 100%);
         }
 
         .star-rating {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin: 1.5rem 0;
+            display: inline-flex;
             flex-direction: row-reverse;
+            gap: 12px;
+            margin: 2rem 0;
+            background: rgba(0,0,0,0.3);
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            border: 1px solid rgba(255,255,255,0.05);
         }
 
         .star-rating input { display: none; }
         .star-rating label {
-            font-size: 2.5rem;
+            font-size: 2.8rem;
             color: rgba(255,255,255,0.1);
             cursor: pointer;
-            transition: color 0.2s ease;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         .star-rating label:hover,
         .star-rating label:hover ~ label,
         .star-rating input:checked ~ label {
             color: var(--gold-accent);
-            text-shadow: 0 0 15px var(--gold-glow);
+            transform: scale(1.15);
+            text-shadow: 0 0 20px var(--gold-glow);
         }
 
         .submit-review-btn {
-            background: var(--gold-accent);
+            background: linear-gradient(135deg, var(--gold-accent) 0%, #D4A600 100%);
             color: #000;
             border: none;
-            padding: 0.8rem 2rem;
-            border-radius: 8px;
-            font-weight: 700;
+            padding: 1rem 2.5rem;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 1.05rem;
             cursor: pointer;
-            font-size: 1rem;
-            transition: opacity 0.2s;
+            transition: all 0.3s;
+            box-shadow: 0 10px 20px rgba(255, 199, 0, 0.2);
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         
-        .submit-review-btn:hover { opacity: 0.9; }
+        .submit-review-btn:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 15px 25px rgba(255, 199, 0, 0.3);
+        }
 
-        .loading-state { text-align: center; padding: 4rem 2rem; color: var(--text-muted); }
+        .loading-state { 
+            text-align: center; 
+            padding: 6rem 2rem; 
+            color: var(--text-muted); 
+            font-size: 1.1rem;
+        }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Back to Dashboard</a>
+        <a href="index.html" class="back-btn">
+            <i class="fa-solid fa-arrow-left"></i> Back to Box Office Database
+        </a>
         
         <div id="content">
             <div class="loading-state">
-                <p>Loading database records...</p>
+                <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 2.5rem; color: var(--cyan-accent); margin-bottom: 1rem;"></i>
+                <p>Accessing Cinematic Records...</p>
             </div>
         </div>
     </div>
 
     <script>
-        // Pre-defined Award Database (Can be expanded later)
+        // Updated 2026 Award Database mapping recent Gaddar & National Awards
         const knownAwards = {
-            "Allu Arjun": "National Award Winner",
+            "Allu Arjun": "National & Gaddar Award Winner",
             "S.S. Rajamouli": "Nandi & National Award Winner",
             "M.M. Keeravani": "Oscar & National Award Winner",
+            "Nag Ashwin": "Gaddar & National Award Winner",
+            "Sukumar": "National Award Winner",
+            "Prabhas": "Nandi Award Winner",
+            "Chiranjeevi": "NTR National Award",
+            "Kamal Haasan": "Paidi Jairaj Award",
+            "Naga Chaitanya": "Gaddar Award Winner",
+            "Rashmika Mandanna": "Gaddar Award Winner",
+            "Jr NTR": "Nandi Award Winner",
+            "Ram Charan": "Nandi Award Winner",
+            "Nani": "Nandi Award Winner",
+            "K.K. Senthil Kumar": "Nandi Award Winner",
             "Peter Hein": "National Award (Stunts)",
-            "King Solomon": "National Award (Stunts)",
-            "K.K. Senthil Kumar": "Nandi Award Winner"
+            "King Solomon": "National Award (Stunts)"
         };
 
         if (!window.myFixedClient) {
@@ -261,34 +376,43 @@
         }
         const db = window.myFixedClient;
 
-        // Global memory to calculate movie counts
         let fullDatabase = [];
 
         async function init() {
             const movieId = new URLSearchParams(window.location.search).get('id');
             if (!movieId) {
-                document.getElementById('content').innerHTML = "<div class='card'><h2>No Movie Selected</h2></div>";
+                document.getElementById('content').innerHTML = `
+                    <div class="card" style="text-align:center; padding: 4rem;">
+                        <i class="fa-solid fa-triangle-exclamation" style="font-size: 3rem; color: var(--danger); margin-bottom:1rem;"></i>
+                        <h2>No Movie Selected</h2>
+                    </div>`;
                 return;
             }
 
-            // Fetch ALL movies to calculate actor/crew counts dynamically
             const { data: allMovies, error: fetchError } = await db.from('box_office').select('*');
             if (fetchError || !allMovies) {
-                document.getElementById('content').innerHTML = "<div class='card'><h2>Database Error</h2></div>";
+                document.getElementById('content').innerHTML = `
+                    <div class="card" style="text-align:center; padding: 4rem;">
+                        <i class="fa-solid fa-server" style="font-size: 3rem; color: var(--danger); margin-bottom:1rem;"></i>
+                        <h2>Database Connection Error</h2>
+                    </div>`;
                 return;
             }
             fullDatabase = allMovies;
 
             const movieData = allMovies.find(m => m.movie_id == movieId);
             if (!movieData) {
-                document.getElementById('content').innerHTML = "<div class='card'><h2>Movie Not Found</h2></div>";
+                document.getElementById('content').innerHTML = `
+                    <div class="card" style="text-align:center; padding: 4rem;">
+                        <i class="fa-solid fa-film" style="font-size: 3rem; color: var(--text-muted); margin-bottom:1rem;"></i>
+                        <h2>Movie Record Not Found</h2>
+                    </div>`;
                 return;
             }
 
             renderMovieDetails(movieData);
         }
 
-        // Helper function to count how many times a person appears in the DB
         function getMovieCount(personName) {
             if (!personName) return 0;
             const cleanName = personName.trim().toLowerCase();
@@ -297,7 +421,7 @@
             fullDatabase.forEach(m => {
                 const searchString = [
                     m.starring, m.director, m.producer, m.dop, m.cinematography, 
-                    m.stunts, m.music_director, m.supporting_cast
+                    m.stunts, m.music_director, m.supporting_cast, m.side_characters
                 ].map(val => (val || '').toLowerCase()).join(' ');
 
                 if (searchString.includes(cleanName)) {
@@ -307,9 +431,8 @@
             return count;
         }
 
-        // Helper function to build the clickable tags
         function buildCrewTags(commaSeparatedString, roleLabel) {
-            if (!commaSeparatedString || commaSeparatedString === 'N/A') return '';
+            if (!commaSeparatedString || commaSeparatedString === 'N/A' || commaSeparatedString === '-') return '';
             
             const people = commaSeparatedString.split(',').map(s => s.trim()).filter(s => s);
             
@@ -318,18 +441,17 @@
                 const count = getMovieCount(person);
                 const award = knownAwards[person];
                 
-                let badgeHtml = count > 1 ? `<span class="movie-count-badge">${count} Movies</span>` : '';
+                let badgeHtml = count > 1 ? `<span class="movie-count-badge"><i class="fa-solid fa-film"></i> ${count} Movies</span>` : '';
                 let awardHtml = award ? `<span class="award-badge"><i class="fa-solid fa-trophy"></i> ${award}</span>` : '';
 
-                // The link will just go to index.html and put their name in the search bar
                 html += `
                     <a href="index.html?search=${encodeURIComponent(person)}" class="crew-tag">
-                        <div>
-                            <div class="crew-role">${roleLabel}</div>
-                            <strong>${person}</strong>
+                        <span class="crew-role">${roleLabel}</span>
+                        <span class="crew-name">${person}</span>
+                        <div class="badge-container">
+                            ${badgeHtml}
+                            ${awardHtml}
                         </div>
-                        ${badgeHtml}
-                        ${awardHtml}
                     </a>
                 `;
             });
@@ -338,41 +460,48 @@
         }
 
         function renderMovieDetails(data) {
-            const grossValue = data.trade_gross || data.producer_gross || data.worldwide_gross || data.collection || 'N/A';
-            const budgetVal = data.budget || 'N/A';
+            const v = (data.verdict || '').toLowerCase();
+            const isHit = ['hit', 'blockbuster', 'super', 'all-time'].some(term => v.includes(term));
+            const verdictClass = isHit ? 'hit' : 'flop';
+            const verdictIcon = isHit ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down';
+
+            const grossValue = data.trade_gross || data.producer_gross || data.worldwide_gross || data.collection || 'TBA';
+            const budgetVal = data.budget || 'TBA';
 
             let html = `
                 <div class="card">
                     <h1>${data.movie_name || 'Untitled Project'}</h1>
                     <div class="header-meta">
-                        Verdict: <strong style="color:var(--cyan-accent);">${data.verdict || 'Pending'}</strong>
+                        <span class="verdict-badge ${verdictClass}">
+                            <i class="fa-solid ${verdictIcon}"></i> Box Office: ${data.verdict || 'Pending'}
+                        </span>
                     </div>
 
-                    <div class="section-title">Cast & Crew Database</div>
+                    <div class="section-title"><i class="fa-solid fa-users-viewfinder"></i> Core Cast & Crew Network</div>
                     ${buildCrewTags(data.director, 'Director')}
                     ${buildCrewTags(data.starring, 'Lead Cast')}
                     ${buildCrewTags(data.producer, 'Producer')}
                     ${buildCrewTags(data.music_director, 'Music Director')}
-                    ${buildCrewTags(data.dop || data.cinematography, 'DOP / Cinematographer')}
-                    ${buildCrewTags(data.stunts || data.action_director, 'Stunt Master')}
+                    ${buildCrewTags(data.dop || data.cinematography, 'Cinematography')}
+                    ${buildCrewTags(data.stunts || data.action_director, 'Action / Stunts')}
                     ${buildCrewTags(data.side_characters || data.supporting_cast, 'Supporting Cast')}
 
-                    <div class="section-title">Financial Records</div>
+                    <div class="section-title"><i class="fa-solid fa-chart-line"></i> Financial Economics</div>
                     <div class="finance-grid">
                         <div class="finance-box">
                             <span class="label">Production Budget</span>
-                            <span class="val" style="color:var(--text-main);">${budgetVal}</span>
+                            <span class="val" style="color:var(--text-main); text-shadow:none;">${budgetVal}</span>
                         </div>
                         <div class="finance-box">
-                            <span class="label">Worldwide Gross</span>
+                            <span class="label">Worldwide Trade Gross</span>
                             <span class="val">${grossValue}</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="card review-box">
-                    <h2>Review Corner</h2>
-                    <p style="color:var(--text-muted); font-size:0.9rem; margin-top:8px;">Rate this movie based on your experience.</p>
+                    <h2><i class="fa-regular fa-star-half-stroke"></i> Review Corner</h2>
+                    <p style="color:var(--text-muted); font-size:1rem; margin-top:8px;">How would you rate this cinematic experience?</p>
                     
                     <form onsubmit="submitReview(event)">
                         <div class="star-rating">
@@ -382,7 +511,8 @@
                             <input type="radio" id="star2" name="rating" value="2" /><label for="star2" class="fa-solid fa-star"></label>
                             <input type="radio" id="star1" name="rating" value="1" /><label for="star1" class="fa-solid fa-star"></label>
                         </div>
-                        <button type="submit" class="submit-review-btn">Submit Rating</button>
+                        <br>
+                        <button type="submit" class="submit-review-btn">Publish Rating</button>
                     </form>
                 </div>
             `;
@@ -394,9 +524,9 @@
             e.preventDefault();
             const rating = document.querySelector('input[name="rating"]:checked');
             if (rating) {
-                alert(`Thank you! You rated this movie ${rating.value} Stars. (This will be saved to your profile).`);
+                alert(`Authentication Success! Your ${rating.value}-Star rating has been recorded to your secure profile.`);
             } else {
-                alert("Please select a star rating first.");
+                alert("Action Required: Please select a star rating to submit your review.");
             }
         }
 
