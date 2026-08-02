@@ -38,14 +38,14 @@
             color: var(--text-main);
             font-family: 'Plus Jakarta Sans', sans-serif;
             min-height: 100vh;
-            padding: 3rem 1.5rem;
+            padding: 2.5rem 1.5rem;
             background-image: 
                 radial-gradient(circle at 15% 0%, rgba(56, 189, 248, 0.08) 0%, transparent 50%),
                 radial-gradient(circle at 85% 100%, rgba(255, 199, 0, 0.05) 0%, transparent 50%);
             background-attachment: fixed;
         }
 
-        .container { max-width: 950px; margin: 0 auto; }
+        .container { max-width: 1150px; margin: 0 auto; }
 
         /* Navigation */
         .back-btn {
@@ -56,7 +56,7 @@
             text-decoration: none;
             font-weight: 600;
             font-size: 0.95rem;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             padding: 0.7rem 1.2rem;
             background: rgba(255,255,255,0.03);
             border: 1px solid var(--border-glass);
@@ -72,21 +72,33 @@
             box-shadow: 0 0 15px var(--cyan-glow);
         }
 
-        /* Main Card Setup */
+        /* 2-Column Responsive Layout Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1.8fr 1.1fr;
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Card Styling */
         .card {
             background: var(--bg-glass);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--border-glass);
             border-radius: var(--card-radius);
-            padding: 2.5rem;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
-            margin-bottom: 2.5rem;
+            padding: 2rem;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
             position: relative;
             overflow: hidden;
         }
 
-        /* Ambient Glow inside card */
         .card::before {
             content: '';
             position: absolute;
@@ -96,68 +108,66 @@
             pointer-events: none;
         }
 
+        /* Movie Header Banner */
+        .movie-header-banner {
+            margin-bottom: 1.5rem;
+        }
+
         h1 {
             color: #FFF;
-            font-size: 2.8rem;
+            font-size: 2.4rem;
             font-weight: 800;
-            letter-spacing: -1px;
-            margin-bottom: 0.5rem;
+            letter-spacing: -0.5px;
+            margin-bottom: 0.2rem;
             text-shadow: 0 2px 10px rgba(0,0,0,0.5);
         }
 
-        .header-meta {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 2.5rem;
-            padding-bottom: 1.5rem;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-
         .section-title {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             text-transform: uppercase;
             letter-spacing: 1.5px;
             color: var(--cyan-accent);
-            margin: 2.5rem 0 1.2rem 0;
+            margin: 0 0 1.2rem 0;
             font-weight: 700;
             display: flex;
             align-items: center;
             gap: 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 0.6rem;
         }
 
-        .section-title i { opacity: 0.7; }
+        .section-title i { opacity: 0.8; }
 
         /* Modern Crew Tags */
         .crew-list {
             display: flex;
             flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 1.5rem;
+            gap: 10px;
+            margin-bottom: 1.2rem;
         }
 
         .crew-tag {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 0.6rem 1.2rem;
+            padding: 0.5rem 1rem;
             border-radius: 12px;
             text-decoration: none;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 4px;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            min-width: 140px;
+            min-width: 130px;
         }
 
         .crew-tag:hover {
             background: var(--bg-glass-hover);
             border-color: rgba(255, 199, 0, 0.4);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3), 0 0 15px var(--gold-glow);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3), 0 0 12px var(--gold-glow);
         }
 
         .crew-role {
-            font-size: 0.7rem;
+            font-size: 0.68rem;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -165,7 +175,7 @@
         }
 
         .crew-name {
-            font-size: 1.05rem;
+            font-size: 0.98rem;
             color: var(--text-main);
             font-weight: 700;
         }
@@ -174,12 +184,12 @@
             display: flex;
             gap: 6px;
             flex-wrap: wrap;
-            margin-top: 4px;
+            margin-top: 2px;
         }
 
         .movie-count-badge, .award-badge {
-            font-size: 0.65rem;
-            padding: 3px 8px;
+            font-size: 0.62rem;
+            padding: 2px 7px;
             border-radius: 20px;
             font-weight: 700;
             text-transform: uppercase;
@@ -201,25 +211,22 @@
             border: 1px solid rgba(255, 199, 0, 0.2);
         }
 
-        /* Financial Grid (Premium Widget Look) */
-        .finance-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 1.5rem;
+        /* Financial Box Widget */
+        .finance-vertical {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
         }
 
         .finance-box {
             background: linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(0,0,0,0.4) 100%);
-            padding: 1.8rem;
-            border-radius: 16px;
+            padding: 1.4rem;
+            border-radius: 14px;
             border: 1px solid rgba(255,255,255,0.04);
             text-align: center;
             position: relative;
             overflow: hidden;
-            transition: transform 0.3s ease;
         }
-
-        .finance-box:hover { transform: translateY(-5px); }
 
         .finance-box::after {
             content: '';
@@ -231,19 +238,19 @@
 
         .finance-box .label {
             display: block;
-            font-size: 0.85rem;
+            font-size: 0.78rem;
             color: var(--text-muted);
-            margin-bottom: 0.8rem;
+            margin-bottom: 0.5rem;
             text-transform: uppercase;
             letter-spacing: 1px;
             font-weight: 600;
         }
 
         .finance-box .val {
-            font-size: 2rem;
+            font-size: 1.7rem;
             font-weight: 800;
             color: var(--gold-accent);
-            text-shadow: 0 0 20px rgba(255, 199, 0, 0.2);
+            text-shadow: 0 0 15px rgba(255, 199, 0, 0.2);
         }
 
         .verdict-badge {
@@ -253,7 +260,7 @@
             padding: 0.5rem 1.2rem;
             border-radius: 30px;
             font-weight: 800;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
@@ -280,17 +287,17 @@
         .star-rating {
             display: inline-flex;
             flex-direction: row-reverse;
-            gap: 12px;
-            margin: 2rem 0;
+            gap: 10px;
+            margin: 1.2rem 0;
             background: rgba(0,0,0,0.3);
-            padding: 1rem 2rem;
+            padding: 0.8rem 1.5rem;
             border-radius: 50px;
             border: 1px solid rgba(255,255,255,0.05);
         }
 
         .star-rating input { display: none; }
         .star-rating label {
-            font-size: 2.8rem;
+            font-size: 2.2rem;
             color: rgba(255,255,255,0.1);
             cursor: pointer;
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -301,27 +308,28 @@
         .star-rating input:checked ~ label {
             color: var(--gold-accent);
             transform: scale(1.15);
-            text-shadow: 0 0 20px var(--gold-glow);
+            text-shadow: 0 0 15px var(--gold-glow);
         }
 
         .submit-review-btn {
             background: linear-gradient(135deg, var(--gold-accent) 0%, #D4A600 100%);
             color: #000;
             border: none;
-            padding: 1rem 2.5rem;
+            padding: 0.8rem 1.8rem;
             border-radius: 12px;
             font-weight: 800;
-            font-size: 1.05rem;
+            font-size: 0.95rem;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 10px 20px rgba(255, 199, 0, 0.2);
+            box-shadow: 0 8px 16px rgba(255, 199, 0, 0.2);
             text-transform: uppercase;
             letter-spacing: 1px;
+            width: 100%;
         }
         
         .submit-review-btn:hover { 
             transform: translateY(-2px);
-            box-shadow: 0 15px 25px rgba(255, 199, 0, 0.3);
+            box-shadow: 0 12px 20px rgba(255, 199, 0, 0.3);
         }
 
         .loading-state { 
@@ -469,51 +477,68 @@
             const budgetVal = data.budget || 'TBA';
 
             let html = `
-                <div class="card">
-                    <h1>${data.movie_name || 'Untitled Project'}</h1>
-                    <div class="header-meta">
+                <!-- Top Header Banner -->
+                <div class="card movie-header-banner">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                        <div>
+                            <h1>${data.movie_name || 'Untitled Project'}</h1>
+                            <p style="color:var(--text-muted); font-size:0.95rem;">Telugu Cinema Analytics & Database Entry</p>
+                        </div>
                         <span class="verdict-badge ${verdictClass}">
-                            <i class="fa-solid ${verdictIcon}"></i> Box Office: ${data.verdict || 'Pending'}
+                            <i class="fa-solid ${verdictIcon}"></i> Verdict: ${data.verdict || 'Pending'}
                         </span>
-                    </div>
-
-                    <div class="section-title"><i class="fa-solid fa-users-viewfinder"></i> Core Cast & Crew Network</div>
-                    ${buildCrewTags(data.director, 'Director')}
-                    ${buildCrewTags(data.starring, 'Lead Cast')}
-                    ${buildCrewTags(data.producer, 'Producer')}
-                    ${buildCrewTags(data.music_director, 'Music Director')}
-                    ${buildCrewTags(data.dop || data.cinematography, 'Cinematography')}
-                    ${buildCrewTags(data.stunts || data.action_director, 'Action / Stunts')}
-                    ${buildCrewTags(data.side_characters || data.supporting_cast, 'Supporting Cast')}
-
-                    <div class="section-title"><i class="fa-solid fa-chart-line"></i> Financial Economics</div>
-                    <div class="finance-grid">
-                        <div class="finance-box">
-                            <span class="label">Production Budget</span>
-                            <span class="val" style="color:var(--text-main); text-shadow:none;">${budgetVal}</span>
-                        </div>
-                        <div class="finance-box">
-                            <span class="label">Worldwide Trade Gross</span>
-                            <span class="val">${grossValue}</span>
-                        </div>
                     </div>
                 </div>
 
-                <div class="card review-box">
-                    <h2><i class="fa-regular fa-star-half-stroke"></i> Review Corner</h2>
-                    <p style="color:var(--text-muted); font-size:1rem; margin-top:8px;">How would you rate this cinematic experience?</p>
+                <!-- 2-Column Content Layout -->
+                <div class="dashboard-grid">
                     
-                    <form onsubmit="submitReview(event)">
-                        <div class="star-rating">
-                            <input type="radio" id="star5" name="rating" value="5" /><label for="star5" class="fa-solid fa-star"></label>
-                            <input type="radio" id="star4" name="rating" value="4" /><label for="star4" class="fa-solid fa-star"></label>
-                            <input type="radio" id="star3" name="rating" value="3" /><label for="star3" class="fa-solid fa-star"></label>
-                            <input type="radio" id="star2" name="rating" value="2" /><label for="star2" class="fa-solid fa-star"></label>
-                            <input type="radio" id="star1" name="rating" value="1" /><label for="star1" class="fa-solid fa-star"></label>
+                    <!-- LEFT COLUMN: Core Cast & Crew Network -->
+                    <div class="card">
+                        <div class="section-title"><i class="fa-solid fa-users-viewfinder"></i> Cast & Crew Network</div>
+                        ${buildCrewTags(data.director, 'Director')}
+                        ${buildCrewTags(data.starring, 'Lead Cast')}
+                        ${buildCrewTags(data.producer, 'Producer')}
+                        ${buildCrewTags(data.music_director, 'Music Director')}
+                        ${buildCrewTags(data.dop || data.cinematography, 'Cinematography')}
+                        ${buildCrewTags(data.stunts || data.action_director, 'Action / Stunts')}
+                        ${buildCrewTags(data.side_characters || data.supporting_cast, 'Supporting Cast')}
+                    </div>
+
+                    <!-- RIGHT COLUMN: Financials & Review Corner -->
+                    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                        
+                        <div class="card">
+                            <div class="section-title"><i class="fa-solid fa-chart-line"></i> Financial Economics</div>
+                            <div class="finance-vertical">
+                                <div class="finance-box">
+                                    <span class="label">Production Budget</span>
+                                    <span class="val" style="color:var(--text-main); text-shadow:none;">${budgetVal}</span>
+                                </div>
+                                <div class="finance-box">
+                                    <span class="label">Worldwide Trade Gross</span>
+                                    <span class="val">${grossValue}</span>
+                                </div>
+                            </div>
                         </div>
-                        <br>
-                        <button type="submit" class="submit-review-btn">Publish Rating</button>
-                    </form>
+
+                        <div class="card review-box">
+                            <div class="section-title" style="justify-content: center;"><i class="fa-regular fa-star-half-stroke"></i> Review Corner</div>
+                            <p style="color:var(--text-muted); font-size:0.88rem;">Rate this movie experience</p>
+                            
+                            <form onsubmit="submitReview(event)">
+                                <div class="star-rating">
+                                    <input type="radio" id="star5" name="rating" value="5" /><label for="star5" class="fa-solid fa-star"></label>
+                                    <input type="radio" id="star4" name="rating" value="4" /><label for="star4" class="fa-solid fa-star"></label>
+                                    <input type="radio" id="star3" name="rating" value="3" /><label for="star3" class="fa-solid fa-star"></label>
+                                    <input type="radio" id="star2" name="rating" value="2" /><label for="star2" class="fa-solid fa-star"></label>
+                                    <input type="radio" id="star1" name="rating" value="1" /><label for="star1" class="fa-solid fa-star"></label>
+                                </div>
+                                <button type="submit" class="submit-review-btn">Publish Rating</button>
+                            </form>
+                        </div>
+
+                    </div>
                 </div>
             `;
             
