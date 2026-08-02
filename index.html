@@ -294,7 +294,7 @@
                 <i class="fa-solid fa-film"></i> TeluguCineCraft
             </div>
             <div class="nav-actions">
-                <button class="auth-btn" onclick="handleGoogleLogin()">
+                <button id="authButton" class="auth-btn" onclick="handleGoogleLogin()">
                     <i class="fa-brands fa-google"></i> Sign In
                 </button>
             </div>
@@ -341,6 +341,34 @@
         }
         const db = window.myFixedClient;
 
+        // AUTHENTICATION LOGIC
+        async function checkAuthState() {
+            // Check if user is currently logged in
+            const { data: { session } } = await db.auth.getSession();
+            updateAuthUI(session ? session.user : null);
+
+            // Listen for changes (like when they return from Google)
+            db.auth.onAuthStateChange((_event, session) => {
+                updateAuthUI(session ? session.user : null);
+            });
+        }
+
+        function updateAuthUI(user) {
+            const authBtn = document.getElementById('authButton');
+            if (user) {
+                // Get the user's name or first part of their email
+                const displayName = user.user_metadata?.full_name || user.email.split('@')[0];
+                authBtn.innerHTML = `<i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out (${displayName})`;
+                authBtn.onclick = async () => {
+                    await db.auth.signOut();
+                    window.location.reload(); // Refresh the page to reset state
+                };
+            } else {
+                authBtn.innerHTML = `<i class="fa-brands fa-google"></i> Sign In`;
+                authBtn.onclick = handleGoogleLogin;
+            }
+        }
+
         async function handleGoogleLogin() {
             const { error } = await db.auth.signInWithOAuth({
                 provider: 'google',
@@ -349,7 +377,15 @@
             if (error) alert("Error logging in: " + error.message);
         }
 
+        // MOVIE DATA LOGIC
         async function init() {
+            // Check auth state immediately
+            checkAuthState();
+
+            // Handle potential search parameters passed from movie.html
+            const urlParams = new URLSearchParams(window.location.search);
+            const initialSearch = urlParams.get('search');
+
             const { data, error } = await db.from('box_office').select('*');
             
             if (error || !data) {
@@ -361,7 +397,13 @@
             }
 
             moviesData = data;
-            renderTable(moviesData);
+
+            if (initialSearch) {
+                document.getElementById('searchInput').value = initialSearch;
+                handleSearch();
+            } else {
+                renderTable(moviesData);
+            }
         }
 
         function renderTable(dataset) {
