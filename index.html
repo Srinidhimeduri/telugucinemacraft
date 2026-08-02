@@ -3,31 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Admitad Verification Code -->
+    <meta name="verify-admitad" content="3b27ad383c" />
+    
     <title>TeluguCineCraft | Box Office Collections</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root { --bg-base: #07090E; --bg-glass: rgba(21, 27, 38, 0.7); --border-glass: rgba(255, 255, 255, 0.08); --gold-accent: #FFC700; --cyan-accent: #38BDF8; --text-main: #F8FAFC; --text-muted: #94A3B8; --success: #10B981; --danger: #EF4444; }
+        :root { --bg-base: #07090E; --bg-glass: rgba(21, 27, 38, 0.7); --border-glass: rgba(255, 255, 255, 0.08); --gold-accent: #FFC700; --cyan-accent: #38BDF8; --text-main: #F8FAFC; --text-muted: #94A3B8; }
         body { background-color: var(--bg-base); color: var(--text-main); font-family: 'Plus Jakarta Sans', sans-serif; padding: 2rem 1.5rem; }
         .container { max-width: 1200px; margin: 0 auto; }
         nav { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; background: var(--bg-glass); backdrop-filter: blur(12px); border: 1px solid var(--border-glass); border-radius: 16px; margin-bottom: 2.5rem; }
         .brand-title { font-size: 1.5rem; font-weight: 800; color: #FFF; }
         .auth-btn { background: rgba(255,199,0,0.1); border: 1px solid var(--gold-accent); color: var(--gold-accent); padding: 0.6rem 1.2rem; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        .signout-btn { background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger); color: var(--danger); padding: 0.6rem 1.2rem; border-radius: 8px; cursor: pointer; font-weight: 600; }
         .table-container { background: var(--bg-glass); border: 1px solid var(--border-glass); border-radius: 16px; overflow: hidden; }
         table { width: 100%; border-collapse: collapse; }
         th, td { padding: 1.2rem; border-bottom: 1px solid var(--border-glass); text-align: left; }
         .movie-title-link { font-weight: 700; color: var(--text-main); text-decoration: none; }
-        .verdict-badge { padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
-        .hit { background: rgba(16, 185, 129, 0.15); color: var(--success); }
-        .flop { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
     </style>
 </head>
 <body>
     <div class="container">
         <nav>
             <div class="brand-title"><i class="fa-solid fa-film"></i> TeluguCineCraft</div>
-            <div id="userMenuArea"><button class="auth-btn" onclick="handleGoogleLogin()"><i class="fa-brands fa-google"></i> Sign In</button></div>
+            <div id="userMenuArea">
+                <button class="auth-btn" onclick="handleGoogleLogin()"><i class="fa-brands fa-google"></i> Sign In</button>
+            </div>
         </nav>
         <div class="table-container" id="content">Loading records...</div>
     </div>
@@ -42,8 +46,20 @@
         async function updateAuthUI() {
             const { data: { user } } = await db.auth.getUser();
             const area = document.getElementById('userMenuArea');
+            
             if (user) {
-                area.innerHTML = `<span style="color:var(--text-muted); margin-right:10px;">Hi, ${user.user_metadata.full_name || 'User'}</span><button class="auth-btn" onclick="db.auth.signOut(); window.location.reload();">Sign Out</button>`;
+                area.innerHTML = `
+                    <span style="color:var(--text-muted); margin-right:15px; font-size: 0.9rem;">
+                        Hi, ${user.user_metadata.full_name || 'User'}
+                    </span>
+                    <button class="signout-btn" onclick="signOutUser()">Sign Out</button>
+                `;
+            } else {
+                area.innerHTML = `
+                    <button class="auth-btn" onclick="handleGoogleLogin()">
+                        <i class="fa-brands fa-google"></i> Sign In
+                    </button>
+                `;
             }
         }
 
@@ -51,13 +67,19 @@
             await db.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
         }
 
+        async function signOutUser() {
+            await db.auth.signOut();
+            window.location.reload();
+        }
+
         async function init() {
             updateAuthUI();
             const { data } = await db.from('box_office').select('*');
-            let html = `<table><thead><tr><th>Movie</th><th>Starring</th><th>Budget</th><th>Gross</th><th>Verdict</th><th>Action</th></tr></thead><tbody>`;
+            if (!data) return;
+            
+            let html = `<table><thead><tr><th>Movie</th><th>Starring</th><th>Budget</th><th>Gross</th><th>Verdict</th></tr></thead><tbody>`;
             data.forEach(m => {
-                const isHit = ['hit', 'blockbuster'].some(t => (m.verdict || '').toLowerCase().includes(t));
-                html += `<tr><td><a href="movie.html?id=${m.movie_id}" class="movie-title-link">${m.movie_name}</a></td><td>${m.starring}</td><td>${m.budget}</td><td>${m.trade_gross}</td><td><span class="verdict-badge ${isHit ? 'hit' : 'flop'}">${m.verdict}</span></td><td><a href="movie.html?id=${m.movie_id}" class="view-btn" style="color:var(--cyan-accent)">Details</a></td></tr>`;
+                html += `<tr><td><a href="movie.html?id=${m.movie_id}" class="movie-title-link">${m.movie_name}</a></td><td>${m.starring}</td><td>${m.budget}</td><td>${m.trade_gross}</td><td>${m.verdict}</td></tr>`;
             });
             document.getElementById('content').innerHTML = html + `</tbody></table>`;
         }
