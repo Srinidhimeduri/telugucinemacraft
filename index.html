@@ -7,7 +7,7 @@
     <!-- Admitad Verification Code -->
     <meta name="verify-admitad" content="3b27ad383c" />
     
-    <title>TeluguCineCraft | Top Blockbusters & Box Office</title>
+    <title>TeluguCineCraft | Box Office & Cinema Database</title>
 
     <!-- Google Fonts & Font Awesome Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -360,10 +360,10 @@
     </div>
 
     <script>
-        // Supabase Initialization
+        // Supabase Initialization with valid JWT Anon Key
         const db = window.supabase.createClient(
             "https://eosgvjvpdwxmpxzerxit.supabase.co", 
-            "sb_publishable_FVXC4U8wUB2l1SmWLpmoeg_4RkydeLx",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvc2d2anZwZHd4bXB4emVyeGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1Njk3MTMsImV4cCI6MjEwMTE0NTcxM30.fD14BdJBDPNqFUKGxS5DRgsDnN8CqYdWR4k8cuAbvcg",
             { auth: { flowType: 'pkce' } }
         );
 
@@ -390,7 +390,7 @@
                     `;
                 }
             } catch (err) {
-                console.error("Auth check warning:", err);
+                console.warn("Auth check warning:", err);
             }
         }
 
@@ -422,7 +422,7 @@
                 document.getElementById('content').innerHTML = `
                     <div style="text-align: center; color: var(--danger); padding: 3rem;">
                         <p style="font-weight: 700; font-size: 1.1rem; margin-bottom: 0.5rem;">Unable to load movies.</p>
-                        <p style="color: var(--text-muted); font-size: 0.85rem;">Ensure RLS public read policy is enabled in Supabase SQL editor.</p>
+                        <p style="color: var(--text-muted); font-size: 0.85rem;">Please check console logs or confirm database table policies.</p>
                     </div>`;
                 return;
             }
