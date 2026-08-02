@@ -238,6 +238,11 @@
             font-size: 1.05rem;
             color: var(--gold-accent);
         }
+        
+        .budget-val {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
 
         .view-btn {
             color: var(--cyan-accent);
@@ -376,6 +381,7 @@
                             <th>Movie</th>
                             <th>Starring</th>
                             <th>Director & Producer</th>
+                            <th>Budget</th>
                             <th>Worldwide Gross</th>
                             <th>Verdict</th>
                             <th style="text-align:right;">Action</th>
@@ -409,6 +415,7 @@
                                 <div><strong>Prod:</strong> ${m.producer || 'N/A'}</div>
                             </div>
                         </td>
+                        <td><span class="budget-val">${m.budget || '-'}</span></td>
                         <td><span class="financial-val">${grossValue}</span></td>
                         <td>
                             <span class="verdict-badge ${verdictClass}">
