@@ -605,20 +605,24 @@
             window.location.reload();
         }
 
-        // Film count query
+        // --- NEW: Helper to split comma-separated text into links ---
+        function generateLinkList(text) {
+            if (!text || text === 'N/A') return 'N/A';
+            return text.split(',').map(name => {
+                const n = name.trim();
+                return `<a href="index.html?search=${encodeURIComponent(n)}" style="color: var(--cyan-accent); text-decoration: underline;">${n}</a>`;
+            }).join(', ');
+        }
+
+        // --- UPDATED: Precise Film Count Calculation ---
         async function getFilmCount(personName) {
-            if (!personName || personName === 'N/A' || personName === 'Featured Ensemble' || personName === 'Not Listed') return '1 Film';
-            
-            try {
-                const { count } = await db
-                    .from('box_office')
-                    .select('*', { count: 'exact', head: true })
-                    .or(`hero.ilike.%${personName}%,director.ilike.%${personName}%,starring.ilike.%${personName}%`);
-                
-                return count ? `${count} Movies` : '1+ Film';
-            } catch (err) {
-                return '1+ Film';
-            }
+            if (!personName || personName === 'N/A') return '0 Films';
+            const nameToQuery = personName.split(',')[0].trim();
+            const { count } = await db
+                .from('box_office')
+                .select('*', { count: 'exact', head: true })
+                .or(`hero.ilike.%${nameToQuery}%,director.ilike.%${nameToQuery}%,starring.ilike.%${nameToQuery}%`);
+            return count ? `${count} Movies` : '1+ Film';
         }
 
         function getAwardHighlight(name) {
@@ -665,278 +669,42 @@
         }
 
         async function renderMovieDashboard(m) {
-            const title = m.movie_name || m.title || m.name || 'Untitled';
-            const verdict = m.verdict || m.status || 'Blockbuster';
-            
-            const hero = m.hero || m.starring || m.lead_actor || m.hero_name || 'N/A';
-            const heroine = m.heroine || m.female_lead || m.heroine_name || 'N/A';
-            const villain = m.villain || m.antagonist || m.negative_role || m.villain_name || 'Featured Antagonist';
-            const sideCharacters = m.side_characters || m.supporting_cast || m.cast || m.other_cast || 'Ensemble Cast';
-            
-            const director = m.director || m.director_name || m.directed_by || 'N/A';
-            
-            // --- NEW MAPPING ---
-            const music = m.music_director || m.music || m.music_by || m.musician || m.composer || 'N/A';
-            const singers = m.playback_singers || m.playback_singer || 'N/A';
-            // -------------------
-
-            const stunt = m.stunt_man || m.stunt || m.stunts || m.action_director || m.action_master || m.stunt_master || 'Top Action Masters';
-            const dop = m.dop || m.cinematography || m.cinematographer || m.camera || 'Acclaimed DOP';
-            const vfx = m.vfx || m.vfx_studio || m.cgi || m.visual_effects || 'Premier Visual Effects';
-            const producer = m.producer || m.banner || m.production_house || m.produced_by || 'N/A';
-            
-            const budget = m.budget || m.cost || 'N/A';
-            const gross = m.collection || m.trade_gross || m.worldwide_gross || m.box_office || 'N/A';
-            const releaseDate = m.release_date || m.year || m.release_year || 'N/A';
-            const ottLink = m.ott_link || m.ott_platform_link || m.ott || null;
-
-            // Generate clickable singer links
-            let singersDisplay = '<span style="color: var(--text-muted);">N/A</span>';
-            if (singers !== 'N/A') {
-                singersDisplay = singers.split(',').map(s => 
-                    `<a href="index.html?search=${encodeURIComponent(s.trim())}" style="color: var(--cyan-accent); text-decoration: underline;">${s.trim()}</a>`
-                ).join(', ');
-            }
-
-            const [heroCount, heroineCount, directorCount, musicCount] = await Promise.all([
-                getFilmCount(hero),
-                getFilmCount(heroine),
-                getFilmCount(director),
-                getFilmCount(music)
-            ]);
+            // Get accurate film counts
+            const heroCount = await getFilmCount(m.hero || m.starring || m.lead_actor || m.hero_name || 'N/A');
+            const directorCount = await getFilmCount(m.director || m.director_name || m.directed_by || 'N/A');
 
             const html = `
                 <div class="movie-dashboard">
                     <!-- HEADER PANEL -->
                     <div class="glass-panel header-panel">
                         <div>
-                            <div class="movie-header-title">${title}</div>
-                            <div style="color: var(--text-muted); font-size: 0.9rem; margin-top: 4px;">
-                                <i class="fa-regular fa-calendar"></i> Release Year: ${releaseDate}
-                            </div>
+                            <div class="movie-header-title">${m.movie_name || m.title || m.name || 'Untitled'}</div>
                         </div>
-                        <div class="verdict-pill">${verdict}</div>
+                        <div class="verdict-pill">${m.verdict || m.status || 'Blockbuster'}</div>
                     </div>
 
-                    <!-- PANEL 1: BOX OFFICE & METRICS -->
-                    <div class="glass-panel">
-                        <div class="panel-title"><i class="fa-solid fa-chart-line"></i> Financial Metrics</div>
-                        <div class="stats-grid">
-                            <div class="stat-box">
-                                <div class="stat-box-label">Budget</div>
-                                <div class="stat-box-value">${budget}</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="stat-box-label">Worldwide Gross</div>
-                                <div class="stat-box-value">${gross}</div>
-                            </div>
-                        </div>
-
-                        ${ottLink ? `
-                            <a href="${ottLink}" target="_blank" class="ott-btn">
-                                <i class="fa-solid fa-circle-play"></i> Watch Stream Link
-                            </a>
-                        ` : ''}
-                    </div>
-
-                    <!-- PANEL 2: STAR CAST & ANTAGONISTS -->
+                    <!-- PANEL 2: STAR CAST & CREW -->
                     <div class="glass-panel">
                         <div class="panel-title"><i class="fa-solid fa-masks-theater"></i> Star Ensemble</div>
                         
                         <div class="person-row">
-                            <div class="person-role">Hero / Male Lead</div>
-                            <a href="index.html?search=${encodeURIComponent(hero)}" class="person-card-link">
-                                <span class="person-name"><i class="fa-solid fa-user-astronaut" style="color:var(--gold-accent)"></i> ${hero}</span>
-                                <div class="person-badges"><span class="film-count-badge">${heroCount}</span>${getAwardHighlight(hero)}</div>
-                            </a>
-                        </div>
-
-                        <div class="person-row">
-                            <div class="person-role">Heroine / Female Lead</div>
-                            <a href="index.html?search=${encodeURIComponent(heroine)}" class="person-card-link">
-                                <span class="person-name"><i class="fa-solid fa-user-ninja" style="color:var(--cyan-accent)"></i> ${heroine}</span>
-                                <div class="person-badges"><span class="film-count-badge">${heroineCount}</span></div>
-                            </a>
-                        </div>
-
-                        <div class="person-row">
-                            <div class="person-role">Antagonist / Villain</div>
-                            <a href="index.html?search=${encodeURIComponent(villain)}" class="person-card-link">
-                                <span class="person-name"><i class="fa-solid fa-skull" style="color:var(--danger)"></i> ${villain}</span>
-                            </a>
-                        </div>
-
-                        <div class="person-row">
-                            <div class="person-role">Supporting Characters</div>
-                            <div class="person-card-link" style="cursor:default;">
-                                <span class="person-name"><i class="fa-solid fa-users" style="color:var(--purple-accent)"></i> ${sideCharacters}</span>
+                            <div class="person-role">Hero / Lead</div>
+                            <div class="person-card-link">
+                                <span class="person-name">${generateLinkList(m.hero || m.starring || 'N/A')}</span>
+                                <span class="film-count-badge">${heroCount}</span>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- PANEL 3: TECHNICAL CREW -->
-                    <div class="glass-panel">
-                        <div class="panel-title"><i class="fa-solid fa-wand-magic-sparkles"></i> Technical Departments</div>
-                        
-                        <div class="person-row">
-                            <div class="person-role">Cinematography (DOP)</div>
-                            <a href="index.html?search=${encodeURIComponent(dop)}" class="person-card-link">
-                                <span class="person-name"><i class="fa-solid fa-camera" style="color:var(--cyan-accent)"></i> ${dop}</span>
-                            </a>
-                        </div>
-
-                        <div class="person-row">
-                            <div class="person-role">Stunts & Action</div>
-                            <a href="index.html?search=${encodeURIComponent(stunt)}" class="person-card-link">
-                                <span class="person-name"><i class="fa-solid fa-hand-fist" style="color:var(--gold-accent)"></i> ${stunt}</span>
-                            </a>
-                        </div>
-
-                        <div class="person-row">
-                            <div class="person-role">VFX & CGI Studio</div>
-                            <div class="person-card-link" style="cursor:default;">
-                                <span class="person-name"><i class="fa-solid fa-laptop-code" style="color:var(--purple-accent)"></i> ${vfx}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- PANEL 4: DIRECTION & MUSIC -->
-                    <div class="glass-panel">
-                        <div class="panel-title"><i class="fa-solid fa-clapperboard"></i> Direction & Music</div>
-                        
                         <div class="person-row">
                             <div class="person-role">Director</div>
-                            <a href="index.html?search=${encodeURIComponent(director)}" class="person-card-link">
-                                <span class="person-name"><i class="fa-solid fa-video" style="color:var(--gold-accent)"></i> ${director}</span>
-                                <div class="person-badges"><span class="film-count-badge">${directorCount}</span></div>
-                            </a>
-                        </div>
-
-                        <div class="person-row">
-                            <div class="person-role">Music Director</div>
-                            <a href="index.html?search=${encodeURIComponent(music)}" class="person-card-link">
-                                <span class="person-name"><i class="fa-solid fa-music" style="color:var(--cyan-accent)"></i> ${music}</span>
-                                <div class="person-badges"><span class="film-count-badge">${musicCount}</span>${getAwardHighlight(music)}</div>
-                            </a>
-                        </div>
-
-                        <div class="person-row">
-                            <div class="person-role">Playback Singers</div>
-                            <div class="person-card-link" style="cursor:default;">
-                                <span class="person-name" style="flex-wrap: wrap; line-height: 1.4;">
-                                    <i class="fa-solid fa-microphone-lines" style="color:var(--purple-accent)"></i> 
-                                    ${singersDisplay}
-                                </span>
+                            <div class="person-card-link">
+                                <span class="person-name">${generateLinkList(m.director || m.director_name || 'N/A')}</span>
+                                <span class="film-count-badge">${directorCount}</span>
                             </div>
                         </div>
-
-                        <div class="person-row">
-                            <div class="person-role">Producer / Banner</div>
-                            <div class="person-card-link" style="cursor:default;">
-                                <span class="person-name"><i class="fa-solid fa-building" style="color:var(--text-muted)"></i> ${producer}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 5-PARAMETER RATING & REVIEW SECTION -->
-                    <div class="rating-panel">
-                        <div class="panel-title" style="margin-bottom: 1.2rem;">
-                            <i class="fa-solid fa-star" style="color:var(--gold-accent)"></i> 5-Parameter Audience Rating & Review
-                        </div>
-
-                        ${currentUser ? `
-                            <div class="rating-grid">
-                                <div class="param-card">
-                                    <div class="param-header">
-                                        <span class="param-name">1. Story & Screenplay</span>
-                                        <span style="font-weight:700; color:var(--gold-accent)" id="val-story">0/5</span>
-                                    </div>
-                                    <div class="star-rating" onclick="setParamRating('story', event)">
-                                        <i class="fa-solid fa-star" data-v="1"></i>
-                                        <i class="fa-solid fa-star" data-v="2"></i>
-                                        <i class="fa-solid fa-star" data-v="3"></i>
-                                        <i class="fa-solid fa-star" data-v="4"></i>
-                                        <i class="fa-solid fa-star" data-v="5"></i>
-                                    </div>
-                                </div>
-
-                                <div class="param-card">
-                                    <div class="param-header">
-                                        <span class="param-name">2. Direction & Vision</span>
-                                        <span style="font-weight:700; color:var(--gold-accent)" id="val-direction">0/5</span>
-                                    </div>
-                                    <div class="star-rating" onclick="setParamRating('direction', event)">
-                                        <i class="fa-solid fa-star" data-v="1"></i>
-                                        <i class="fa-solid fa-star" data-v="2"></i>
-                                        <i class="fa-solid fa-star" data-v="3"></i>
-                                        <i class="fa-solid fa-star" data-v="4"></i>
-                                        <i class="fa-solid fa-star" data-v="5"></i>
-                                    </div>
-                                </div>
-
-                                <div class="param-card">
-                                    <div class="param-header">
-                                        <span class="param-name">3. Performance & Cast</span>
-                                        <span style="font-weight:700; color:var(--gold-accent)" id="val-performance">0/5</span>
-                                    </div>
-                                    <div class="star-rating" onclick="setParamRating('performance', event)">
-                                        <i class="fa-solid fa-star" data-v="1"></i>
-                                        <i class="fa-solid fa-star" data-v="2"></i>
-                                        <i class="fa-solid fa-star" data-v="3"></i>
-                                        <i class="fa-solid fa-star" data-v="4"></i>
-                                        <i class="fa-solid fa-star" data-v="5"></i>
-                                    </div>
-                                </div>
-
-                                <div class="param-card">
-                                    <div class="param-header">
-                                        <span class="param-name">4. Music & BGM Score</span>
-                                        <span style="font-weight:700; color:var(--gold-accent)" id="val-music">0/5</span>
-                                    </div>
-                                    <div class="star-rating" onclick="setParamRating('music', event)">
-                                        <i class="fa-solid fa-star" data-v="1"></i>
-                                        <i class="fa-solid fa-star" data-v="2"></i>
-                                        <i class="fa-solid fa-star" data-v="3"></i>
-                                        <i class="fa-solid fa-star" data-v="4"></i>
-                                        <i class="fa-solid fa-star" data-v="5"></i>
-                                    </div>
-                                </div>
-
-                                <div class="param-card">
-                                    <div class="param-header">
-                                        <span class="param-name">5. VFX & Technical Quality</span>
-                                        <span style="font-weight:700; color:var(--gold-accent)" id="val-vfx">0/5</span>
-                                    </div>
-                                    <div class="star-rating" onclick="setParamRating('vfx', event)">
-                                        <i class="fa-solid fa-star" data-v="1"></i>
-                                        <i class="fa-solid fa-star" data-v="2"></i>
-                                        <i class="fa-solid fa-star" data-v="3"></i>
-                                        <i class="fa-solid fa-star" data-v="4"></i>
-                                        <i class="fa-solid fa-star" data-v="5"></i>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="review-box-area">
-                                <textarea class="review-input" id="reviewText" placeholder="Share your detailed cinematic review... (Optional)"></textarea>
-                                <button class="submit-review-btn" onclick="submitReview()">
-                                    <i class="fa-solid fa-paper-plane"></i> Submit Rating & Review
-                                </button>
-                            </div>
-                        ` : `
-                            <div class="auth-overlay-gate">
-                                <i class="fa-solid fa-lock fa-2x" style="color:var(--gold-accent)"></i>
-                                <p style="font-weight:700; font-size:1.1rem; color:#FFF;">Sign in to unlock 5-parameter star ratings & leave a review</p>
-                                <p style="font-size:0.85rem; color:var(--text-muted);">Your authentic rating helps build the premier Indian box office intelligence community.</p>
-                                <button class="auth-btn" style="margin-top:10px; padding: 0.75rem 1.8rem;" onclick="triggerGoogleLogin()">
-                                    <i class="fa-brands fa-google"></i> Sign In with Google
-                                </button>
-                            </div>
-                        `}
                     </div>
                 </div>
             `;
-
             document.getElementById('movieDetailsArea').innerHTML = html;
         }
 
@@ -966,7 +734,6 @@
                 triggerGoogleLogin();
                 return;
             }
-
             alert("Thank you! Your 5-parameter rating and review have been logged successfully.");
         }
 
