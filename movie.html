@@ -1,976 +1,976 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <title>TeluguCineCraft | Personal Cinema Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>TeluguCineCraft | Personal Cinema Dashboard</title>
 
-    <!-- Google Fonts & Font Awesome Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Supabase JS Client v2 -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Supabase JS Client v2 -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <style>
-        :root {
-            --bg-base: #06080C;
-            --bg-glass: rgba(18, 24, 38, 0.75);
-            --bg-card: rgba(26, 34, 52, 0.6);
-            --border-glass: rgba(255, 255, 255, 0.08);
-            --border-hover: rgba(255, 199, 0, 0.4);
-            --gold-accent: #FFC700;
-            --gold-glow: rgba(255, 199, 0, 0.15);
-            --cyan-accent: #38BDF8;
-            --text-main: #F8FAFC;
-            --text-muted: #94A3B8;
-            --danger: #EF4444;
-            --success: #22C55E;
-            --purple-accent: #C084FC;
-        }
+    <style>
+        :root {
+            --bg-base: #06080C;
+            --bg-glass: rgba(18, 24, 38, 0.75);
+            --bg-card: rgba(26, 34, 52, 0.6);
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(255, 199, 0, 0.4);
+            --gold-accent: #FFC700;
+            --gold-glow: rgba(255, 199, 0, 0.15);
+            --cyan-accent: #38BDF8;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --danger: #EF4444;
+            --success: #22C55E;
+            --purple-accent: #C084FC;
+        }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-        body {
-            background-color: var(--bg-base);
-            background-image: 
-                radial-gradient(circle at 15% 10%, rgba(255, 199, 0, 0.05) 0%, transparent 40%),
-                radial-gradient(circle at 85% 85%, rgba(56, 189, 248, 0.04) 0%, transparent 40%);
-            color: var(--text-main);
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            min-height: 100vh;
-            padding: 1.2rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
+        body {
+            background-color: var(--bg-base);
+            background-image: 
+                radial-gradient(circle at 15% 10%, rgba(255, 199, 0, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(56, 189, 248, 0.04) 0%, transparent 40%);
+            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh;
+            padding: 1.2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
 
-        .container {
-            max-width: 1350px;
-            margin: 0 auto;
-            width: 100%;
-        }
+        .container {
+            max-width: 1350px;
+            margin: 0 auto;
+            width: 100%;
+        }
 
-        /* --- NAV BAR & PERSONAL DASHBOARD BADGE --- */
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.85rem 1.6rem;
-            background: var(--bg-glass);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--border-glass);
-            border-radius: 16px;
-            margin-bottom: 1.2rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
+        /* --- NAV BAR & PERSONAL DASHBOARD BADGE --- */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.85rem 1.6rem;
+            background: var(--bg-glass);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-glass);
+            border-radius: 16px;
+            margin-bottom: 1.2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
 
-        .brand-title {
-            font-size: 1.4rem;
-            font-weight: 800;
-            color: #FFF;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            text-decoration: none;
-        }
+        .brand-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #FFF;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
 
-        .brand-title i {
-            color: var(--gold-accent);
-        }
+        .brand-title i {
+            color: var(--gold-accent);
+        }
 
-        .nav-actions {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
 
-        .user-pill {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: rgba(255, 199, 0, 0.08);
-            border: 1px solid var(--border-hover);
-            padding: 0.45rem 1rem;
-            border-radius: 12px;
-            box-shadow: 0 0 15px var(--gold-glow);
-        }
+        .user-pill {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 199, 0, 0.08);
+            border: 1px solid var(--border-hover);
+            padding: 0.45rem 1rem;
+            border-radius: 12px;
+            box-shadow: 0 0 15px var(--gold-glow);
+        }
 
-        .user-avatar {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            border: 1.5px solid var(--gold-accent);
-        }
+        .user-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 1.5px solid var(--gold-accent);
+        }
 
-        .greeting-text {
-            font-size: 0.88rem;
-            font-weight: 700;
-            color: var(--text-main);
-        }
+        .greeting-text {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
 
-        .dashboard-badge {
-            background: rgba(56, 189, 248, 0.15);
-            color: var(--cyan-accent);
-            border: 1px solid rgba(56, 189, 248, 0.3);
-            font-size: 0.68rem;
-            font-weight: 800;
-            padding: 0.15rem 0.5rem;
-            border-radius: 6px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+        .dashboard-badge {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--cyan-accent);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            font-size: 0.68rem;
+            font-weight: 800;
+            padding: 0.15rem 0.5rem;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
 
-        .back-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-glass);
-            color: var(--text-main);
-            padding: 0.55rem 1.2rem;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.88rem;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s ease;
-        }
+        .back-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-glass);
+            color: var(--text-main);
+            padding: 0.55rem 1.2rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.88rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
 
-        .back-btn:hover {
-            border-color: var(--gold-accent);
-            color: var(--gold-accent);
-        }
+        .back-btn:hover {
+            border-color: var(--gold-accent);
+            color: var(--gold-accent);
+        }
 
-        .auth-btn {
-            background: rgba(255, 199, 0, 0.12);
-            border: 1px solid var(--gold-accent);
-            color: var(--gold-accent);
-            padding: 0.55rem 1.2rem;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 700;
-            font-size: 0.88rem;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
+        .auth-btn {
+            background: rgba(255, 199, 0, 0.12);
+            border: 1px solid var(--gold-accent);
+            color: var(--gold-accent);
+            padding: 0.55rem 1.2rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.88rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
 
-        .auth-btn:hover {
-            background: var(--gold-accent);
-            color: #000;
-            box-shadow: 0 0 15px var(--gold-glow);
-        }
+        .auth-btn:hover {
+            background: var(--gold-accent);
+            color: #000;
+            box-shadow: 0 0 15px var(--gold-glow);
+        }
 
-        .signout-btn {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid var(--danger);
-            color: var(--danger);
-            padding: 0.45rem 0.8rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.78rem;
-            transition: all 0.2s ease;
-        }
+        .signout-btn {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            padding: 0.45rem 0.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.78rem;
+            transition: all 0.2s ease;
+        }
 
-        .signout-btn:hover {
-            background: var(--danger);
-            color: #FFF;
-        }
+        .signout-btn:hover {
+            background: var(--danger);
+            color: #FFF;
+        }
 
-        /* --- DASHBOARD GRID LAYOUT --- */
-        .movie-dashboard {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1.2rem;
-        }
+        /* --- DASHBOARD GRID LAYOUT --- */
+        .movie-dashboard {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.2rem;
+        }
 
-        .glass-panel {
-            background: var(--bg-card);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--border-glass);
-            border-radius: 18px;
-            padding: 1.2rem 1.3rem;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
+        .glass-panel {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-glass);
+            border-radius: 18px;
+            padding: 1.2rem 1.3rem;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
 
-        /* HEADER PANEL */
-        .header-panel {
-            grid-column: 1 / -1;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
-            border-bottom: 2px solid rgba(255, 199, 0, 0.25);
-        }
+        /* HEADER PANEL */
+        .header-panel {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            border-bottom: 2px solid rgba(255, 199, 0, 0.25);
+        }
 
-        .movie-header-title {
-            font-size: 2.2rem;
-            font-weight: 800;
-            color: #FFF;
-            line-height: 1.1;
-        }
+        .movie-header-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #FFF;
+            line-height: 1.1;
+        }
 
-        .verdict-pill {
-            background: rgba(34, 197, 94, 0.15);
-            color: var(--success);
-            border: 1px solid rgba(34, 197, 94, 0.3);
-            padding: 0.4rem 1rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+        .verdict-pill {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--success);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
 
-        /* METRICS GRID */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-            gap: 0.8rem;
-            margin-top: 0.5rem;
-        }
+        /* METRICS GRID */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 0.8rem;
+            margin-top: 0.5rem;
+        }
 
-        .stat-box {
-            background: rgba(0, 0, 0, 0.35);
-            border: 1px solid var(--border-glass);
-            padding: 0.75rem;
-            border-radius: 12px;
-            text-align: center;
-        }
+        .stat-box {
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid var(--border-glass);
+            padding: 0.75rem;
+            border-radius: 12px;
+            text-align: center;
+        }
 
-        .stat-box-label {
-            font-size: 0.68rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 0.2rem;
-        }
+        .stat-box-label {
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.2rem;
+        }
 
-        .stat-box-value {
-            font-size: 1.1rem;
-            font-weight: 800;
-            color: var(--gold-accent);
-        }
+        .stat-box-value {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--gold-accent);
+        }
 
-        .panel-title {
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--cyan-accent);
-            margin-bottom: 0.8rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border-bottom: 1px solid var(--border-glass);
-            padding-bottom: 0.4rem;
-        }
+        .panel-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--cyan-accent);
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid var(--border-glass);
+            padding-bottom: 0.4rem;
+        }
 
-        /* CAST & CREW ROWS */
-        .person-row {
-            display: flex;
-            flex-direction: column;
-            gap: 0.2rem;
-            padding: 0.45rem 0;
-            border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
-        }
+        /* CAST & CREW ROWS */
+        .person-row {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+            padding: 0.45rem 0;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+        }
 
-        .person-row:last-child {
-            border-bottom: none;
-        }
+        .person-row:last-child {
+            border-bottom: none;
+        }
 
-        .person-role {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            font-weight: 600;
-            letter-spacing: 0.5px;
-        }
+        .person-role {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
 
-        .person-card-link {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border-glass);
-            padding: 0.45rem 0.75rem;
-            border-radius: 10px;
-            text-decoration: none;
-            color: var(--text-main);
-            transition: all 0.2s ease;
-        }
+        .person-card-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-glass);
+            padding: 0.45rem 0.75rem;
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--text-main);
+            transition: all 0.2s ease;
+        }
 
-        .person-card-link:hover {
-            background: rgba(255, 199, 0, 0.08);
-            border-color: var(--gold-accent);
-            transform: translateX(3px);
-        }
+        .person-card-link:hover {
+            background: rgba(255, 199, 0, 0.08);
+            border-color: var(--gold-accent);
+            transform: translateX(3px);
+        }
 
-        .person-name {
-            font-weight: 700;
-            font-size: 0.88rem;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
+        .person-name {
+            font-weight: 700;
+            font-size: 0.88rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
 
-        .person-badges {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
+        .person-badges {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
 
-        .film-count-badge {
-            background: rgba(56, 189, 248, 0.12);
-            color: var(--cyan-accent);
-            border: 1px solid rgba(56, 189, 248, 0.3);
-            font-size: 0.68rem;
-            font-weight: 700;
-            padding: 0.12rem 0.45rem;
-            border-radius: 6px;
-            white-space: nowrap;
-        }
+        .film-count-badge {
+            background: rgba(56, 189, 248, 0.12);
+            color: var(--cyan-accent);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            font-size: 0.68rem;
+            font-weight: 700;
+            padding: 0.12rem 0.45rem;
+            border-radius: 6px;
+            white-space: nowrap;
+        }
 
-        .award-badge {
-            background: rgba(255, 199, 0, 0.12);
-            color: var(--gold-accent);
-            border: 1px solid rgba(255, 199, 0, 0.3);
-            font-size: 0.68rem;
-            font-weight: 700;
-            padding: 0.12rem 0.45rem;
-            border-radius: 6px;
-            white-space: nowrap;
-        }
+        .award-badge {
+            background: rgba(255, 199, 0, 0.12);
+            color: var(--gold-accent);
+            border: 1px solid rgba(255, 199, 0, 0.3);
+            font-size: 0.68rem;
+            font-weight: 700;
+            padding: 0.12rem 0.45rem;
+            border-radius: 6px;
+            white-space: nowrap;
+        }
 
-        /* 5-PARAMETER RATING PANEL */
-        .rating-panel {
-            grid-column: 1 / -1;
-            margin-top: 0.5rem;
-            background: rgba(18, 24, 38, 0.85);
-            border: 1px solid var(--border-hover);
-            border-radius: 20px;
-            padding: 1.5rem;
-            position: relative;
-        }
+        /* 5-PARAMETER RATING PANEL */
+        .rating-panel {
+            grid-column: 1 / -1;
+            margin-top: 0.5rem;
+            background: rgba(18, 24, 38, 0.85);
+            border: 1px solid var(--border-hover);
+            border-radius: 20px;
+            padding: 1.5rem;
+            position: relative;
+        }
 
-        .rating-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 1.2rem;
-            margin-bottom: 1.2rem;
-        }
+        .rating-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 1.2rem;
+        }
 
-        .param-card {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--border-glass);
-            border-radius: 12px;
-            padding: 0.8rem 1rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
+        .param-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            padding: 0.8rem 1rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
 
-        .param-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.4rem;
-        }
+        .param-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.4rem;
+        }
 
-        .param-name {
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: var(--text-main);
-        }
+        .param-name {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
 
-        .star-rating {
-            display: flex;
-            gap: 4px;
-            color: rgba(255, 255, 255, 0.2);
-            cursor: pointer;
-        }
+        .star-rating {
+            display: flex;
+            gap: 4px;
+            color: rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+        }
 
-        .star-rating i {
-            transition: all 0.2s ease;
-            font-size: 1rem;
-        }
+        .star-rating i {
+            transition: all 0.2s ease;
+            font-size: 1rem;
+        }
 
-        .star-rating i.active, .star-rating i:hover {
-            color: var(--gold-accent);
-            text-shadow: 0 0 10px var(--gold-glow);
-        }
+        .star-rating i.active, .star-rating i:hover {
+            color: var(--gold-accent);
+            text-shadow: 0 0 10px var(--gold-glow);
+        }
 
-        .review-box-area {
-            display: flex;
-            flex-direction: column;
-            gap: 0.8rem;
-        }
+        .review-box-area {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
 
-        .review-input {
-            width: 100%;
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid var(--border-glass);
-            border-radius: 12px;
-            padding: 0.8rem 1rem;
-            color: var(--text-main);
-            font-family: inherit;
-            font-size: 0.9rem;
-            outline: none;
-            resize: none;
-            height: 70px;
-            transition: all 0.3s ease;
-        }
+        .review-input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            padding: 0.8rem 1rem;
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 0.9rem;
+            outline: none;
+            resize: none;
+            height: 70px;
+            transition: all 0.3s ease;
+        }
 
-        .review-input:focus {
-            border-color: var(--gold-accent);
-            box-shadow: 0 0 15px var(--gold-glow);
-        }
+        .review-input:focus {
+            border-color: var(--gold-accent);
+            box-shadow: 0 0 15px var(--gold-glow);
+        }
 
-        .submit-review-btn {
-            align-self: flex-end;
-            background: var(--gold-accent);
-            color: #000;
-            border: none;
-            padding: 0.6rem 1.4rem;
-            border-radius: 10px;
-            font-weight: 800;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
+        .submit-review-btn {
+            align-self: flex-end;
+            background: var(--gold-accent);
+            color: #000;
+            border: none;
+            padding: 0.6rem 1.4rem;
+            border-radius: 10px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-        .submit-review-btn:hover {
-            box-shadow: 0 0 20px var(--gold-glow);
-            transform: translateY(-2px);
-        }
+        .submit-review-btn:hover {
+            box-shadow: 0 0 20px var(--gold-glow);
+            transform: translateY(-2px);
+        }
 
-        .auth-overlay-gate {
-            background: rgba(6, 8, 12, 0.85);
-            backdrop-filter: blur(8px);
-            border: 1px dashed var(--gold-accent);
-            border-radius: 16px;
-            padding: 1.5rem;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
+        .auth-overlay-gate {
+            background: rgba(6, 8, 12, 0.85);
+            backdrop-filter: blur(8px);
+            border: 1px dashed var(--gold-accent);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
 
-        .ott-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            width: 100%;
-            padding: 0.7rem;
-            background: linear-gradient(135deg, rgba(255, 199, 0, 0.15), rgba(56, 189, 248, 0.15));
-            border: 1px solid var(--gold-accent);
-            color: var(--gold-accent);
-            border-radius: 12px;
-            font-weight: 700;
-            text-decoration: none;
-            transition: all 0.2s ease;
-            margin-top: 0.8rem;
-        }
+        .ott-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 0.7rem;
+            background: linear-gradient(135deg, rgba(255, 199, 0, 0.15), rgba(56, 189, 248, 0.15));
+            border: 1px solid var(--gold-accent);
+            color: var(--gold-accent);
+            border-radius: 12px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            margin-top: 0.8rem;
+        }
 
-        .ott-btn:hover {
-            background: var(--gold-accent);
-            color: #000;
-            box-shadow: 0 0 20px var(--gold-glow);
-        }
+        .ott-btn:hover {
+            background: var(--gold-accent);
+            color: #000;
+            box-shadow: 0 0 20px var(--gold-glow);
+        }
 
-        .loading-view {
-            text-align: center;
-            padding: 5rem 0;
-            color: var(--text-muted);
-            font-size: 1.2rem;
-        }
+        .loading-view {
+            text-align: center;
+            padding: 5rem 0;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+        }
 
-        @media (max-width: 1200px) {
-            .movie-dashboard { grid-template-columns: 1fr 1fr; }
-        }
+        @media (max-width: 1200px) {
+            .movie-dashboard { grid-template-columns: 1fr 1fr; }
+        }
 
-        @media (max-width: 768px) {
-            body { padding: 0.8rem; }
-            .movie-dashboard { grid-template-columns: 1fr; }
-            .movie-header-title { font-size: 1.6rem; }
-            .header-panel { flex-direction: column; align-items: flex-start; }
-            .rating-grid { grid-template-columns: 1fr; }
-        }
-    </style>
+        @media (max-width: 768px) {
+            body { padding: 0.8rem; }
+            .movie-dashboard { grid-template-columns: 1fr; }
+            .movie-header-title { font-size: 1.6rem; }
+            .header-panel { flex-direction: column; align-items: flex-start; }
+            .rating-grid { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <!-- TOP NAVIGATION BAR -->
-        <nav>
-            <a href="index.html" class="brand-title">
-                <i class="fa-solid fa-film"></i> TeluguCineCraft
-            </a>
-            <div class="nav-actions">
-                <div id="authStatusArea"></div>
-                <a href="index.html" class="back-btn">
-                    <i class="fa-solid fa-arrow-left"></i> Dashboard
-                </a>
-            </div>
-        </nav>
+    <div class="container">
+        <!-- TOP NAVIGATION BAR -->
+        <nav>
+            <a href="index.html" class="brand-title">
+                <i class="fa-solid fa-film"></i> TeluguCineCraft
+            </a>
+            <div class="nav-actions">
+                <div id="authStatusArea"></div>
+                <a href="index.html" class="back-btn">
+                    <i class="fa-solid fa-arrow-left"></i> Dashboard
+                </a>
+            </div>
+        </nav>
 
-        <!-- DYNAMIC CONTENT HOLDER -->
-        <div id="movieDetailsArea" class="loading-view">
-            <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
-            <p style="margin-top: 12px;">Loading metadata & viewer intelligence...</p>
-        </div>
-    </div>
+        <!-- DYNAMIC CONTENT HOLDER -->
+        <div id="movieDetailsArea" class="loading-view">
+            <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+            <p style="margin-top: 12px;">Loading metadata & viewer intelligence...</p>
+        </div>
+    </div>
 
-    <script>
-        // Supabase Client Initialization
-        const db = window.supabase.createClient(
-            "https://eosgvjvpdwxmpxzerxit.supabase.co", 
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvc2d2anZwZHd4bXB4emVyeGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1Njk3MTMsImV4cCI6MjEwMTE0NTcxM30.fD14BdJBDPNqFUKGxS5DRgsDnN8CqYdWR4k8cuAbvcg",
-            { auth: { flowType: 'pkce' } }
-        );
+    <script>
+        // Supabase Client Initialization
+        const db = window.supabase.createClient(
+            "https://eosgvjvpdwxmpxzerxit.supabase.co", 
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvc2d2anZwZHd4bXB4emVyeGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1Njk3MTMsImV4cCI6MjEwMTE0NTcxM30.fD14BdJBDPNqFUKGxS5DRgsDnN8CqYdWR4k8cuAbvcg",
+            { auth: { flowType: 'pkce' } }
+        );
 
-        let currentUser = null;
-        let selectedRatings = { story: 0, direction: 0, performance: 0, music: 0, vfx: 0 };
+        let currentUser = null;
+        let selectedRatings = { story: 0, direction: 0, performance: 0, music: 0, vfx: 0 };
 
-        function getMovieId() {
-            const params = new URLSearchParams(window.location.search);
-            return params.get('id');
-        }
+        function getMovieId() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('id');
+        }
 
-        // Time-of-Day Greeting Logic
-        function getLocalGreeting() {
-            const hour = new Date().getHours();
-            if (hour >= 5 && hour < 12) return "Good morning";
-            if (hour >= 12 && hour < 17) return "Good afternoon";
-            return "Good evening";
-        }
+        // Time-of-Day Greeting Logic
+        function getLocalGreeting() {
+            const hour = new Date().getHours();
+            if (hour >= 5 && hour < 12) return "Good morning";
+            if (hour >= 12 && hour < 17) return "Good afternoon";
+            return "Good evening";
+        }
 
-        // Auth Handler with Personalized Dashboard UI
-        async function checkUserAuth() {
-            try {
-                const { data: { user } } = await db.auth.getUser();
-                currentUser = user;
-                const authArea = document.getElementById('authStatusArea');
-                
-                if (user) {
-                    const fullName = user.user_metadata.full_name || 'Cinephile';
-                    const firstName = fullName.split(' ')[0];
-                    const avatarUrl = user.user_metadata.avatar_url || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png';
-                    const greeting = getLocalGreeting();
+        // Auth Handler with Personalized Dashboard UI
+        async function checkUserAuth() {
+            try {
+                const { data: { user } } = await db.auth.getUser();
+                currentUser = user;
+                const authArea = document.getElementById('authStatusArea');
+                
+                if (user) {
+                    const fullName = user.user_metadata.full_name || 'Cinephile';
+                    const firstName = fullName.split(' ')[0];
+                    const avatarUrl = user.user_metadata.avatar_url || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png';
+                    const greeting = getLocalGreeting();
 
-                    authArea.innerHTML = `
-                        <div class="user-pill">
-                            <img src="${avatarUrl}" class="user-avatar" alt="User Profile">
-                            <div style="display: flex; flex-direction: column;">
-                                <span class="greeting-text">${greeting}, ${firstName}! 👋</span>
-                                <span class="dashboard-badge">Personal Dashboard</span>
-                            </div>
-                            <button class="signout-btn" onclick="signOutUser()" style="margin-left:5px;">Sign Out</button>
-                        </div>
-                    `;
-                } else {
-                    authArea.innerHTML = `
-                        <button class="auth-btn" onclick="triggerGoogleLogin()">
-                            <i class="fa-brands fa-google"></i> Sign In
-                        </button>
-                    `;
-                }
-            } catch (err) {
-                console.warn("Auth check error:", err);
-            }
-        }
+                    authArea.innerHTML = `
+                        <div class="user-pill">
+                            <img src="${avatarUrl}" class="user-avatar" alt="User Profile">
+                            <div style="display: flex; flex-direction: column;">
+                                <span class="greeting-text">${greeting}, ${firstName}! 👋</span>
+                                <span class="dashboard-badge">Personal Dashboard</span>
+                            </div>
+                            <button class="signout-btn" onclick="signOutUser()" style="margin-left:5px;">Sign Out</button>
+                        </div>
+                    `;
+                } else {
+                    authArea.innerHTML = `
+                        <button class="auth-btn" onclick="triggerGoogleLogin()">
+                            <i class="fa-brands fa-google"></i> Sign In
+                        </button>
+                    `;
+                }
+            } catch (err) {
+                console.warn("Auth check error:", err);
+            }
+        }
 
-        async function triggerGoogleLogin() {
-            await db.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
-        }
+        async function triggerGoogleLogin() {
+            await db.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
+        }
 
-        async function signOutUser() {
-            await db.auth.signOut();
-            window.location.reload();
-        }
+        async function signOutUser() {
+            await db.auth.signOut();
+            window.location.reload();
+        }
 
-        // Film count query
-        async function getFilmCount(personName) {
-            if (!personName || personName === 'N/A' || personName === 'Featured Ensemble' || personName === 'Not Listed') return '1 Film';
-            
-            try {
-                const { count } = await db
-                    .from('box_office')
-                    .select('*', { count: 'exact', head: true })
-                    .or(`hero.ilike.%${personName}%,director.ilike.%${personName}%,starring.ilike.%${personName}%`);
-                
-                return count ? `${count} Movies` : '1+ Film';
-            } catch (err) {
-                return '1+ Film';
-            }
-        }
+        // Film count query
+        async function getFilmCount(personName) {
+            if (!personName || personName === 'N/A' || personName === 'Featured Ensemble' || personName === 'Not Listed') return '1 Film';
+            
+            try {
+                const { count } = await db
+                    .from('box_office')
+                    .select('*', { count: 'exact', head: true })
+                    .or(`hero.ilike.%${personName}%,director.ilike.%${personName}%,starring.ilike.%${personName}%`);
+                
+                return count ? `${count} Movies` : '1+ Film';
+            } catch (err) {
+                return '1+ Film';
+            }
+        }
 
-        function getAwardHighlight(name) {
-            if (!name || name === 'N/A') return '';
-            const lower = name.toLowerCase();
-            if (lower.includes('pawan kalyan') || lower.includes('prabhas') || lower.includes('mahesh') || lower.includes('rajamouli') || lower.includes('dsp') || lower.includes('thaman')) {
-                return `<span class="award-badge"><i class="fa-solid fa-trophy"></i> National / Nandi</span>`;
-            } else if (lower.includes('allu arjun') || lower.includes('ntr') || lower.includes('ram charan') || lower.includes('keeravani')) {
-                return `<span class="award-badge"><i class="fa-solid fa-award"></i> Filmfare / Oscar</span>`;
-            }
-            return `<span class="award-badge"><i class="fa-solid fa-star"></i> Industry Veteran</span>`;
-        }
+        function getAwardHighlight(name) {
+            if (!name || name === 'N/A') return '';
+            const lower = name.toLowerCase();
+            if (lower.includes('pawan kalyan') || lower.includes('prabhas') || lower.includes('mahesh') || lower.includes('rajamouli') || lower.includes('dsp') || lower.includes('thaman')) {
+                return `<span class="award-badge"><i class="fa-solid fa-trophy"></i> National / Nandi</span>`;
+            } else if (lower.includes('allu arjun') || lower.includes('ntr') || lower.includes('ram charan') || lower.includes('keeravani')) {
+                return `<span class="award-badge"><i class="fa-solid fa-award"></i> Filmfare / Oscar</span>`;
+            }
+            return `<span class="award-badge"><i class="fa-solid fa-star"></i> Industry Veteran</span>`;
+        }
 
-        async function fetchMovieDetails() {
-            await checkUserAuth();
-            const id = getMovieId();
-            if (!id) {
-                document.getElementById('movieDetailsArea').innerHTML = `
-                    <div style="color: var(--danger);">
-                        <p style="font-weight: 700;">No Movie Selected.</p>
-                        <a href="index.html" class="back-btn" style="margin-top: 15px;">Return Home</a>
-                    </div>`;
-                return;
-            }
+        async function fetchMovieDetails() {
+            await checkUserAuth();
+            const id = getMovieId();
+            if (!id) {
+                document.getElementById('movieDetailsArea').innerHTML = `
+                    <div style="color: var(--danger);">
+                        <p style="font-weight: 700;">No Movie Selected.</p>
+                        <a href="index.html" class="back-btn" style="margin-top: 15px;">Return Home</a>
+                    </div>`;
+                return;
+            }
 
-            let { data, error } = await db.from('box_office').select('*').eq('movie_id', id).single();
-            
-            if (error || !data) {
-                const res = await db.from('movies').select('*').or(`movie_id.eq.${id},id.eq.${id}`).single();
-                data = res.data;
-                error = res.error;
-            }
+            let { data, error } = await db.from('box_office').select('*').eq('movie_id', id).single();
+            
+            if (error || !data) {
+                const res = await db.from('movies').select('*').or(`movie_id.eq.${id},id.eq.${id}`).single();
+                data = res.data;
+                error = res.error;
+            }
 
-            if (error || !data) {
-                document.getElementById('movieDetailsArea').innerHTML = `
-                    <div style="color: var(--danger);">
-                        <p style="font-weight: 700; font-size: 1.2rem;">Movie details unfulfilled.</p>
-                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 5px;">Record ID #${id} may have been moved.</p>
-                    </div>`;
-                return;
-            }
+            if (error || !data) {
+                document.getElementById('movieDetailsArea').innerHTML = `
+                    <div style="color: var(--danger);">
+                        <p style="font-weight: 700; font-size: 1.2rem;">Movie details unfulfilled.</p>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 5px;">Record ID #${id} may have been moved.</p>
+                    </div>`;
+                return;
+            }
 
-            await renderMovieDashboard(data);
-        }
+            await renderMovieDashboard(data);
+        }
 
-        async function renderMovieDashboard(m) {
-            const title = m.movie_name || m.title || m.name || 'Untitled';
-            const verdict = m.verdict || m.status || 'Blockbuster';
-            
-            const hero = m.hero || m.starring || m.lead_actor || m.hero_name || 'N/A';
-            const heroine = m.heroine || m.female_lead || m.heroine_name || 'N/A';
-            const villain = m.villain || m.antagonist || m.negative_role || m.villain_name || 'Featured Antagonist';
-            const sideCharacters = m.side_characters || m.supporting_cast || m.cast || m.other_cast || 'Ensemble Cast';
-            
-            const director = m.director || m.director_name || m.directed_by || 'N/A';
-            
-            // --- NEW MAPPING ---
-            const music = m.music_director || m.music || m.music_by || m.musician || m.composer || 'N/A';
-            const singers = m.playback_singers || m.playback_singer || 'N/A';
-            // -------------------
+        async function renderMovieDashboard(m) {
+            const title = m.movie_name || m.title || m.name || 'Untitled';
+            const verdict = m.verdict || m.status || 'Blockbuster';
+            
+            const hero = m.hero || m.starring || m.lead_actor || m.hero_name || 'N/A';
+            const heroine = m.heroine || m.female_lead || m.heroine_name || 'N/A';
+            const villain = m.villain || m.antagonist || m.negative_role || m.villain_name || 'Featured Antagonist';
+            const sideCharacters = m.side_characters || m.supporting_cast || m.cast || m.other_cast || 'Ensemble Cast';
+            
+            const director = m.director || m.director_name || m.directed_by || 'N/A';
+            
+            // --- NEW MAPPING ---
+            const music = m.music_director || m.music || m.music_by || m.musician || m.composer || 'N/A';
+            const singers = m.playback_singers || m.playback_singer || 'N/A';
+            // -------------------
 
-            const stunt = m.stunt_man || m.stunt || m.stunts || m.action_director || m.action_master || m.stunt_master || 'Top Action Masters';
-            const dop = m.dop || m.cinematography || m.cinematographer || m.camera || 'Acclaimed DOP';
-            const vfx = m.vfx || m.vfx_studio || m.cgi || m.visual_effects || 'Premier Visual Effects';
-            const producer = m.producer || m.banner || m.production_house || m.produced_by || 'N/A';
-            
-            const budget = m.budget || m.cost || 'N/A';
-            const gross = m.collection || m.trade_gross || m.worldwide_gross || m.box_office || 'N/A';
-            const releaseDate = m.release_date || m.year || m.release_year || 'N/A';
-            const ottLink = m.ott_link || m.ott_platform_link || m.ott || null;
+            const stunt = m.stunt_man || m.stunt || m.stunts || m.action_director || m.action_master || m.stunt_master || 'Top Action Masters';
+            const dop = m.dop || m.cinematography || m.cinematographer || m.camera || 'Acclaimed DOP';
+            const vfx = m.vfx || m.vfx_studio || m.cgi || m.visual_effects || 'Premier Visual Effects';
+            const producer = m.producer || m.banner || m.production_house || m.produced_by || 'N/A';
+            
+            const budget = m.budget || m.cost || 'N/A';
+            const gross = m.collection || m.trade_gross || m.worldwide_gross || m.box_office || 'N/A';
+            const releaseDate = m.release_date || m.year || m.release_year || 'N/A';
+            const ottLink = m.ott_link || m.ott_platform_link || m.ott || null;
 
-            // Generate clickable singer links
-            let singersDisplay = '<span style="color: var(--text-muted);">N/A</span>';
-            if (singers !== 'N/A') {
-                singersDisplay = singers.split(',').map(s => 
-                    `<a href="index.html?search=${encodeURIComponent(s.trim())}" style="color: var(--cyan-accent); text-decoration: underline;">${s.trim()}</a>`
-                ).join(', ');
-            }
+            // Generate clickable singer links
+            let singersDisplay = '<span style="color: var(--text-muted);">N/A</span>';
+            if (singers !== 'N/A') {
+                singersDisplay = singers.split(',').map(s => 
+                    `<a href="index.html?search=${encodeURIComponent(s.trim())}" style="color: var(--cyan-accent); text-decoration: underline;">${s.trim()}</a>`
+                ).join(', ');
+            }
 
-            const [heroCount, heroineCount, directorCount, musicCount] = await Promise.all([
-                getFilmCount(hero),
-                getFilmCount(heroine),
-                getFilmCount(director),
-                getFilmCount(music)
-            ]);
+            const [heroCount, heroineCount, directorCount, musicCount] = await Promise.all([
+                getFilmCount(hero),
+                getFilmCount(heroine),
+                getFilmCount(director),
+                getFilmCount(music)
+            ]);
 
-            const html = `
-                <div class="movie-dashboard">
-                    <!-- HEADER PANEL -->
-                    <div class="glass-panel header-panel">
-                        <div>
-                            <div class="movie-header-title">${title}</div>
-                            <div style="color: var(--text-muted); font-size: 0.9rem; margin-top: 4px;">
-                                <i class="fa-regular fa-calendar"></i> Release Year: ${releaseDate}
-                            </div>
-                        </div>
-                        <div class="verdict-pill">${verdict}</div>
-                    </div>
+            const html = `
+                <div class="movie-dashboard">
+                    <!-- HEADER PANEL -->
+                    <div class="glass-panel header-panel">
+                        <div>
+                            <div class="movie-header-title">${title}</div>
+                            <div style="color: var(--text-muted); font-size: 0.9rem; margin-top: 4px;">
+                                <i class="fa-regular fa-calendar"></i> Release Year: ${releaseDate}
+                            </div>
+                        </div>
+                        <div class="verdict-pill">${verdict}</div>
+                    </div>
 
-                    <!-- PANEL 1: BOX OFFICE & METRICS -->
-                    <div class="glass-panel">
-                        <div class="panel-title"><i class="fa-solid fa-chart-line"></i> Financial Metrics</div>
-                        <div class="stats-grid">
-                            <div class="stat-box">
-                                <div class="stat-box-label">Budget</div>
-                                <div class="stat-box-value">${budget}</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="stat-box-label">Worldwide Gross</div>
-                                <div class="stat-box-value">${gross}</div>
-                            </div>
-                        </div>
+                    <!-- PANEL 1: BOX OFFICE & METRICS -->
+                    <div class="glass-panel">
+                        <div class="panel-title"><i class="fa-solid fa-chart-line"></i> Financial Metrics</div>
+                        <div class="stats-grid">
+                            <div class="stat-box">
+                                <div class="stat-box-label">Budget</div>
+                                <div class="stat-box-value">${budget}</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-box-label">Worldwide Gross</div>
+                                <div class="stat-box-value">${gross}</div>
+                            </div>
+                        </div>
 
-                        ${ottLink ? `
-                            <a href="${ottLink}" target="_blank" class="ott-btn">
-                                <i class="fa-solid fa-circle-play"></i> Watch Stream Link
-                            </a>
-                        ` : ''}
-                    </div>
+                        ${ottLink ? `
+                            <a href="${ottLink}" target="_blank" class="ott-btn">
+                                <i class="fa-solid fa-circle-play"></i> Watch Stream Link
+                            </a>
+                        ` : ''}
+                    </div>
 
-                    <!-- PANEL 2: STAR CAST & ANTAGONISTS -->
-                    <div class="glass-panel">
-                        <div class="panel-title"><i class="fa-solid fa-masks-theater"></i> Star Ensemble</div>
-                        
-                        <div class="person-row">
-                            <div class="person-role">Hero / Male Lead</div>
-                            <a href="index.html?search=${encodeURIComponent(hero)}" class="person-card-link">
-                                <span class="person-name"><i class="fa-solid fa-user-astronaut" style="color:var(--gold-accent)"></i> ${hero}</span>
-                                <div class="person-badges"><span class="film-count-badge">${heroCount}</span>${getAwardHighlight(hero)}</div>
-                            </a>
-                        </div>
+                    <!-- PANEL 2: STAR CAST & ANTAGONISTS -->
+                    <div class="glass-panel">
+                        <div class="panel-title"><i class="fa-solid fa-masks-theater"></i> Star Ensemble</div>
+                        
+                        <div class="person-row">
+                            <div class="person-role">Hero / Male Lead</div>
+                            <a href="index.html?search=${encodeURIComponent(hero)}" class="person-card-link">
+                                <span class="person-name"><i class="fa-solid fa-user-astronaut" style="color:var(--gold-accent)"></i> ${hero}</span>
+                                <div class="person-badges"><span class="film-count-badge">${heroCount}</span>${getAwardHighlight(hero)}</div>
+                            </a>
+                        </div>
 
-                        <div class="person-row">
-                            <div class="person-role">Heroine / Female Lead</div>
-                            <a href="index.html?search=${encodeURIComponent(heroine)}" class="person-card-link">
-                                <span class="person-name"><i class="fa-solid fa-user-ninja" style="color:var(--cyan-accent)"></i> ${heroine}</span>
-                                <div class="person-badges"><span class="film-count-badge">${heroineCount}</span></div>
-                            </a>
-                        </div>
+                        <div class="person-row">
+                            <div class="person-role">Heroine / Female Lead</div>
+                            <a href="index.html?search=${encodeURIComponent(heroine)}" class="person-card-link">
+                                <span class="person-name"><i class="fa-solid fa-user-ninja" style="color:var(--cyan-accent)"></i> ${heroine}</span>
+                                <div class="person-badges"><span class="film-count-badge">${heroineCount}</span></div>
+                            </a>
+                        </div>
 
-                        <div class="person-row">
-                            <div class="person-role">Antagonist / Villain</div>
-                            <a href="index.html?search=${encodeURIComponent(villain)}" class="person-card-link">
-                                <span class="person-name"><i class="fa-solid fa-skull" style="color:var(--danger)"></i> ${villain}</span>
-                            </a>
-                        </div>
+                        <div class="person-row">
+                            <div class="person-role">Antagonist / Villain</div>
+                            <a href="index.html?search=${encodeURIComponent(villain)}" class="person-card-link">
+                                <span class="person-name"><i class="fa-solid fa-skull" style="color:var(--danger)"></i> ${villain}</span>
+                            </a>
+                        </div>
 
-                        <div class="person-row">
-                            <div class="person-role">Supporting Characters</div>
-                            <div class="person-card-link" style="cursor:default;">
-                                <span class="person-name"><i class="fa-solid fa-users" style="color:var(--purple-accent)"></i> ${sideCharacters}</span>
-                            </div>
-                        </div>
-                    </div>
+                        <div class="person-row">
+                            <div class="person-role">Supporting Characters</div>
+                            <div class="person-card-link" style="cursor:default;">
+                                <span class="person-name"><i class="fa-solid fa-users" style="color:var(--purple-accent)"></i> ${sideCharacters}</span>
+                            </div>
+                        </div>
+                    </div>
 
-                    <!-- PANEL 3: TECHNICAL CREW -->
-                    <div class="glass-panel">
-                        <div class="panel-title"><i class="fa-solid fa-wand-magic-sparkles"></i> Technical Departments</div>
-                        
-                        <div class="person-row">
-                            <div class="person-role">Cinematography (DOP)</div>
-                            <a href="index.html?search=${encodeURIComponent(dop)}" class="person-card-link">
-                                <span class="person-name"><i class="fa-solid fa-camera" style="color:var(--cyan-accent)"></i> ${dop}</span>
-                            </a>
-                        </div>
+                    <!-- PANEL 3: TECHNICAL CREW -->
+                    <div class="glass-panel">
+                        <div class="panel-title"><i class="fa-solid fa-wand-magic-sparkles"></i> Technical Departments</div>
+                        
+                        <div class="person-row">
+                            <div class="person-role">Cinematography (DOP)</div>
+                            <a href="index.html?search=${encodeURIComponent(dop)}" class="person-card-link">
+                                <span class="person-name"><i class="fa-solid fa-camera" style="color:var(--cyan-accent)"></i> ${dop}</span>
+                            </a>
+                        </div>
 
-                        <div class="person-row">
-                            <div class="person-role">Stunts & Action</div>
-                            <a href="index.html?search=${encodeURIComponent(stunt)}" class="person-card-link">
-                                <span class="person-name"><i class="fa-solid fa-hand-fist" style="color:var(--gold-accent)"></i> ${stunt}</span>
-                            </a>
-                        </div>
+                        <div class="person-row">
+                            <div class="person-role">Stunts & Action</div>
+                            <a href="index.html?search=${encodeURIComponent(stunt)}" class="person-card-link">
+                                <span class="person-name"><i class="fa-solid fa-hand-fist" style="color:var(--gold-accent)"></i> ${stunt}</span>
+                            </a>
+                        </div>
 
-                        <div class="person-row">
-                            <div class="person-role">VFX & CGI Studio</div>
-                            <div class="person-card-link" style="cursor:default;">
-                                <span class="person-name"><i class="fa-solid fa-laptop-code" style="color:var(--purple-accent)"></i> ${vfx}</span>
-                            </div>
-                        </div>
-                    </div>
+                        <div class="person-row">
+                            <div class="person-role">VFX & CGI Studio</div>
+                            <div class="person-card-link" style="cursor:default;">
+                                <span class="person-name"><i class="fa-solid fa-laptop-code" style="color:var(--purple-accent)"></i> ${vfx}</span>
+                            </div>
+                        </div>
+                    </div>
 
-                    <!-- PANEL 4: DIRECTION & MUSIC -->
-                    <div class="glass-panel">
-                        <div class="panel-title"><i class="fa-solid fa-clapperboard"></i> Direction & Music</div>
-                        
-                        <div class="person-row">
-                            <div class="person-role">Director</div>
-                            <a href="index.html?search=${encodeURIComponent(director)}" class="person-card-link">
-                                <span class="person-name"><i class="fa-solid fa-video" style="color:var(--gold-accent)"></i> ${director}</span>
-                                <div class="person-badges"><span class="film-count-badge">${directorCount}</span></div>
-                            </a>
-                        </div>
+                    <!-- PANEL 4: DIRECTION & MUSIC -->
+                    <div class="glass-panel">
+                        <div class="panel-title"><i class="fa-solid fa-clapperboard"></i> Direction & Music</div>
+                        
+                        <div class="person-row">
+                            <div class="person-role">Director</div>
+                            <a href="index.html?search=${encodeURIComponent(director)}" class="person-card-link">
+                                <span class="person-name"><i class="fa-solid fa-video" style="color:var(--gold-accent)"></i> ${director}</span>
+                                <div class="person-badges"><span class="film-count-badge">${directorCount}</span></div>
+                            </a>
+                        </div>
 
-                        <div class="person-row">
-                            <div class="person-role">Music Director</div>
-                            <a href="index.html?search=${encodeURIComponent(music)}" class="person-card-link">
-                                <span class="person-name"><i class="fa-solid fa-music" style="color:var(--cyan-accent)"></i> ${music}</span>
-                                <div class="person-badges"><span class="film-count-badge">${musicCount}</span>${getAwardHighlight(music)}</div>
-                            </a>
-                        </div>
+                        <div class="person-row">
+                            <div class="person-role">Music Director</div>
+                            <a href="index.html?search=${encodeURIComponent(music)}" class="person-card-link">
+                                <span class="person-name"><i class="fa-solid fa-music" style="color:var(--cyan-accent)"></i> ${music}</span>
+                                <div class="person-badges"><span class="film-count-badge">${musicCount}</span>${getAwardHighlight(music)}</div>
+                            </a>
+                        </div>
 
-                        <div class="person-row">
-                            <div class="person-role">Playback Singers</div>
-                            <div class="person-card-link" style="cursor:default;">
-                                <span class="person-name" style="flex-wrap: wrap; line-height: 1.4;">
-                                    <i class="fa-solid fa-microphone-lines" style="color:var(--purple-accent)"></i> 
-                                    ${singersDisplay}
-                                </span>
-                            </div>
-                        </div>
+                        <div class="person-row">
+                            <div class="person-role">Playback Singers</div>
+                            <div class="person-card-link" style="cursor:default;">
+                                <span class="person-name" style="flex-wrap: wrap; line-height: 1.4;">
+                                    <i class="fa-solid fa-microphone-lines" style="color:var(--purple-accent)"></i> 
+                                    ${singersDisplay}
+                                </span>
+                            </div>
+                        </div>
 
-                        <div class="person-row">
-                            <div class="person-role">Producer / Banner</div>
-                            <div class="person-card-link" style="cursor:default;">
-                                <span class="person-name"><i class="fa-solid fa-building" style="color:var(--text-muted)"></i> ${producer}</span>
-                            </div>
-                        </div>
-                    </div>
+                        <div class="person-row">
+                            <div class="person-role">Producer / Banner</div>
+                            <div class="person-card-link" style="cursor:default;">
+                                <span class="person-name"><i class="fa-solid fa-building" style="color:var(--text-muted)"></i> ${producer}</span>
+                            </div>
+                        </div>
+                    </div>
 
-                    <!-- 5-PARAMETER RATING & REVIEW SECTION -->
-                    <div class="rating-panel">
-                        <div class="panel-title" style="margin-bottom: 1.2rem;">
-                            <i class="fa-solid fa-star" style="color:var(--gold-accent)"></i> 5-Parameter Audience Rating & Review
-                        </div>
+                    <!-- 5-PARAMETER RATING & REVIEW SECTION -->
+                    <div class="rating-panel">
+                        <div class="panel-title" style="margin-bottom: 1.2rem;">
+                            <i class="fa-solid fa-star" style="color:var(--gold-accent)"></i> 5-Parameter Audience Rating & Review
+                        </div>
 
-                        ${currentUser ? `
-                            <div class="rating-grid">
-                                <div class="param-card">
-                                    <div class="param-header">
-                                        <span class="param-name">1. Story & Screenplay</span>
-                                        <span style="font-weight:700; color:var(--gold-accent)" id="val-story">0/5</span>
-                                    </div>
-                                    <div class="star-rating" onclick="setParamRating('story', event)">
-                                        <i class="fa-solid fa-star" data-v="1"></i>
-                                        <i class="fa-solid fa-star" data-v="2"></i>
-                                        <i class="fa-solid fa-star" data-v="3"></i>
-                                        <i class="fa-solid fa-star" data-v="4"></i>
-                                        <i class="fa-solid fa-star" data-v="5"></i>
-                                    </div>
-                                </div>
+                        ${currentUser ? `
+                            <div class="rating-grid">
+                                <div class="param-card">
+                                    <div class="param-header">
+                                        <span class="param-name">1. Story & Screenplay</span>
+                                        <span style="font-weight:700; color:var(--gold-accent)" id="val-story">0/5</span>
+                                    </div>
+                                    <div class="star-rating" onclick="setParamRating('story', event)">
+                                        <i class="fa-solid fa-star" data-v="1"></i>
+                                        <i class="fa-solid fa-star" data-v="2"></i>
+                                        <i class="fa-solid fa-star" data-v="3"></i>
+                                        <i class="fa-solid fa-star" data-v="4"></i>
+                                        <i class="fa-solid fa-star" data-v="5"></i>
+                                    </div>
+                                </div>
 
-                                <div class="param-card">
-                                    <div class="param-header">
-                                        <span class="param-name">2. Direction & Vision</span>
-                                        <span style="font-weight:700; color:var(--gold-accent)" id="val-direction">0/5</span>
-                                    </div>
-                                    <div class="star-rating" onclick="setParamRating('direction', event)">
-                                        <i class="fa-solid fa-star" data-v="1"></i>
-                                        <i class="fa-solid fa-star" data-v="2"></i>
-                                        <i class="fa-solid fa-star" data-v="3"></i>
-                                        <i class="fa-solid fa-star" data-v="4"></i>
-                                        <i class="fa-solid fa-star" data-v="5"></i>
-                                    </div>
-                                </div>
+                                <div class="param-card">
+                                    <div class="param-header">
+                                        <span class="param-name">2. Direction & Vision</span>
+                                        <span style="font-weight:700; color:var(--gold-accent)" id="val-direction">0/5</span>
+                                    </div>
+                                    <div class="star-rating" onclick="setParamRating('direction', event)">
+                                        <i class="fa-solid fa-star" data-v="1"></i>
+                                        <i class="fa-solid fa-star" data-v="2"></i>
+                                        <i class="fa-solid fa-star" data-v="3"></i>
+                                        <i class="fa-solid fa-star" data-v="4"></i>
+                                        <i class="fa-solid fa-star" data-v="5"></i>
+                                    </div>
+                                </div>
 
-                                <div class="param-card">
-                                    <div class="param-header">
-                                        <span class="param-name">3. Performance & Cast</span>
-                                        <span style="font-weight:700; color:var(--gold-accent)" id="val-performance">0/5</span>
-                                    </div>
-                                    <div class="star-rating" onclick="setParamRating('performance', event)">
-                                        <i class="fa-solid fa-star" data-v="1"></i>
-                                        <i class="fa-solid fa-star" data-v="2"></i>
-                                        <i class="fa-solid fa-star" data-v="3"></i>
-                                        <i class="fa-solid fa-star" data-v="4"></i>
-                                        <i class="fa-solid fa-star" data-v="5"></i>
-                                    </div>
-                                </div>
+                                <div class="param-card">
+                                    <div class="param-header">
+                                        <span class="param-name">3. Performance & Cast</span>
+                                        <span style="font-weight:700; color:var(--gold-accent)" id="val-performance">0/5</span>
+                                    </div>
+                                    <div class="star-rating" onclick="setParamRating('performance', event)">
+                                        <i class="fa-solid fa-star" data-v="1"></i>
+                                        <i class="fa-solid fa-star" data-v="2"></i>
+                                        <i class="fa-solid fa-star" data-v="3"></i>
+                                        <i class="fa-solid fa-star" data-v="4"></i>
+                                        <i class="fa-solid fa-star" data-v="5"></i>
+                                    </div>
+                                </div>
 
-                                <div class="param-card">
-                                    <div class="param-header">
-                                        <span class="param-name">4. Music & BGM Score</span>
-                                        <span style="font-weight:700; color:var(--gold-accent)" id="val-music">0/5</span>
-                                    </div>
-                                    <div class="star-rating" onclick="setParamRating('music', event)">
-                                        <i class="fa-solid fa-star" data-v="1"></i>
-                                        <i class="fa-solid fa-star" data-v="2"></i>
-                                        <i class="fa-solid fa-star" data-v="3"></i>
-                                        <i class="fa-solid fa-star" data-v="4"></i>
-                                        <i class="fa-solid fa-star" data-v="5"></i>
-                                    </div>
-                                </div>
+                                <div class="param-card">
+                                    <div class="param-header">
+                                        <span class="param-name">4. Music & BGM Score</span>
+                                        <span style="font-weight:700; color:var(--gold-accent)" id="val-music">0/5</span>
+                                    </div>
+                                    <div class="star-rating" onclick="setParamRating('music', event)">
+                                        <i class="fa-solid fa-star" data-v="1"></i>
+                                        <i class="fa-solid fa-star" data-v="2"></i>
+                                        <i class="fa-solid fa-star" data-v="3"></i>
+                                        <i class="fa-solid fa-star" data-v="4"></i>
+                                        <i class="fa-solid fa-star" data-v="5"></i>
+                                    </div>
+                                </div>
 
-                                <div class="param-card">
-                                    <div class="param-header">
-                                        <span class="param-name">5. VFX & Technical Quality</span>
-                                        <span style="font-weight:700; color:var(--gold-accent)" id="val-vfx">0/5</span>
-                                    </div>
-                                    <div class="star-rating" onclick="setParamRating('vfx', event)">
-                                        <i class="fa-solid fa-star" data-v="1"></i>
-                                        <i class="fa-solid fa-star" data-v="2"></i>
-                                        <i class="fa-solid fa-star" data-v="3"></i>
-                                        <i class="fa-solid fa-star" data-v="4"></i>
-                                        <i class="fa-solid fa-star" data-v="5"></i>
-                                    </div>
-                                </div>
-                            </div>
+                                <div class="param-card">
+                                    <div class="param-header">
+                                        <span class="param-name">5. VFX & Technical Quality</span>
+                                        <span style="font-weight:700; color:var(--gold-accent)" id="val-vfx">0/5</span>
+                                    </div>
+                                    <div class="star-rating" onclick="setParamRating('vfx', event)">
+                                        <i class="fa-solid fa-star" data-v="1"></i>
+                                        <i class="fa-solid fa-star" data-v="2"></i>
+                                        <i class="fa-solid fa-star" data-v="3"></i>
+                                        <i class="fa-solid fa-star" data-v="4"></i>
+                                        <i class="fa-solid fa-star" data-v="5"></i>
+                                    </div>
+                                </div>
+                            </div>
 
-                            <div class="review-box-area">
-                                <textarea class="review-input" id="reviewText" placeholder="Share your detailed cinematic review... (Optional)"></textarea>
-                                <button class="submit-review-btn" onclick="submitReview()">
-                                    <i class="fa-solid fa-paper-plane"></i> Submit Rating & Review
-                                </button>
-                            </div>
-                        ` : `
-                            <div class="auth-overlay-gate">
-                                <i class="fa-solid fa-lock fa-2x" style="color:var(--gold-accent)"></i>
-                                <p style="font-weight:700; font-size:1.1rem; color:#FFF;">Sign in to unlock 5-parameter star ratings & leave a review</p>
-                                <p style="font-size:0.85rem; color:var(--text-muted);">Your authentic rating helps build the premier Indian box office intelligence community.</p>
-                                <button class="auth-btn" style="margin-top:10px; padding: 0.75rem 1.8rem;" onclick="triggerGoogleLogin()">
-                                    <i class="fa-brands fa-google"></i> Sign In with Google
-                                </button>
-                            </div>
-                        `}
-                    </div>
-                </div>
-            `;
+                            <div class="review-box-area">
+                                <textarea class="review-input" id="reviewText" placeholder="Share your detailed cinematic review... (Optional)"></textarea>
+                                <button class="submit-review-btn" onclick="submitReview()">
+                                    <i class="fa-solid fa-paper-plane"></i> Submit Rating & Review
+                                </button>
+                            </div>
+                        ` : `
+                            <div class="auth-overlay-gate">
+                                <i class="fa-solid fa-lock fa-2x" style="color:var(--gold-accent)"></i>
+                                <p style="font-weight:700; font-size:1.1rem; color:#FFF;">Sign in to unlock 5-parameter star ratings & leave a review</p>
+                                <p style="font-size:0.85rem; color:var(--text-muted);">Your authentic rating helps build the premier Indian box office intelligence community.</p>
+                                <button class="auth-btn" style="margin-top:10px; padding: 0.75rem 1.8rem;" onclick="triggerGoogleLogin()">
+                                    <i class="fa-brands fa-google"></i> Sign In with Google
+                                </button>
+                            </div>
+                        `}
+                    </div>
+                </div>
+            `;
 
-            document.getElementById('movieDetailsArea').innerHTML = html;
-        }
+            document.getElementById('movieDetailsArea').innerHTML = html;
+        }
 
-        // Star Selection Logic
-        function setParamRating(param, event) {
-            const star = event.target;
-            if (!star.dataset.v) return;
-            
-            const val = parseInt(star.dataset.v);
-            selectedRatings[param] = val;
-            document.getElementById(`val-${param}`).innerText = `${val}/5`;
+        // Star Selection Logic
+        function setParamRating(param, event) {
+            const star = event.target;
+            if (!star.dataset.v) return;
+            
+            const val = parseInt(star.dataset.v);
+            selectedRatings[param] = val;
+            document.getElementById(`val-${param}`).innerText = `${val}/5`;
 
-            const container = star.parentElement;
-            const stars = container.querySelectorAll('i');
-            stars.forEach((s, idx) => {
-                if (idx < val) {
-                    s.classList.add('active');
-                } else {
-                    s.classList.remove('active');
-                }
-            });
-        }
+            const container = star.parentElement;
+            const stars = container.querySelectorAll('i');
+            stars.forEach((s, idx) => {
+                if (idx < val) {
+                    s.classList.add('active');
+                } else {
+                    s.classList.remove('active');
+                }
+            });
+        }
 
-        // Review Submission Logic
-        async function submitReview() {
-            if (!currentUser) {
-                triggerGoogleLogin();
-                return;
-            }
+        // Review Submission Logic
+        async function submitReview() {
+            if (!currentUser) {
+                triggerGoogleLogin();
+                return;
+            }
 
-            alert("Thank you! Your 5-parameter rating and review have been logged successfully.");
-        }
+            alert("Thank you! Your 5-parameter rating and review have been logged successfully.");
+        }
 
-        fetchMovieDetails();
-    </script>
+        fetchMovieDetails();
+    </script>
 </body>
-</html> this is my movie.html code
+</html>
