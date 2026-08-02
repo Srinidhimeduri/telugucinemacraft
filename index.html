@@ -7,42 +7,369 @@
     <!-- Admitad Verification Code -->
     <meta name="verify-admitad" content="3b27ad383c" />
     
-    <title>TeluguCineCraft | Box Office Collections</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <title>TeluguCineCraft | Top Blockbusters & Box Office</title>
+
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Supabase JS Client v2 -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
-        :root { --bg-base: #07090E; --bg-glass: rgba(21, 27, 38, 0.7); --border-glass: rgba(255, 255, 255, 0.08); --gold-accent: #FFC700; --cyan-accent: #38BDF8; --text-main: #F8FAFC; --text-muted: #94A3B8; }
-        body { background-color: var(--bg-base); color: var(--text-main); font-family: 'Plus Jakarta Sans', sans-serif; padding: 2rem 1.5rem; }
-        .container { max-width: 1200px; margin: 0 auto; }
-        nav { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; background: var(--bg-glass); backdrop-filter: blur(12px); border: 1px solid var(--border-glass); border-radius: 16px; margin-bottom: 2.5rem; }
-        .brand-title { font-size: 1.5rem; font-weight: 800; color: #FFF; }
-        .auth-btn { background: rgba(255,199,0,0.1); border: 1px solid var(--gold-accent); color: var(--gold-accent); padding: 0.6rem 1.2rem; border-radius: 8px; cursor: pointer; font-weight: 600; }
-        .signout-btn { background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger); color: var(--danger); padding: 0.6rem 1.2rem; border-radius: 8px; cursor: pointer; font-weight: 600; }
-        .table-container { background: var(--bg-glass); border: 1px solid var(--border-glass); border-radius: 16px; overflow: hidden; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 1.2rem; border-bottom: 1px solid var(--border-glass); text-align: left; }
-        .movie-title-link { font-weight: 700; color: var(--text-main); text-decoration: none; }
+        :root {
+            --bg-base: #06080C;
+            --bg-glass: rgba(18, 24, 38, 0.7);
+            --bg-card: rgba(26, 34, 52, 0.6);
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(255, 199, 0, 0.4);
+            --gold-accent: #FFC700;
+            --gold-glow: rgba(255, 199, 0, 0.15);
+            --cyan-accent: #38BDF8;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --danger: #EF4444;
+            --success: #22C55E;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            background-image: 
+                radial-gradient(circle at 20% 10%, rgba(255, 199, 0, 0.04) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(56, 189, 248, 0.03) 0%, transparent 40%);
+            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh;
+            padding: 1.5rem;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        /* --- NAV BAR --- */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.8rem;
+            background: var(--bg-glass);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .brand-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #FFF;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        .brand-title i {
+            color: var(--gold-accent);
+        }
+
+        .auth-btn {
+            background: rgba(255, 199, 0, 0.12);
+            border: 1px solid var(--gold-accent);
+            color: var(--gold-accent);
+            padding: 0.65rem 1.4rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .auth-btn:hover {
+            background: var(--gold-accent);
+            color: #000;
+            box-shadow: 0 0 20px var(--gold-glow);
+        }
+
+        .signout-btn {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            padding: 0.6rem 1.2rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .signout-btn:hover {
+            background: var(--danger);
+            color: #FFF;
+        }
+
+        /* --- HERO & SEARCH SECTION --- */
+        .hero-banner {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .hero-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #FFF 60%, var(--text-muted));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-box {
+            position: relative;
+            max-width: 550px;
+            margin: 0 auto;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 1.2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.9rem 1rem 0.9rem 3rem;
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: 14px;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: var(--gold-accent);
+            box-shadow: 0 0 15px var(--gold-glow);
+        }
+
+        /* --- MOVIE CARDS GRID --- */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--gold-accent);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .movie-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-glass);
+            border-radius: 18px;
+            padding: 1.5rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .movie-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--border-hover);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6), 0 0 20px var(--gold-glow);
+        }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .movie-name {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #FFF;
+            line-height: 1.2;
+        }
+
+        .verdict-badge {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--success);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            padding: 0.25rem 0.6rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .card-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            font-size: 0.88rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-muted);
+        }
+
+        .detail-row span {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .card-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.8rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--gold-accent);
+        }
+
+        .view-btn {
+            margin-top: 1rem;
+            width: 100%;
+            padding: 0.7rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-glass);
+            border-radius: 10px;
+            color: #FFF;
+            font-weight: 700;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .movie-card:hover .view-btn {
+            background: var(--gold-accent);
+            color: #000;
+            border-color: var(--gold-accent);
+        }
+
+        .loading-spinner {
+            text-align: center;
+            padding: 4rem 0;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title { font-size: 1.8rem; }
+            .grid-container { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- NAV BAR -->
         <nav>
-            <div class="brand-title"><i class="fa-solid fa-film"></i> TeluguCineCraft</div>
+            <div class="brand-title">
+                <i class="fa-solid fa-film"></i> TeluguCineCraft
+            </div>
             <div id="userMenuArea">
-                <button class="auth-btn" onclick="handleGoogleLogin()"><i class="fa-brands fa-google"></i> Sign In</button>
+                <button class="auth-btn" onclick="handleGoogleLogin()">
+                    <i class="fa-brands fa-google"></i> Sign In
+                </button>
             </div>
         </nav>
-        <div class="table-container" id="content">Loading records...</div>
+
+        <!-- HERO & SEARCH SECTION -->
+        <div class="hero-banner">
+            <h1 class="hero-title">Top Indian Box Office Tracker</h1>
+            <p class="hero-subtitle">Discover trending blockbusters, worldwide collections, & full production details.</p>
+
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="searchInput" class="search-input" placeholder="Search by Movie, Star, or Director..." onkeyup="filterMovies()">
+            </div>
+        </div>
+
+        <!-- MOVIES FEED SECTION -->
+        <div class="section-header">
+            <div class="section-title">
+                <i class="fa-solid fa-fire"></i> Top 10 Highest Grossing Blockbusters
+            </div>
+        </div>
+
+        <div id="content" class="loading-spinner">
+            <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+            <p style="margin-top: 10px;">Loading top box office records...</p>
+        </div>
     </div>
 
     <script>
+        // Supabase Initialization
         const db = window.supabase.createClient(
             "https://eosgvjvpdwxmpxzerxit.supabase.co", 
             "sb_publishable_FVXC4U8wUB2l1SmWLpmoeg_4RkydeLx",
             { auth: { flowType: 'pkce' } }
         );
 
+        let allMovies = [];
+
+        // Auth Handler
         async function updateAuthUI() {
             const { data: { user } } = await db.auth.getUser();
             const area = document.getElementById('userMenuArea');
@@ -72,17 +399,99 @@
             window.location.reload();
         }
 
+        // Fetch Data & Display Top 10 Blockbusters
         async function init() {
             updateAuthUI();
-            const { data } = await db.from('box_office').select('*');
-            if (!data) return;
             
-            let html = `<table><thead><tr><th>Movie</th><th>Starring</th><th>Budget</th><th>Gross</th><th>Verdict</th></tr></thead><tbody>`;
-            data.forEach(m => {
-                html += `<tr><td><a href="movie.html?id=${m.movie_id}" class="movie-title-link">${m.movie_name}</a></td><td>${m.starring}</td><td>${m.budget}</td><td>${m.trade_gross}</td><td>${m.verdict}</td></tr>`;
-            });
-            document.getElementById('content').innerHTML = html + `</tbody></table>`;
+            // Query box_office table
+            const { data, error } = await db.from('box_office').select('*');
+            
+            if (error || !data) {
+                document.getElementById('content').innerHTML = `
+                    <div style="text-center; color: var(--danger);">
+                        <p>Unable to load movies. Please check connection.</p>
+                    </div>`;
+                return;
+            }
+
+            allMovies = data;
+            renderMovies(allMovies.slice(0, 10)); // Top 10 initial view
         }
+
+        function renderMovies(movies) {
+            if (movies.length === 0) {
+                document.getElementById('content').innerHTML = `
+                    <div style="text-align: center; grid-column: 1/-1; padding: 3rem; color: var(--text-muted);">
+                        No matching movies found.
+                    </div>`;
+                return;
+            }
+
+            let html = `<div class="grid-container">`;
+            movies.forEach(m => {
+                const hero = m.hero || m.starring || 'N/A';
+                const director = m.director || 'N/A';
+                const budget = m.budget || 'N/A';
+                const gross = m.collection || m.trade_gross || 'N/A';
+                const verdict = m.verdict || 'Blockbuster';
+
+                html += `
+                    <a href="movie.html?id=${m.movie_id}" class="movie-card">
+                        <div>
+                            <div class="card-top">
+                                <div class="movie-name">${m.movie_name}</div>
+                                <div class="verdict-badge">${verdict}</div>
+                            </div>
+                            
+                            <div class="card-details">
+                                <div class="detail-row">
+                                    <span>Hero:</span> <span>${hero}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span>Director:</span> <span>${director}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="card-stats">
+                                <div class="stat-item">
+                                    <div class="stat-label">Budget</div>
+                                    <div class="stat-value">${budget}</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-label">Gross</div>
+                                    <div class="stat-value">${gross}</div>
+                                </div>
+                            </div>
+                            <div class="view-btn">View Full Details <i class="fa-solid fa-arrow-right"></i></div>
+                        </div>
+                    </a>
+                `;
+            });
+            html += `</div>`;
+
+            document.getElementById('content').innerHTML = html;
+        }
+
+        // Search Filter Logic
+        function filterMovies() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            if (!query) {
+                renderMovies(allMovies.slice(0, 10));
+                return;
+            }
+
+            const filtered = allMovies.filter(m => {
+                const name = (m.movie_name || '').toLowerCase();
+                const hero = (m.hero || m.starring || '').toLowerCase();
+                const director = (m.director || '').toLowerCase();
+                return name.includes(query) || hero.includes(query) || director.includes(query);
+            });
+
+            renderMovies(filtered);
+        }
+
         init();
     </script>
 </body>
