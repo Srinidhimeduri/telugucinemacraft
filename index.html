@@ -4,498 +4,63 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TeluguCineCraft | Box Office Collections</title>
-    
-    <!-- Google Fonts & Icons -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <style>
-        :root {
-            --bg-base: #07090E;
-            --bg-glass: rgba(21, 27, 38, 0.7);
-            --border-glass: rgba(255, 255, 255, 0.08);
-            --gold-accent: #FFC700;
-            --gold-glow: rgba(255, 199, 0, 0.2);
-            --cyan-accent: #38BDF8;
-            --text-main: #F8FAFC;
-            --text-muted: #94A3B8;
-            --success: #10B981;
-            --danger: #EF4444;
-            --card-radius: 16px;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            background-color: var(--bg-base);
-            color: var(--text-main);
-            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-            min-height: 100vh;
-            padding: 2rem 1.5rem;
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.05) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(255, 199, 0, 0.04) 0%, transparent 40%);
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        /* Navbar */
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 1.5rem;
-            background: var(--bg-glass);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--border-glass);
-            border-radius: var(--card-radius);
-            margin-bottom: 2.5rem;
-        }
-
-        .brand-title {
-            font-size: 1.5rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #FFF 0%, var(--gold-accent) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .auth-btn {
-            background: linear-gradient(135deg, rgba(255,199,0,0.15) 0%, rgba(255,199,0,0.05) 100%);
-            border: 1px solid var(--gold-accent);
-            color: var(--gold-accent);
-            padding: 0.6rem 1.2rem;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .auth-btn:hover {
-            background: var(--gold-accent);
-            color: #000;
-            box-shadow: 0 0 15px var(--gold-glow);
-        }
-
-        /* Dashboard Header & Search Controls */
-        .dashboard-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            margin-bottom: 2rem;
-            gap: 1.5rem;
-            flex-wrap: wrap;
-        }
-
-        .header-text h2 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .header-text p {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-        }
-
-        .search-box-wrapper {
-            position: relative;
-            min-width: 320px;
-            flex-grow: 1;
-            max-width: 480px;
-        }
-
-        .search-box-wrapper i.search-icon {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 0.85rem 1rem 0.85rem 2.8rem;
-            background: var(--bg-glass);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--border-glass);
-            border-radius: 12px;
-            color: var(--text-main);
-            font-size: 0.95rem;
-            outline: none;
-            transition: all 0.3s ease;
-        }
-
-        .search-input:focus {
-            border-color: var(--gold-accent);
-            box-shadow: 0 0 15px var(--gold-glow);
-        }
-
-        /* Dashboard Table */
-        .table-container {
-            background: var(--bg-glass);
-            backdrop-filter: blur(16px);
-            border: 1px solid var(--border-glass);
-            border-radius: var(--card-radius);
-            overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
-
-        th {
-            background: rgba(255, 255, 255, 0.02);
-            color: var(--text-muted);
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            padding: 1.2rem 1.2rem;
-            border-bottom: 1px solid var(--border-glass);
-        }
-
-        td {
-            padding: 1.2rem 1.2rem;
-            border-bottom: 1px solid var(--border-glass);
-            vertical-align: middle;
-        }
-
-        tr:hover {
-            background: rgba(255, 255, 255, 0.02);
-        }
-
-        .movie-title-link {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--text-main);
-            text-decoration: none;
-            transition: color 0.2s ease;
-            display: block;
-            margin-bottom: 4px;
-        }
-
-        .movie-title-link:hover {
-            color: var(--cyan-accent);
-        }
-
-        .crew-subtext {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            line-height: 1.4;
-        }
-
-        .crew-subtext strong {
-            color: var(--text-main);
-        }
-
-        .verdict-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 0.35rem 0.8rem;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-        }
-
-        .verdict-badge.hit {
-            background: rgba(16, 185, 129, 0.15);
-            color: var(--success);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-        }
-
-        .verdict-badge.flop {
-            background: rgba(239, 68, 68, 0.15);
-            color: var(--danger);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-        }
-
-        .financial-val {
-            font-weight: 700;
-            font-size: 1.05rem;
-            color: var(--gold-accent);
-        }
-        
-        .budget-val {
-            font-weight: 600;
-            font-size: 0.95rem;
-        }
-
-        .view-btn {
-            color: var(--cyan-accent);
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.85rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 0.4rem 0.8rem;
-            background: rgba(56, 189, 248, 0.1);
-            border-radius: 6px;
-            transition: all 0.2s ease;
-            white-space: nowrap;
-        }
-
-        .view-btn:hover {
-            background: rgba(56, 189, 248, 0.2);
-        }
-
-        .loading-state, .empty-state {
-            text-align: center;
-            padding: 4rem 2rem;
-            color: var(--text-muted);
-        }
-
-        .spinner {
-            border: 3px solid rgba(255, 255, 255, 0.1);
-            border-top: 3px solid var(--gold-accent);
-            border-radius: 50%;
-            width: 36px;
-            height: 36px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 1rem auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+        :root { --bg-base: #07090E; --bg-glass: rgba(21, 27, 38, 0.7); --border-glass: rgba(255, 255, 255, 0.08); --gold-accent: #FFC700; --cyan-accent: #38BDF8; --text-main: #F8FAFC; --text-muted: #94A3B8; --success: #10B981; --danger: #EF4444; }
+        body { background-color: var(--bg-base); color: var(--text-main); font-family: 'Plus Jakarta Sans', sans-serif; padding: 2rem 1.5rem; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; background: var(--bg-glass); backdrop-filter: blur(12px); border: 1px solid var(--border-glass); border-radius: 16px; margin-bottom: 2.5rem; }
+        .brand-title { font-size: 1.5rem; font-weight: 800; color: #FFF; }
+        .auth-btn { background: rgba(255,199,0,0.1); border: 1px solid var(--gold-accent); color: var(--gold-accent); padding: 0.6rem 1.2rem; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        .table-container { background: var(--bg-glass); border: 1px solid var(--border-glass); border-radius: 16px; overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 1.2rem; border-bottom: 1px solid var(--border-glass); text-align: left; }
+        .movie-title-link { font-weight: 700; color: var(--text-main); text-decoration: none; }
+        .verdict-badge { padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+        .hit { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+        .flop { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
     </style>
 </head>
 <body>
-
     <div class="container">
-        <!-- Top Navigation -->
         <nav>
-            <div class="brand-title">
-                <i class="fa-solid fa-film"></i> TeluguCineCraft
-            </div>
-            <div class="nav-actions">
-                <button id="authButton" class="auth-btn" onclick="handleGoogleLogin()">
-                    <i class="fa-brands fa-google"></i> Sign In
-                </button>
-            </div>
+            <div class="brand-title"><i class="fa-solid fa-film"></i> TeluguCineCraft</div>
+            <div id="userMenuArea"><button class="auth-btn" onclick="handleGoogleLogin()"><i class="fa-brands fa-google"></i> Sign In</button></div>
         </nav>
-
-        <!-- Dashboard Header -->
-        <div class="dashboard-header">
-            <div class="header-text">
-                <h2>Box Office Overview</h2>
-                <p>Track movie titles, star cast, crew, and worldwide collections.</p>
-            </div>
-            
-            <div class="search-box-wrapper">
-                <input 
-                    type="text" 
-                    id="searchInput" 
-                    class="search-input" 
-                    placeholder="Search movie, starring, director, producer..." 
-                    oninput="handleSearch()"
-                />
-                <i class="fa-solid fa-magnifying-glass search-icon"></i>
-            </div>
-        </div>
-
-        <!-- Main Overview Table -->
-        <div class="table-container">
-            <div id="content">
-                <div class="loading-state">
-                    <div class="spinner"></div>
-                    <p>Loading box office records...</p>
-                </div>
-            </div>
-        </div>
+        <div class="table-container" id="content">Loading records...</div>
     </div>
 
     <script>
-        let moviesData = [];
+        const db = window.supabase.createClient(
+            "https://eosgvjvpdwxmpxzerxit.supabase.co", 
+            "sb_publishable_FVXC4U8wUB2l1SmWLpmoeg_4RkydeLx",
+            { auth: { flowType: 'pkce' } }
+        );
 
-        if (!window.myFixedClient) {
-            window.myFixedClient = window.supabase.createClient(
-                "https://eosgvjvpdwxmpxzerxit.supabase.co", 
-                "sb_publishable_FVXC4U8wUB2l1SmWLpmoeg_4RkydeLx"
-            );
-        }
-        const db = window.myFixedClient;
-
-        // AUTHENTICATION LOGIC
-        async function checkAuthState() {
-            // Check if user is currently logged in
-            const { data: { session } } = await db.auth.getSession();
-            updateAuthUI(session ? session.user : null);
-
-            // Listen for changes (like when they return from Google)
-            db.auth.onAuthStateChange((_event, session) => {
-                updateAuthUI(session ? session.user : null);
-            });
-        }
-
-        function updateAuthUI(user) {
-            const authBtn = document.getElementById('authButton');
+        async function updateAuthUI() {
+            const { data: { user } } = await db.auth.getUser();
+            const area = document.getElementById('userMenuArea');
             if (user) {
-                // Get the user's name or first part of their email
-                const displayName = user.user_metadata?.full_name || user.email.split('@')[0];
-                authBtn.innerHTML = `<i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out (${displayName})`;
-                authBtn.onclick = async () => {
-                    await db.auth.signOut();
-                    window.location.reload(); // Refresh the page to reset state
-                };
-            } else {
-                authBtn.innerHTML = `<i class="fa-brands fa-google"></i> Sign In`;
-                authBtn.onclick = handleGoogleLogin;
+                area.innerHTML = `<span style="color:var(--text-muted); margin-right:10px;">Hi, ${user.user_metadata.full_name || 'User'}</span><button class="auth-btn" onclick="db.auth.signOut(); window.location.reload();">Sign Out</button>`;
             }
         }
 
         async function handleGoogleLogin() {
-            const { error } = await db.auth.signInWithOAuth({
-                provider: 'google',
-                options: { redirectTo: window.location.href }
-            });
-            if (error) alert("Error logging in: " + error.message);
+            await db.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
         }
 
-        // MOVIE DATA LOGIC
         async function init() {
-            // Check auth state immediately
-            checkAuthState();
-
-            // Handle potential search parameters passed from movie.html
-            const urlParams = new URLSearchParams(window.location.search);
-            const initialSearch = urlParams.get('search');
-
-            const { data, error } = await db.from('box_office').select('*');
-            
-            if (error || !data) {
-                document.getElementById('content').innerHTML = `
-                    <div class="loading-state" style="color: var(--danger);">
-                        <p>Unable to load box office data.</p>
-                    </div>`;
-                return;
-            }
-
-            moviesData = data;
-
-            if (initialSearch) {
-                document.getElementById('searchInput').value = initialSearch;
-                handleSearch();
-            } else {
-                renderTable(moviesData);
-            }
-        }
-
-        function renderTable(dataset) {
-            if (dataset.length === 0) {
-                document.getElementById('content').innerHTML = `
-                    <div class="empty-state">
-                        <i class="fa-solid fa-film" style="font-size: 2.5rem; margin-bottom: 1rem; opacity: 0.4;"></i>
-                        <p style="font-size: 1.1rem; font-weight: 600;">No matching movies found</p>
-                    </div>`;
-                return;
-            }
-
-            let html = `
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Movie</th>
-                            <th>Starring</th>
-                            <th>Director & Producer</th>
-                            <th>Budget</th>
-                            <th>Worldwide Gross</th>
-                            <th>Verdict</th>
-                            <th style="text-align:right;">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>`;
-            
-            dataset.forEach(m => {
-                const v = (m.verdict || '').toLowerCase();
-                const isHit = ['hit', 'blockbuster', 'super', 'all-time'].some(term => v.includes(term));
-                const verdictClass = isHit ? 'hit' : 'flop';
-                const verdictIcon = isHit ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down';
-
-                const grossValue = m.trade_gross || m.producer_gross || m.sacnilk_gross || m.worldwide_gross || m.collection || '-';
-
-                html += `
-                    <tr>
-                        <td>
-                            <a href="movie.html?id=${m.movie_id}" class="movie-title-link">
-                                ${m.movie_name || 'Untitled Project'}
-                            </a>
-                        </td>
-                        <td>
-                            <div class="crew-subtext">
-                                ${m.starring || 'N/A'}
-                            </div>
-                        </td>
-                        <td>
-                            <div class="crew-subtext">
-                                <div><strong>Dir:</strong> ${m.director || 'N/A'}</div>
-                                <div><strong>Prod:</strong> ${m.producer || 'N/A'}</div>
-                            </div>
-                        </td>
-                        <td><span class="budget-val">${m.budget || '-'}</span></td>
-                        <td><span class="financial-val">${grossValue}</span></td>
-                        <td>
-                            <span class="verdict-badge ${verdictClass}">
-                                <i class="fa-solid ${verdictIcon}"></i> ${m.verdict || 'Pending'}
-                            </span>
-                        </td>
-                        <td style="text-align:right;">
-                            <a href="movie.html?id=${m.movie_id}" class="view-btn">
-                                Details <i class="fa-solid fa-arrow-right"></i>
-                            </a>
-                        </td>
-                    </tr>`;
+            updateAuthUI();
+            const { data } = await db.from('box_office').select('*');
+            let html = `<table><thead><tr><th>Movie</th><th>Starring</th><th>Budget</th><th>Gross</th><th>Verdict</th><th>Action</th></tr></thead><tbody>`;
+            data.forEach(m => {
+                const isHit = ['hit', 'blockbuster'].some(t => (m.verdict || '').toLowerCase().includes(t));
+                html += `<tr><td><a href="movie.html?id=${m.movie_id}" class="movie-title-link">${m.movie_name}</a></td><td>${m.starring}</td><td>${m.budget}</td><td>${m.trade_gross}</td><td><span class="verdict-badge ${isHit ? 'hit' : 'flop'}">${m.verdict}</span></td><td><a href="movie.html?id=${m.movie_id}" class="view-btn" style="color:var(--cyan-accent)">Details</a></td></tr>`;
             });
-            
-            html += `</tbody></table>`;
-            document.getElementById('content').innerHTML = html;
+            document.getElementById('content').innerHTML = html + `</tbody></table>`;
         }
-
-        function handleSearch() {
-            const query = document.getElementById('searchInput').value.toLowerCase().trim();
-
-            if (!query) {
-                renderTable(moviesData);
-                return;
-            }
-
-            const filtered = moviesData.filter(m => {
-                const title = (m.movie_name || '').toLowerCase();
-                const starring = (m.starring || '').toLowerCase();
-                const director = (m.director || '').toLowerCase();
-                const producer = (m.producer || '').toLowerCase();
-                
-                return title.includes(query) || starring.includes(query) || director.includes(query) || producer.includes(query);
-            });
-
-            renderTable(filtered);
-        }
-
         init();
     </script>
 </body>
