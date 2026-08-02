@@ -360,10 +360,10 @@
     </div>
 
     <script>
-        // Supabase Initialization with your active Publishable Key
+        // Supabase Initialization using the JWT anon key for proper client authentication
         const db = window.supabase.createClient(
             "https://eosgvjvpdwxmpxzerxit.supabase.co", 
-            "sb_publishable_FVXC4U8wUB2l1SmWLpmoeg_4RkydeLx",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvc2d2anZwZHd4bXB4emVyeGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1Njk3MTMsImV4cCI6MjEwMTE0NTcxM30.fD14BdJBDPNqFUKGxS5DRgsDnN8CqYdWR4k8cuAbvcg",
             { auth: { flowType: 'pkce' } }
         );
 
@@ -422,7 +422,7 @@
                 document.getElementById('content').innerHTML = `
                     <div style="text-align: center; color: var(--danger); padding: 3rem;">
                         <p style="font-weight: 700; font-size: 1.1rem; margin-bottom: 0.5rem;">Unable to load movies.</p>
-                        <p style="color: var(--text-muted); font-size: 0.85rem;">Check console logs or run RLS grants in Supabase SQL editor.</p>
+                        <p style="color: var(--text-muted); font-size: 0.85rem;">Run table permission grants in Supabase SQL editor if issues persist.</p>
                     </div>`;
                 return;
             }
