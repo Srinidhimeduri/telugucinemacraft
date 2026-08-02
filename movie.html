@@ -1,315 +1,168 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     
-
     <title>TeluguCineCraft | Personal Cinema Dashboard</title>
 
-
-
     <!-- Google Fonts & Font Awesome Icons -->
-
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
     
-
     <!-- Supabase JS Client v2 -->
-
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-
-
     <style>
-
         :root {
-
             --bg-base: #06080C;
-
             --bg-glass: rgba(18, 24, 38, 0.75);
-
             --bg-card: rgba(26, 34, 52, 0.6);
-
             --border-glass: rgba(255, 255, 255, 0.08);
-
             --border-hover: rgba(255, 199, 0, 0.4);
-
             --gold-accent: #FFC700;
-
             --gold-glow: rgba(255, 199, 0, 0.15);
-
             --cyan-accent: #38BDF8;
-
             --text-main: #F8FAFC;
-
             --text-muted: #94A3B8;
-
             --danger: #EF4444;
-
             --success: #22C55E;
-
             --purple-accent: #C084FC;
-
         }
-
-
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-
         body { background-color: var(--bg-base); background-image: radial-gradient(circle at 15% 10%, rgba(255, 199, 0, 0.05) 0%, transparent 40%), radial-gradient(circle at 85% 85%, rgba(56, 189, 248, 0.04) 0%, transparent 40%); color: var(--text-main); font-family: 'Plus Jakarta Sans', sans-serif; min-height: 100vh; padding: 1.2rem; display: flex; flex-direction: column; justify-content: center; }
-
         .container { max-width: 1350px; margin: 0 auto; width: 100%; }
 
-
-
         nav { display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 1.6rem; background: var(--bg-glass); backdrop-filter: blur(16px); border: 1px solid var(--border-glass); border-radius: 16px; margin-bottom: 1.2rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
-
         .brand-title { font-size: 1.4rem; font-weight: 800; color: #FFF; display: flex; align-items: center; gap: 10px; text-decoration: none; }
-
         .brand-title i { color: var(--gold-accent); }
-
         .nav-actions { display: flex; align-items: center; gap: 12px; }
-
         .user-pill { display: flex; align-items: center; gap: 10px; background: rgba(255, 199, 0, 0.08); border: 1px solid var(--border-hover); padding: 0.45rem 1rem; border-radius: 12px; box-shadow: 0 0 15px var(--gold-glow); }
-
         .user-avatar { width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--gold-accent); }
-
         .greeting-text { font-size: 0.88rem; font-weight: 700; color: var(--text-main); }
-
         .dashboard-badge { background: rgba(56, 189, 248, 0.15); color: var(--cyan-accent); border: 1px solid rgba(56, 189, 248, 0.3); font-size: 0.68rem; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 6px; text-transform: uppercase; }
-
         .back-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-glass); color: var(--text-main); padding: 0.55rem 1.2rem; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.88rem; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
-
         .back-btn:hover { border-color: var(--gold-accent); color: var(--gold-accent); }
-
         .auth-btn { background: rgba(255, 199, 0, 0.12); border: 1px solid var(--gold-accent); color: var(--gold-accent); padding: 0.55rem 1.2rem; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 0.88rem; display: flex; align-items: center; gap: 6px; }
-
         .auth-btn:hover { background: var(--gold-accent); color: #000; box-shadow: 0 0 15px var(--gold-glow); }
-
         .signout-btn { background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger); color: var(--danger); padding: 0.45rem 0.8rem; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.78rem; }
-
         
-
         .movie-dashboard { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.2rem; }
-
         .glass-panel { background: var(--bg-card); backdrop-filter: blur(16px); border: 1px solid var(--border-glass); border-radius: 18px; padding: 1.2rem 1.3rem; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4); display: flex; flex-direction: column; justify-content: space-between; }
-
         .header-panel { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid rgba(255, 199, 0, 0.25); }
-
         .movie-header-title { font-size: 2.2rem; font-weight: 800; color: #FFF; }
-
         .verdict-pill { background: rgba(34, 197, 94, 0.15); color: var(--success); border: 1px solid rgba(34, 197, 94, 0.3); padding: 0.4rem 1rem; border-radius: 20px; font-weight: 800; text-transform: uppercase; }
-
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 0.8rem; margin-top: 0.5rem; }
-
         .stat-box { background: rgba(0, 0, 0, 0.35); border: 1px solid var(--border-glass); padding: 0.75rem; border-radius: 12px; text-align: center; }
-
         .stat-box-value { font-size: 1.1rem; font-weight: 800; color: var(--gold-accent); }
-
         .panel-title { font-size: 1rem; font-weight: 700; color: var(--cyan-accent); margin-bottom: 0.8rem; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border-glass); padding-bottom: 0.4rem; }
-
         .person-row { display: flex; flex-direction: column; gap: 0.2rem; padding: 0.45rem 0; border-bottom: 1px dashed rgba(255, 255, 255, 0.05); }
-
+        .person-row:last-child { border-bottom: none; }
         .person-role { font-size: 0.7rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
-
         .person-card-link { display: flex; align-items: center; justify-content: space-between; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-glass); padding: 0.45rem 0.75rem; border-radius: 10px; text-decoration: none; color: var(--text-main); }
-
         .person-card-link a { color: var(--text-main); text-decoration: none; }
-
         .person-card-link:hover { background: rgba(255, 199, 0, 0.08); border-color: var(--gold-accent); }
-
         .person-name { font-weight: 700; font-size: 0.88rem; display: flex; align-items: center; gap: 6px; }
-
         .film-count-badge { background: rgba(56, 189, 248, 0.12); color: var(--cyan-accent); border: 1px solid rgba(56, 189, 248, 0.3); font-size: 0.68rem; font-weight: 700; padding: 0.12rem 0.45rem; border-radius: 6px; }
-
         .rating-panel { grid-column: 1 / -1; margin-top: 0.5rem; background: rgba(18, 24, 38, 0.85); border: 1px solid var(--border-hover); border-radius: 20px; padding: 1.5rem; }
-
     </style>
-
 </head>
-
 <body>
-
     <div class="container">
-
         <nav>
-
             <a href="index.html" class="brand-title"><i class="fa-solid fa-film"></i> TeluguCineCraft</a>
-
             <div class="nav-actions">
-
                 <div id="authStatusArea"></div>
-
                 <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Dashboard</a>
-
             </div>
-
         </nav>
-
         <div id="movieDetailsArea" class="loading-view">
-
             <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
-
         </div>
-
     </div>
 
-
-
     <script>
-
         const db = window.supabase.createClient(
-
             "https://eosgvjvpdwxmpxzerxit.supabase.co", 
-
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvc2d2anZwZHd4bXB4emVyeGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1Njk3MTMsImV4cCI6MjEwMTE0NTcxM30.fD14BdJBDPNqFUKGxS5DRgsDnN8CqYdWR4k8cuAbvcg",
-
             { auth: { flowType: 'pkce' } }
-
         );
 
-
-
         let currentUser = null;
+        let selectedRatings = { story: 0, direction: 0, performance: 0, music: 0, vfx: 0 };
 
-
-
-        // HELPER: Splits comma-separated strings into clickable links
-
+        // --- NEW: Helper to create individual links for comma-separated lists ---
         function generateLinkList(text) {
-
             if (!text || text === 'N/A') return 'N/A';
-
             return text.split(',').map(name => {
-
                 const n = name.trim();
-
-                return `<a href="index.html?search=${encodeURIComponent(n)}" style="color: var(--cyan-accent); text-decoration: none; font-weight: 700; margin-right: 5px;">${n}</a>`;
-
+                return `<a href="index.html?search=${encodeURIComponent(n)}" style="color: var(--cyan-accent); font-weight: 700; text-decoration: none; margin-right: 5px;">${n}</a>`;
             }).join(' ');
-
         }
 
-
-
+        // --- UPDATED: Precise Film Count ---
         async function getFilmCount(personName) {
-
             if (!personName || personName === 'N/A') return '0 Films';
-
-            const { count, error } = await db
-
+            // Querying using the specific name part
+            const { count } = await db
                 .from('box_office')
-
                 .select('*', { count: 'exact', head: true })
-
-                .or(`hero.ilike.%${personName}%,director.ilike.%${personName}%,starring.ilike.%${personName}%`);
-
-            return error ? '0' : `${count} Films`;
-
+                .or(`hero.ilike.%${personName.split(',')[0].trim()}%,director.ilike.%${personName.split(',')[0].trim()}%,starring.ilike.%${personName.split(',')[0].trim()}%`);
+            return `${count || 0} Films`;
         }
-
-
 
         async function fetchMovieDetails() {
-
             const id = new URLSearchParams(window.location.search).get('id');
-
             const { data, error } = await db.from('box_office').select('*').eq('movie_id', id).single();
-
             if (error) { document.getElementById('movieDetailsArea').innerHTML = "Record not found."; return; }
-
             renderMovieDashboard(data);
-
         }
-
-
 
         async function renderMovieDashboard(m) {
-
-            // Count logic for primary fields
-
-            const hCount = await getFilmCount(m.hero);
-
-            const dCount = await getFilmCount(m.director);
-
-
+            const hCount = await getFilmCount(m.hero || 'N/A');
+            const dCount = await getFilmCount(m.director || 'N/A');
+            const mCount = await getFilmCount(m.music_director || 'N/A');
 
             const html = `
-
                 <div class="movie-dashboard">
-
                     <div class="glass-panel header-panel">
-
-                        <div class="movie-header-title">${m.movie_name}</div>
-
+                        <div class="movie-header-title">${m.movie_name || 'Untitled'}</div>
                     </div>
-
                     
-
                     <div class="glass-panel">
-
                         <div class="panel-title"><i class="fa-solid fa-masks-theater"></i> Cast & Crew</div>
-
+                        
                         <div class="person-row">
-
                             <div class="person-role">Hero</div>
-
                             <div class="person-card-link">
-
                                 <span>${generateLinkList(m.hero)}</span>
-
                                 <span class="film-count-badge">${hCount}</span>
-
                             </div>
-
                         </div>
 
                         <div class="person-row">
-
                             <div class="person-role">Director</div>
-
                             <div class="person-card-link">
-
                                 <span>${generateLinkList(m.director)}</span>
-
                                 <span class="film-count-badge">${dCount}</span>
-
                             </div>
-
                         </div>
 
                         <div class="person-row">
-
                             <div class="person-role">Music Director</div>
-
-                            <div class="person-card-link">${generateLinkList(m.music_director)}</div>
-
+                            <div class="person-card-link">
+                                <span>${generateLinkList(m.music_director)}</span>
+                                <span class="film-count-badge">${mCount}</span>
+                            </div>
                         </div>
-
                     </div>
-
                 </div>
-
             `;
-
             document.getElementById('movieDetailsArea').innerHTML = html;
-
         }
 
-
-
         fetchMovieDetails();
-
     </script>
-
 </body>
-
 </html>
