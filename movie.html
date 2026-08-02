@@ -8,14 +8,16 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root { --bg-base: #05070A; --bg-glass: rgba(15, 20, 28, 0.7); --gold-accent: #FFC700; --cyan-accent: #38BDF8; --text-main: #F8FAFC; --text-muted: #94A3B8; --success: #10B981; }
+        :root { --bg-base: #05070A; --bg-glass: rgba(15, 20, 28, 0.7); --border-glass: rgba(255, 255, 255, 0.08); --gold-accent: #FFC700; --cyan-accent: #38BDF8; --text-main: #F8FAFC; --text-muted: #94A3B8; }
         body { background-color: var(--bg-base); color: var(--text-main); font-family: 'Plus Jakarta Sans', sans-serif; padding: 2rem; }
         .container { max-width: 1150px; margin: 0 auto; }
         .dashboard-grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: 2rem; }
-        .card { background: var(--bg-glass); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 2rem; margin-bottom: 1.5rem; }
+        .card { background: var(--bg-glass); backdrop-filter: blur(12px); border: 1px solid var(--border-glass); border-radius: 20px; padding: 2rem; margin-bottom: 1.5rem; }
         .section-title { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--cyan-accent); margin: 1.5rem 0 1rem 0; font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.5rem; }
         .crew-tag { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.04); padding: 0.6rem 1rem; border-radius: 12px; margin: 5px; text-decoration: none; color: white; border: 1px solid rgba(255,255,255,0.1); }
         .badge { font-size: 0.6rem; background: rgba(255,199,0,0.2); color: var(--gold-accent); padding: 2px 6px; border-radius: 6px; font-weight: 700; }
+        .finance-box { background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 14px; margin-bottom: 1rem; text-align: center; border: 1px solid var(--border-glass); }
+        .val { font-size: 1.7rem; font-weight: 800; color: var(--gold-accent); }
         .rating-row { display: flex; justify-content: space-between; padding: 0.8rem; background: rgba(255,255,255,0.03); border-radius: 8px; margin-bottom: 0.5rem; font-size: 0.9rem; }
         .star-box { color: var(--gold-accent); }
     </style>
@@ -28,22 +30,20 @@
 
     <script>
         const db = window.supabase.createClient("https://eosgvjvpdwxmpxzerxit.supabase.co", "sb_publishable_FVXC4U8wUB2l1SmWLpmoeg_4RkydeLx", { auth: { flowType: 'pkce' } });
-        // Add all your award winners here:
-        const awardWinners = { "S.S. Rajamouli": "National Award", "Prabhas": "Nandi Award", "Allu Arjun": "National Award", "M.M. Keeravani": "Oscar" };
+        const awardWinners = { "S.S. Rajamouli": "National Award", "Prabhas": "Nandi Award" };
 
         async function init() {
             const id = new URLSearchParams(window.location.search).get('id');
             const { data } = await db.from('box_office').select('*');
             const m = data.find(x => x.movie_id == id);
             
-            function getCount(n) { return data.filter(x => [x.starring, x.director, x.producer, x.dop, x.stunts].join(',').includes(n)).length; }
+            function getCount(n) { return data.filter(x => [x.starring, x.director, x.producer, x.dop, x.stunts, x.supporting_cast].join(',').includes(n)).length; }
             function buildTags(str, role) { 
-                if (!str) return '';
+                if (!str || str === 'N/A' || str === '-') return '';
                 return str.split(',').map(n => {
                     const name = n.trim();
-                    const count = getCount(name);
                     const award = awardWinners[name] ? `<span class="badge" style="background:rgba(16,185,129,0.2); color:var(--success)">${awardWinners[name]}</span>` : '';
-                    return `<a href="index.html?search=${name}" class="crew-tag"><div><div style="font-size:0.6rem; color:var(--text-muted)">${role}</div><strong>${name}</strong></div><span class="badge">${count} Films</span>${award}</a>`;
+                    return `<a href="index.html?search=${name}" class="crew-tag"><div><div style="font-size:0.6rem; color:var(--text-muted)">${role}</div><strong>${name}</strong></div><span class="badge">${getCount(name)} Films</span>${award}</a>`;
                 }).join('');
             }
 
@@ -52,9 +52,13 @@
                 <div class="dashboard-grid">
                     <div class="card">
                         <div class="section-title">Cast & Crew Directory</div>
-                        ${buildTags(m.starring, 'Starring')}${buildTags(m.director, 'Director')}${buildTags(m.producer, 'Producer')}${buildTags(m.dop, 'DOP')}${buildTags(m.stunts, 'Stunts')}
+                        ${buildTags(m.starring, 'Starring')}${buildTags(m.director, 'Director')}${buildTags(m.producer, 'Producer')}${buildTags(m.dop, 'DOP')}${buildTags(m.stunts, 'Stunts')}${buildTags(m.supporting_cast, 'Supporting')}
                     </div>
                     <div>
+                        <div class="card">
+                            <div class="finance-box"><div style="font-size:0.7rem; color:var(--text-muted)">Budget</div><div class="val">${m.budget || 'TBA'}</div></div>
+                            <div class="finance-box"><div style="font-size:0.7rem; color:var(--text-muted)">Worldwide Gross</div><div class="val">${m.trade_gross || 'TBA'}</div></div>
+                        </div>
                         <div class="card">
                             <div class="section-title">Categorized Ratings</div>
                             <div class="rating-row">Direction <span class="star-box">★★★★★</span></div>
