@@ -20,7 +20,6 @@
         .badge { font-size: 0.65rem; background: rgba(255,199,0,0.2); color: var(--gold-accent); padding: 2px 6px; border-radius: 6px; font-weight: 700; }
         .finance-box { background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 14px; margin-bottom: 1rem; text-align: center; border: 1px solid var(--border-glass); }
         .val { font-size: 1.7rem; font-weight: 800; color: var(--gold-accent); }
-        .rating-row { display: flex; justify-content: space-between; padding: 0.8rem; background: rgba(255,255,255,0.02); border-radius: 8px; margin-bottom: 0.5rem; font-size: 0.9rem; }
     </style>
 </head>
 <body>
@@ -37,25 +36,43 @@
             const id = new URLSearchParams(window.location.search).get('id');
             const { data } = await db.from('box_office').select('*');
             const m = data.find(x => x.movie_id == id);
-            const allMovies = data;
+            
+            // Function to count appearances across ALL relevant columns
+            function getCount(name) {
+                return data.filter(x => 
+                    [x.starring, x.director, x.producer, x.dop, x.stunts, x.supporting_cast].join(',').includes(name)
+                ).length;
+            }
 
-            function getCount(name) { return allMovies.filter(x => (x.starring + x.director).includes(name)).length; }
-            function buildTags(str, role) { return str.split(',').map(n => `<a href="index.html?search=${n.trim()}" class="crew-tag"><div><div style="font-size:0.6rem; color:var(--text-muted);">${role}</div><strong>${n.trim()}</strong></div><span class="badge">${getCount(n.trim())} Films</span>${awards[n.trim()] ? `<span class="badge" style="background:rgba(16,185,129,0.2); color:var(--success)">${awards[n.trim()]}</span>` : ''}</a>`).join(''); }
+            // Function to build tags for any column
+            function buildTags(str, role) {
+                if (!str) return '';
+                return str.split(',').map(n => {
+                    const name = n.trim();
+                    return `<a href="index.html?search=${name}" class="crew-tag">
+                        <div><div style="font-size:0.6rem; color:var(--text-muted);">${role}</div><strong>${name}</strong></div>
+                        <span class="badge">${getCount(name)} Films</span>
+                    </a>`;
+                }).join('');
+            }
 
             document.getElementById('content').innerHTML = `
                 <div class="card"><h1>${m.movie_name}</h1><p style="color:var(--cyan-accent)">Verdict: ${m.verdict}</p></div>
                 <div class="dashboard-grid">
                     <div class="card">
-                        <div class="section-title">Cast & Crew</div>
+                        <div class="section-title">Cast & Crew Directory</div>
                         ${buildTags(m.starring, 'Lead')}
                         ${buildTags(m.director, 'Director')}
+                        ${buildTags(m.producer, 'Producer')}
+                        ${buildTags(m.dop, 'DOP')}
+                        ${buildTags(m.stunts, 'Stunt Master')}
+                        ${buildTags(m.supporting_cast, 'Supporting')}
                     </div>
                     <div>
                         <div class="card">
-                            <div class="finance-box"><div style="font-size:0.7rem; color:var(--text-muted)">Budget</div><div class="val">${m.budget}</div></div>
-                            <div class="finance-box"><div style="font-size:0.7rem; color:var(--text-muted)">Worldwide Gross</div><div class="val">${m.trade_gross}</div></div>
+                            <div class="finance-box"><div style="font-size:0.7rem; color:var(--text-muted)">Budget</div><div class="val">${m.budget || 'TBA'}</div></div>
+                            <div class="finance-box"><div style="font-size:0.7rem; color:var(--text-muted)">Worldwide Gross</div><div class="val">${m.trade_gross || 'TBA'}</div></div>
                         </div>
-                        <div class="card"><div class="section-title">Ratings</div><div class="rating-row">Direction <span>★★★★★</span></div><div class="rating-row">Music <span>★★★★★</span></div></div>
                     </div>
                 </div>
             `;
