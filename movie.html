@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>TeluguCineCraft | Movie & Cast Intelligence</title>
+    <title>TeluguCineCraft | Full Cast & Technical Crew Intelligence</title>
 
     <!-- Google Fonts & Font Awesome Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -27,7 +27,7 @@
             --text-muted: #94A3B8;
             --danger: #EF4444;
             --success: #22C55E;
-            --purple-accent: #A855F7;
+            --purple-accent: #C084FC;
         }
 
         * {
@@ -39,8 +39,8 @@
         body {
             background-color: var(--bg-base);
             background-image: 
-                radial-gradient(circle at 15% 10%, rgba(255, 199, 0, 0.06) 0%, transparent 40%),
-                radial-gradient(circle at 85% 85%, rgba(56, 189, 248, 0.05) 0%, transparent 40%);
+                radial-gradient(circle at 15% 10%, rgba(255, 199, 0, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(56, 189, 248, 0.04) 0%, transparent 40%);
             color: var(--text-main);
             font-family: 'Plus Jakarta Sans', sans-serif;
             min-height: 100vh;
@@ -51,7 +51,7 @@
         }
 
         .container {
-            max-width: 1280px;
+            max-width: 1350px;
             margin: 0 auto;
             width: 100%;
         }
@@ -61,7 +61,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0.82rem 1.6rem;
+            padding: 0.8rem 1.6rem;
             background: var(--bg-glass);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
@@ -109,7 +109,7 @@
         /* --- DASHBOARD GRID --- */
         .movie-dashboard {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-columns: repeat(4, 1fr);
             gap: 1.2rem;
         }
 
@@ -119,7 +119,7 @@
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--border-glass);
             border-radius: 18px;
-            padding: 1.25rem 1.4rem;
+            padding: 1.2rem 1.3rem;
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
             display: flex;
             flex-direction: column;
@@ -159,7 +159,7 @@
         /* --- METRICS GRID --- */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
             gap: 0.8rem;
             margin-top: 0.5rem;
         }
@@ -167,13 +167,13 @@
         .stat-box {
             background: rgba(0, 0, 0, 0.35);
             border: 1px solid var(--border-glass);
-            padding: 0.8rem;
+            padding: 0.75rem;
             border-radius: 12px;
             text-align: center;
         }
 
         .stat-box-label {
-            font-size: 0.7rem;
+            font-size: 0.68rem;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -181,16 +181,16 @@
         }
 
         .stat-box-value {
-            font-size: 1.15rem;
+            font-size: 1.1rem;
             font-weight: 800;
             color: var(--gold-accent);
         }
 
         .panel-title {
-            font-size: 1.05rem;
+            font-size: 1rem;
             font-weight: 700;
             color: var(--cyan-accent);
-            margin-bottom: 0.9rem;
+            margin-bottom: 0.8rem;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -198,13 +198,13 @@
             padding-bottom: 0.4rem;
         }
 
-        /* --- INTERACTIVE CAST & CREW ROW --- */
+        /* --- INTERACTIVE CAST & CREW ROWS --- */
         .person-row {
             display: flex;
             flex-direction: column;
-            gap: 0.25rem;
-            padding: 0.55rem 0;
-            border-bottom: 1px dashed rgba(255, 255, 255, 0.06);
+            gap: 0.2rem;
+            padding: 0.45rem 0;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
         }
 
         .person-row:last-child {
@@ -212,7 +212,7 @@
         }
 
         .person-role {
-            font-size: 0.73rem;
+            font-size: 0.7rem;
             text-transform: uppercase;
             color: var(--text-muted);
             font-weight: 600;
@@ -225,22 +225,22 @@
             justify-content: space-between;
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--border-glass);
-            padding: 0.5rem 0.8rem;
+            padding: 0.45rem 0.75rem;
             border-radius: 10px;
             text-decoration: none;
             color: var(--text-main);
-            transition: all 0.25 ease;
+            transition: all 0.2s ease;
         }
 
         .person-card-link:hover {
             background: rgba(255, 199, 0, 0.08);
             border-color: var(--gold-accent);
-            transform: translateX(4px);
+            transform: translateX(3px);
         }
 
         .person-name {
             font-weight: 700;
-            font-size: 0.92rem;
+            font-size: 0.88rem;
             display: flex;
             align-items: center;
             gap: 6px;
@@ -249,16 +249,16 @@
         .person-badges {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
         }
 
         .film-count-badge {
             background: rgba(56, 189, 248, 0.12);
             color: var(--cyan-accent);
             border: 1px solid rgba(56, 189, 248, 0.3);
-            font-size: 0.7rem;
+            font-size: 0.68rem;
             font-weight: 700;
-            padding: 0.15rem 0.5rem;
+            padding: 0.12rem 0.45rem;
             border-radius: 6px;
             white-space: nowrap;
         }
@@ -267,9 +267,9 @@
             background: rgba(255, 199, 0, 0.12);
             color: var(--gold-accent);
             border: 1px solid rgba(255, 199, 0, 0.3);
-            font-size: 0.7rem;
+            font-size: 0.68rem;
             font-weight: 700;
-            padding: 0.15rem 0.5rem;
+            padding: 0.12rem 0.45rem;
             border-radius: 6px;
             white-space: nowrap;
         }
@@ -280,7 +280,7 @@
             justify-content: center;
             gap: 8px;
             width: 100%;
-            padding: 0.75rem;
+            padding: 0.7rem;
             background: linear-gradient(135deg, rgba(255, 199, 0, 0.15), rgba(56, 189, 248, 0.15));
             border: 1px solid var(--gold-accent);
             color: var(--gold-accent);
@@ -304,7 +304,7 @@
             font-size: 1.2rem;
         }
 
-        @media (max-width: 1024px) {
+        @media (max-width: 1200px) {
             .movie-dashboard { grid-template-columns: 1fr 1fr; }
         }
 
@@ -331,12 +331,12 @@
         <!-- DYNAMIC CONTENT HOLDER -->
         <div id="movieDetailsArea" class="loading-view">
             <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
-            <p style="margin-top: 12px;">Fetching full production & box office metadata...</p>
+            <p style="margin-top: 12px;">Loading comprehensive cast, crew & technical data...</p>
         </div>
     </div>
 
     <script>
-        // Initialize Supabase Client
+        // Supabase Initialization
         const db = window.supabase.createClient(
             "https://eosgvjvpdwxmpxzerxit.supabase.co", 
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvc2d2anZwZHd4bXB4emVyeGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1Njk3MTMsImV4cCI6MjEwMTE0NTcxM30.fD14BdJBDPNqFUKGxS5DRgsDnN8CqYdWR4k8cuAbvcg",
@@ -348,9 +348,9 @@
             return params.get('id');
         }
 
-        // Helper to count how many times an individual appears in all loaded movies
+        // Film count query
         async function getFilmCount(personName) {
-            if (!personName || personName === 'N/A') return '1 Film';
+            if (!personName || personName === 'N/A' || personName === 'Featured Ensemble') return '1 Film';
             
             try {
                 const { count } = await db
@@ -364,15 +364,13 @@
             }
         }
 
-        // Generate award badge based on notable icons
-        function getAwardHighlight(role, name) {
+        function getAwardHighlight(name) {
             if (!name || name === 'N/A') return '';
             const lower = name.toLowerCase();
-            
-            if (lower.includes('pawan kalyan') || lower.includes('prabhas') || lower.includes('mahesh') || lower.includes('ss rajamouli')) {
-                return `<span class="award-badge"><i class="fa-solid fa-trophy"></i> National / Nandi Winner</span>`;
+            if (lower.includes('pawan kalyan') || lower.includes('prabhas') || lower.includes('mahesh') || lower.includes('rajamouli')) {
+                return `<span class="award-badge"><i class="fa-solid fa-trophy"></i> National / Nandi</span>`;
             } else if (lower.includes('allu arjun') || lower.includes('ntr') || lower.includes('ram charan')) {
-                return `<span class="award-badge"><i class="fa-solid fa-award"></i> Filmfare & National</span>`;
+                return `<span class="award-badge"><i class="fa-solid fa-award"></i> Filmfare Winner</span>`;
             }
             return `<span class="award-badge"><i class="fa-solid fa-star"></i> Industry Veteran</span>`;
         }
@@ -388,7 +386,6 @@
                 return;
             }
 
-            // Dual Table Query
             let { data, error } = await db.from('box_office').select('*').eq('movie_id', id).single();
             
             if (error || !data) {
@@ -400,8 +397,8 @@
             if (error || !data) {
                 document.getElementById('movieDetailsArea').innerHTML = `
                     <div style="color: var(--danger);">
-                        <p style="font-weight: 700; font-size: 1.2rem;">Movie details not found.</p>
-                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 5px;">Record ID #${id} may have been moved or removed.</p>
+                        <p style="font-weight: 700; font-size: 1.2rem;">Movie details unfulfilled.</p>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 5px;">Record ID #${id} may have been moved.</p>
                     </div>`;
                 return;
             }
@@ -414,15 +411,21 @@
             const verdict = m.verdict || 'Blockbuster';
             const hero = m.hero || m.starring || m.lead_actor || 'N/A';
             const heroine = m.heroine || m.female_lead || 'N/A';
+            const villain = m.villain || m.antagonist || m.negative_role || 'Featured Antagonist';
+            const sideCharacters = m.side_characters || m.supporting_cast || m.cast || 'Ensemble Cast';
+            
             const director = m.director || 'N/A';
-            const producer = m.producer || m.banner || 'N/A';
+            const dop = m.dop || m.cinematography || m.cinematographer || 'Acclaimed DOP';
+            const stunt = m.stunt_man || m.stunt || m.action_director || 'Top Action Masters';
+            const vfx = m.vfx || m.vfx_studio || m.cgi || 'Premier Visual Effects';
             const music = m.music_director || m.music || 'N/A';
+            const producer = m.producer || m.banner || 'N/A';
+            
             const budget = m.budget || 'N/A';
             const gross = m.collection || m.trade_gross || m.worldwide_gross || 'N/A';
             const releaseDate = m.release_date || m.year || 'N/A';
             const ottLink = m.ott_link || m.ott_platform_link || null;
 
-            // Fetch dynamic film counts asynchronously
             const [heroCount, heroineCount, directorCount, musicCount] = await Promise.all([
                 getFilmCount(hero),
                 getFilmCount(heroine),
@@ -443,9 +446,9 @@
                         <div class="verdict-pill">${verdict}</div>
                     </div>
 
-                    <!-- COLUMN 1: BOX OFFICE & METRICS -->
+                    <!-- PANEL 1: BOX OFFICE & METRICS -->
                     <div class="glass-panel">
-                        <div class="panel-title"><i class="fa-solid fa-chart-line"></i> Box Office & Financials</div>
+                        <div class="panel-title"><i class="fa-solid fa-chart-line"></i> Financial Metrics</div>
                         <div class="stats-grid">
                             <div class="stat-box">
                                 <div class="stat-box-label">Budget</div>
@@ -464,18 +467,15 @@
                         ` : ''}
                     </div>
 
-                    <!-- COLUMN 2: KEY CAST WITH HYPERLINKS & COUNTS -->
+                    <!-- PANEL 2: STAR CAST & ANTAGONISTS -->
                     <div class="glass-panel">
-                        <div class="panel-title"><i class="fa-solid fa-users"></i> Cast & Filmography</div>
+                        <div class="panel-title"><i class="fa-solid fa-masks-theater"></i> Star Ensemble</div>
                         
                         <div class="person-row">
-                            <div class="person-role">Hero / Lead Actor</div>
+                            <div class="person-role">Hero / Male Lead</div>
                             <a href="index.html?search=${encodeURIComponent(hero)}" class="person-card-link">
                                 <span class="person-name"><i class="fa-solid fa-user-astronaut" style="color:var(--gold-accent)"></i> ${hero}</span>
-                                <div class="person-badges">
-                                    <span class="film-count-badge">${heroCount}</span>
-                                    ${getAwardHighlight('hero', hero)}
-                                </div>
+                                <div class="person-badges"><span class="film-count-badge">${heroCount}</span>${getAwardHighlight(hero)}</div>
                             </a>
                         </div>
 
@@ -483,26 +483,60 @@
                             <div class="person-role">Heroine / Female Lead</div>
                             <a href="index.html?search=${encodeURIComponent(heroine)}" class="person-card-link">
                                 <span class="person-name"><i class="fa-solid fa-user-ninja" style="color:var(--cyan-accent)"></i> ${heroine}</span>
-                                <div class="person-badges">
-                                    <span class="film-count-badge">${heroineCount}</span>
-                                    ${getAwardHighlight('heroine', heroine)}
-                                </div>
+                                <div class="person-badges"><span class="film-count-badge">${heroineCount}</span></div>
                             </a>
+                        </div>
+
+                        <div class="person-row">
+                            <div class="person-role">Antagonist / Villain</div>
+                            <a href="index.html?search=${encodeURIComponent(villain)}" class="person-card-link">
+                                <span class="person-name"><i class="fa-solid fa-skull" style="color:var(--danger)"></i> ${villain}</span>
+                            </a>
+                        </div>
+
+                        <div class="person-row">
+                            <div class="person-role">Supporting Characters</div>
+                            <div class="person-card-link" style="cursor:default;">
+                                <span class="person-name"><i class="fa-solid fa-users" style="color:var(--purple-accent)"></i> ${sideCharacters}</span>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- COLUMN 3: CREW & TECHNICAL TEAM -->
+                    <!-- PANEL 3: TECHNICAL CREW (DOP, STUNTS, VFX) -->
                     <div class="glass-panel">
-                        <div class="panel-title"><i class="fa-solid fa-clapperboard"></i> Crew & Technical Team</div>
+                        <div class="panel-title"><i class="fa-solid fa-wand-magic-sparkles"></i> Technical Departments</div>
+                        
+                        <div class="person-row">
+                            <div class="person-role">Cinematography (DOP)</div>
+                            <a href="index.html?search=${encodeURIComponent(dop)}" class="person-card-link">
+                                <span class="person-name"><i class="fa-solid fa-camera" style="color:var(--cyan-accent)"></i> ${dop}</span>
+                            </a>
+                        </div>
+
+                        <div class="person-row">
+                            <div class="person-role">Stunts & Action</div>
+                            <div class="person-card-link" style="cursor:default;">
+                                <span class="person-name"><i class="fa-solid fa-hand-fist" style="color:var(--gold-accent)"></i> ${stunt}</span>
+                            </div>
+                        </div>
+
+                        <div class="person-row">
+                            <div class="person-role">VFX & CGI Studio</div>
+                            <div class="person-card-link" style="cursor:default;">
+                                <span class="person-name"><i class="fa-solid fa-laptop-code" style="color:var(--purple-accent)"></i> ${vfx}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PANEL 4: DIRECTION & MUSIC -->
+                    <div class="glass-panel">
+                        <div class="panel-title"><i class="fa-solid fa-clapperboard"></i> Direction & Production</div>
                         
                         <div class="person-row">
                             <div class="person-role">Director</div>
                             <a href="index.html?search=${encodeURIComponent(director)}" class="person-card-link">
                                 <span class="person-name"><i class="fa-solid fa-video" style="color:var(--gold-accent)"></i> ${director}</span>
-                                <div class="person-badges">
-                                    <span class="film-count-badge">${directorCount}</span>
-                                    ${getAwardHighlight('director', director)}
-                                </div>
+                                <div class="person-badges"><span class="film-count-badge">${directorCount}</span></div>
                             </a>
                         </div>
 
@@ -510,15 +544,13 @@
                             <div class="person-role">Music Director</div>
                             <a href="index.html?search=${encodeURIComponent(music)}" class="person-card-link">
                                 <span class="person-name"><i class="fa-solid fa-music" style="color:var(--cyan-accent)"></i> ${music}</span>
-                                <div class="person-badges">
-                                    <span class="film-count-badge">${musicCount}</span>
-                                </div>
+                                <div class="person-badges"><span class="film-count-badge">${musicCount}</span></div>
                             </a>
                         </div>
 
                         <div class="person-row">
                             <div class="person-role">Producer / Banner</div>
-                            <div class="person-card-link" style="cursor: default;">
+                            <div class="person-card-link" style="cursor:default;">
                                 <span class="person-name"><i class="fa-solid fa-building" style="color:var(--text-muted)"></i> ${producer}</span>
                             </div>
                         </div>
