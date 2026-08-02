@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeluguCineCraft | Premium Cinema Analytics</title>
+    <title>TeluguCineCraft | Box Office Collections</title>
     
     <!-- Google Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,7 +17,6 @@
     <style>
         :root {
             --bg-base: #07090E;
-            --bg-surface: #0F141C;
             --bg-glass: rgba(21, 27, 38, 0.7);
             --border-glass: rgba(255, 255, 255, 0.08);
             --gold-accent: #FFC700;
@@ -48,7 +47,7 @@
         }
 
         .container {
-            max-width: 1280px;
+            max-width: 1200px;
             margin: 0 auto;
         }
 
@@ -68,19 +67,12 @@
         .brand-title {
             font-size: 1.5rem;
             font-weight: 800;
-            letter-spacing: -0.5px;
             background: linear-gradient(135deg, #FFF 0%, var(--gold-accent) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             display: flex;
             align-items: center;
             gap: 10px;
-        }
-
-        .nav-actions {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
         }
 
         .auth-btn {
@@ -125,12 +117,11 @@
             font-size: 0.95rem;
         }
 
-        /* Search Bar Box */
         .search-box-wrapper {
             position: relative;
-            min-width: 380px;
+            min-width: 320px;
             flex-grow: 1;
-            max-width: 500px;
+            max-width: 480px;
         }
 
         .search-box-wrapper i.search-icon {
@@ -139,8 +130,6 @@
             top: 50%;
             transform: translateY(-50%);
             color: var(--text-muted);
-            font-size: 1rem;
-            transition: color 0.2s ease;
         }
 
         .search-input {
@@ -159,10 +148,6 @@
         .search-input:focus {
             border-color: var(--gold-accent);
             box-shadow: 0 0 15px var(--gold-glow);
-        }
-
-        .search-input:focus + i.search-icon {
-            color: var(--gold-accent);
         }
 
         /* Dashboard Table */
@@ -187,25 +172,20 @@
             font-size: 0.8rem;
             text-transform: uppercase;
             letter-spacing: 1px;
-            padding: 1.2rem 1.5rem;
+            padding: 1.2rem 1.2rem;
             border-bottom: 1px solid var(--border-glass);
         }
 
         td {
-            padding: 1.2rem 1.5rem;
+            padding: 1.2rem 1.2rem;
             border-bottom: 1px solid var(--border-glass);
             vertical-align: middle;
-        }
-
-        tr:last-child td {
-            border-bottom: none;
         }
 
         tr:hover {
             background: rgba(255, 255, 255, 0.02);
         }
 
-        /* Movie Cell Details */
         .movie-title-link {
             font-size: 1.1rem;
             font-weight: 700;
@@ -213,26 +193,23 @@
             text-decoration: none;
             transition: color 0.2s ease;
             display: block;
-            margin-bottom: 0.35rem;
+            margin-bottom: 4px;
         }
 
         .movie-title-link:hover {
             color: var(--cyan-accent);
         }
 
-        .crew-preview {
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
+        .crew-subtext {
             font-size: 0.85rem;
             color: var(--text-muted);
+            line-height: 1.4;
         }
 
-        .crew-preview span strong {
-            color: rgba(248, 250, 252, 0.85);
+        .crew-subtext strong {
+            color: var(--text-main);
         }
 
-        /* Badges & Metrics */
         .verdict-badge {
             display: inline-flex;
             align-items: center;
@@ -256,24 +233,31 @@
             border: 1px solid rgba(239, 68, 68, 0.3);
         }
 
-        .rating-box {
-            display: flex;
-            align-items: center;
-            gap: 6px;
+        .financial-val {
             font-weight: 700;
+            font-size: 1.05rem;
             color: var(--gold-accent);
         }
 
-        .rating-box i {
-            font-size: 0.9rem;
-        }
-
-        .financial-val {
+        .view-btn {
+            color: var(--cyan-accent);
+            text-decoration: none;
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 0.4rem 0.8rem;
+            background: rgba(56, 189, 248, 0.1);
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
         }
 
-        /* Loader & Empty States */
+        .view-btn:hover {
+            background: rgba(56, 189, 248, 0.2);
+        }
+
         .loading-state, .empty-state {
             text-align: center;
             padding: 4rem 2rem;
@@ -306,16 +290,16 @@
             </div>
             <div class="nav-actions">
                 <button class="auth-btn" onclick="handleGoogleLogin()">
-                    <i class="fa-brands fa-google"></i> Sign In to Review
+                    <i class="fa-brands fa-google"></i> Sign In
                 </button>
             </div>
         </nav>
 
-        <!-- Dashboard Header with Universal Search Bar -->
+        <!-- Dashboard Header -->
         <div class="dashboard-header">
             <div class="header-text">
-                <h2>Box Office & Industry Insights</h2>
-                <p>Search cast, crew, DOPs, directors, or collections instantly.</p>
+                <h2>Box Office Overview</h2>
+                <p>Track movie titles, star cast, crew, and worldwide collections.</p>
             </div>
             
             <div class="search-box-wrapper">
@@ -323,19 +307,19 @@
                     type="text" 
                     id="searchInput" 
                     class="search-input" 
-                    placeholder="Search movie, hero, heroine, director, DOP, or box office..." 
+                    placeholder="Search movie, starring, director, producer..." 
                     oninput="handleSearch()"
                 />
                 <i class="fa-solid fa-magnifying-glass search-icon"></i>
             </div>
         </div>
 
-        <!-- Main Dashboard Table -->
+        <!-- Main Overview Table -->
         <div class="table-container">
             <div id="content">
                 <div class="loading-state">
                     <div class="spinner"></div>
-                    <p>Fetching industry records...</p>
+                    <p>Loading box office records...</p>
                 </div>
             </div>
         </div>
@@ -366,29 +350,21 @@
             if (error || !data) {
                 document.getElementById('content').innerHTML = `
                     <div class="loading-state" style="color: var(--danger);">
-                        <p>Unable to load dashboard data.</p>
+                        <p>Unable to load box office data.</p>
                     </div>`;
                 return;
-            }
-
-            // --- DIAGNOSTIC TOOL ---
-            if (data.length > 0) {
-                console.log("=== DATABASE DIAGNOSTIC ===");
-                console.log("Here are the EXACT column names Supabase is returning:");
-                console.table(data[0]);
-                console.log("===========================");
             }
 
             moviesData = data;
             renderTable(moviesData);
         }
 
-        function renderTable(dataset, query = '') {
+        function renderTable(dataset) {
             if (dataset.length === 0) {
                 document.getElementById('content').innerHTML = `
                     <div class="empty-state">
                         <i class="fa-solid fa-film" style="font-size: 2.5rem; margin-bottom: 1rem; opacity: 0.4;"></i>
-                        <p style="font-size: 1.1rem; font-weight: 600;">No matching movies or crew found</p>
+                        <p style="font-size: 1.1rem; font-weight: 600;">No matching movies found</p>
                     </div>`;
                 return;
             }
@@ -397,12 +373,12 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Movie & Key Crew Details</th>
-                            <th>DOP & Supporting Cast</th>
-                            <th>Rating</th>
-                            <th>Budget</th>
-                            <th>Collection</th>
+                            <th>Movie</th>
+                            <th>Starring</th>
+                            <th>Director & Producer</th>
+                            <th>Worldwide Gross</th>
                             <th>Verdict</th>
+                            <th style="text-align:right;">Action</th>
                         </tr>
                     </thead>
                     <tbody>`;
@@ -413,40 +389,36 @@
                 const verdictClass = isHit ? 'hit' : 'flop';
                 const verdictIcon = isHit ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down';
 
-                // Added even more fallback keys for the collection
-                const finalCollection = m.worldwide_gross || m.collection || m.gross || m.revenue || m.total_collection || m.box_office || m.ww_gross || m.worldwide_collection || '-';
+                const grossValue = m.trade_gross || m.producer_gross || m.sacnilk_gross || m.worldwide_gross || m.collection || '-';
 
                 html += `
                     <tr>
                         <td>
                             <a href="movie.html?id=${m.movie_id}" class="movie-title-link">
-                                ${m.movie_name || 'Untitled Project'} <i class="fa-solid fa-chevron-right" style="font-size:0.75rem; margin-left:4px;"></i>
+                                ${m.movie_name || 'Untitled Project'}
                             </a>
-                            <div class="crew-preview">
-                                <span><strong>Hero / Cast:</strong> ${m.starring || 'N/A'}</span>
-                                <span><strong>Director:</strong> ${m.director || 'N/A'}</span>
-                                <span><strong>Producer:</strong> ${m.producer || 'N/A'}</span>
+                        </td>
+                        <td>
+                            <div class="crew-subtext">
+                                ${m.starring || 'N/A'}
                             </div>
                         </td>
                         <td>
-                            <div class="crew-preview">
-                                <span><strong>DOP:</strong> ${m.dop || m.cinematography || 'N/A'}</span>
-                                <span><strong>Supporting Cast:</strong> ${m.side_characters || m.supporting_cast || 'N/A'}</span>
+                            <div class="crew-subtext">
+                                <div><strong>Dir:</strong> ${m.director || 'N/A'}</div>
+                                <div><strong>Prod:</strong> ${m.producer || 'N/A'}</div>
                             </div>
                         </td>
-                        <td>
-                            <div class="rating-box">
-                                <i class="fa-solid fa-star"></i>
-                                <span>${m.rating ? Number(m.rating).toFixed(1) : 'N/A'}</span>
-                                <span style="font-size:0.75rem; color:var(--text-muted); font-weight:400;">/ 5.0</span>
-                            </div>
-                        </td>
-                        <td><span class="financial-val">${m.budget || '-'}</span></td>
-                        <td><span class="financial-val" style="color:var(--text-main); font-weight:700;">${finalCollection}</span></td>
+                        <td><span class="financial-val">${grossValue}</span></td>
                         <td>
                             <span class="verdict-badge ${verdictClass}">
                                 <i class="fa-solid ${verdictIcon}"></i> ${m.verdict || 'Pending'}
                             </span>
+                        </td>
+                        <td style="text-align:right;">
+                            <a href="movie.html?id=${m.movie_id}" class="view-btn">
+                                Details <i class="fa-solid fa-arrow-right"></i>
+                            </a>
                         </td>
                     </tr>`;
             });
@@ -464,16 +436,15 @@
             }
 
             const filtered = moviesData.filter(m => {
-                const searchString = [
-                    m.movie_name, m.starring, m.director, m.producer, 
-                    m.dop, m.cinematography, m.side_characters, m.supporting_cast, m.verdict,
-                    m.worldwide_gross, m.collection, m.gross, m.revenue, m.total_collection, m.box_office, m.ww_gross, m.worldwide_collection
-                ].map(val => (val || '').toLowerCase()).join(' ');
-
-                return searchString.includes(query);
+                const title = (m.movie_name || '').toLowerCase();
+                const starring = (m.starring || '').toLowerCase();
+                const director = (m.director || '').toLowerCase();
+                const producer = (m.producer || '').toLowerCase();
+                
+                return title.includes(query) || starring.includes(query) || director.includes(query) || producer.includes(query);
             });
 
-            renderTable(filtered, query);
+            renderTable(filtered);
         }
 
         init();
