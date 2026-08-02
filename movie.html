@@ -674,7 +674,12 @@
             const sideCharacters = m.side_characters || m.supporting_cast || m.cast || m.other_cast || 'Ensemble Cast';
             
             const director = m.director || m.director_name || m.directed_by || 'N/A';
+            
+            // --- NEW MAPPING ---
             const music = m.music_director || m.music || m.music_by || m.musician || m.composer || 'N/A';
+            const singers = m.playback_singers || m.playback_singer || 'N/A';
+            // -------------------
+
             const stunt = m.stunt_man || m.stunt || m.stunts || m.action_director || m.action_master || m.stunt_master || 'Top Action Masters';
             const dop = m.dop || m.cinematography || m.cinematographer || m.camera || 'Acclaimed DOP';
             const vfx = m.vfx || m.vfx_studio || m.cgi || m.visual_effects || 'Premier Visual Effects';
@@ -685,18 +690,12 @@
             const releaseDate = m.release_date || m.year || m.release_year || 'N/A';
             const ottLink = m.ott_link || m.ott_platform_link || m.ott || null;
 
-            // Generate clickable links for playback singers
-            const singersText = m.playback_singer || m.playback_singers || null;
+            // Generate clickable singer links
             let singersDisplay = '<span style="color: var(--text-muted);">N/A</span>';
-            
-            if (singersText && singersText.trim() !== '' && singersText.toLowerCase() !== 'n/a') {
-                const singersArray = singersText.split(',');
-                const linkedSingers = singersArray.map(singer => {
-                    let cleanName = singer.trim();
-                    let linkUrl = `index.html?search=${encodeURIComponent(cleanName)}`;
-                    return `<a href="${linkUrl}" style="color: var(--cyan-accent); text-decoration: none; font-weight: 700;">${cleanName}</a>`;
-                });
-                singersDisplay = linkedSingers.join('<span style="color: var(--text-main); font-weight: normal;">, </span>');
+            if (singers !== 'N/A') {
+                singersDisplay = singers.split(',').map(s => 
+                    `<a href="index.html?search=${encodeURIComponent(s.trim())}" style="color: var(--cyan-accent); text-decoration: underline;">${s.trim()}</a>`
+                ).join(', ');
             }
 
             const [heroCount, heroineCount, directorCount, musicCount] = await Promise.all([
@@ -824,10 +823,7 @@
                         <div class="person-row">
                             <div class="person-role">Playback Singers</div>
                             <div class="person-card-link" style="cursor:default;">
-                                <span class="person-name" style="flex-wrap: wrap; line-height: 1.4;">
-                                    <i class="fa-solid fa-microphone-lines" style="color:var(--purple-accent)"></i> 
-                                    ${singersDisplay}
-                                </span>
+                                <span class="person-name"><i class="fa-solid fa-microphone-lines" style="color:var(--purple-accent)"></i> ${singersDisplay}</span>
                             </div>
                         </div>
 
