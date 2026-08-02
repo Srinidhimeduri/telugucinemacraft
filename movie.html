@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>TeluguCineCraft | Full Cast, Crew & Audience Rating Intelligence</title>
+    <title>TeluguCineCraft | Personal Cinema Dashboard</title>
 
     <!-- Google Fonts & Font Awesome Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -56,12 +56,12 @@
             width: 100%;
         }
 
-        /* NAV BAR */
+        /* --- NAV BAR & PERSONAL DASHBOARD BADGE --- */
         nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0.8rem 1.6rem;
+            padding: 0.85rem 1.6rem;
             background: var(--bg-glass);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
@@ -89,6 +89,42 @@
             display: flex;
             align-items: center;
             gap: 12px;
+        }
+
+        .user-pill {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 199, 0, 0.08);
+            border: 1px solid var(--border-hover);
+            padding: 0.45rem 1rem;
+            border-radius: 12px;
+            box-shadow: 0 0 15px var(--gold-glow);
+        }
+
+        .user-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 1.5px solid var(--gold-accent);
+        }
+
+        .greeting-text {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .dashboard-badge {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--cyan-accent);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            font-size: 0.68rem;
+            font-weight: 800;
+            padding: 0.15rem 0.5rem;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .back-btn {
@@ -133,7 +169,24 @@
             box-shadow: 0 0 15px var(--gold-glow);
         }
 
-        /* DASHBOARD GRID */
+        .signout-btn {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            padding: 0.45rem 0.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.78rem;
+            transition: all 0.2s ease;
+        }
+
+        .signout-btn:hover {
+            background: var(--danger);
+            color: #FFF;
+        }
+
+        /* --- DASHBOARD GRID LAYOUT --- */
         .movie-dashboard {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -301,7 +354,7 @@
             white-space: nowrap;
         }
 
-        /* 5-PARAMETER RATING PANEL STYLING */
+        /* 5-PARAMETER RATING PANEL */
         .rating-panel {
             grid-column: 1 / -1;
             margin-top: 0.5rem;
@@ -464,7 +517,7 @@
 </head>
 <body>
     <div class="container">
-        <!-- TOP NAVIGATION -->
+        <!-- TOP NAVIGATION BAR -->
         <nav>
             <a href="index.html" class="brand-title">
                 <i class="fa-solid fa-film"></i> TeluguCineCraft
@@ -500,7 +553,15 @@
             return params.get('id');
         }
 
-        // Auth Handler
+        // Time-of-Day Greeting Logic
+        function getLocalGreeting() {
+            const hour = new Date().getHours();
+            if (hour >= 5 && hour < 12) return "Good morning";
+            if (hour >= 12 && hour < 17) return "Good afternoon";
+            return "Good evening";
+        }
+
+        // Auth Handler with Personalized Dashboard UI
         async function checkUserAuth() {
             try {
                 const { data: { user } } = await db.auth.getUser();
@@ -508,10 +569,20 @@
                 const authArea = document.getElementById('authStatusArea');
                 
                 if (user) {
+                    const fullName = user.user_metadata.full_name || 'Cinephile';
+                    const firstName = fullName.split(' ')[0];
+                    const avatarUrl = user.user_metadata.avatar_url || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png';
+                    const greeting = getLocalGreeting();
+
                     authArea.innerHTML = `
-                        <span style="color:var(--text-muted); font-size: 0.85rem; margin-right:5px;">
-                            <i class="fa-solid fa-circle-user" style="color:var(--gold-accent)"></i> ${user.user_metadata.full_name || 'User'}
-                        </span>
+                        <div class="user-pill">
+                            <img src="${avatarUrl}" class="user-avatar" alt="User Profile">
+                            <div style="display: flex; flex-direction: column;">
+                                <span class="greeting-text">${greeting}, ${firstName}! 👋</span>
+                                <span class="dashboard-badge">Personal Dashboard</span>
+                            </div>
+                            <button class="signout-btn" onclick="signOutUser()" style="margin-left:5px;">Sign Out</button>
+                        </div>
                     `;
                 } else {
                     authArea.innerHTML = `
@@ -527,6 +598,11 @@
 
         async function triggerGoogleLogin() {
             await db.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
+        }
+
+        async function signOutUser() {
+            await db.auth.signOut();
+            window.location.reload();
         }
 
         // Film count query
@@ -868,7 +944,6 @@
                 return;
             }
 
-            const review = document.getElementById('reviewText').value;
             alert("Thank you! Your 5-parameter rating and review have been logged successfully.");
         }
 
