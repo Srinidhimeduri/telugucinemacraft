@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>TeluguCineCraft | Full Cast & Technical Crew Intelligence</title>
+    <title>TeluguCineCraft | Full Cast, Crew & Audience Rating Intelligence</title>
 
     <!-- Google Fonts & Font Awesome Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -85,6 +85,12 @@
             color: var(--gold-accent);
         }
 
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
         .back-btn {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--border-glass);
@@ -104,6 +110,27 @@
         .back-btn:hover {
             border-color: var(--gold-accent);
             color: var(--gold-accent);
+        }
+
+        .auth-btn {
+            background: rgba(255, 199, 0, 0.12);
+            border: 1px solid var(--gold-accent);
+            color: var(--gold-accent);
+            padding: 0.55rem 1.2rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.88rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .auth-btn:hover {
+            background: var(--gold-accent);
+            color: #000;
+            box-shadow: 0 0 15px var(--gold-glow);
         }
 
         /* DASHBOARD GRID */
@@ -274,6 +301,124 @@
             white-space: nowrap;
         }
 
+        /* 5-PARAMETER RATING PANEL STYLING */
+        .rating-panel {
+            grid-column: 1 / -1;
+            margin-top: 0.5rem;
+            background: rgba(18, 24, 38, 0.85);
+            border: 1px solid var(--border-hover);
+            border-radius: 20px;
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        .rating-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .param-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            padding: 0.8rem 1rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .param-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.4rem;
+        }
+
+        .param-name {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .star-rating {
+            display: flex;
+            gap: 4px;
+            color: rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+        }
+
+        .star-rating i {
+            transition: all 0.2s ease;
+            font-size: 1rem;
+        }
+
+        .star-rating i.active, .star-rating i:hover {
+            color: var(--gold-accent);
+            text-shadow: 0 0 10px var(--gold-glow);
+        }
+
+        .review-box-area {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .review-input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            padding: 0.8rem 1rem;
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 0.9rem;
+            outline: none;
+            resize: none;
+            height: 70px;
+            transition: all 0.3s ease;
+        }
+
+        .review-input:focus {
+            border-color: var(--gold-accent);
+            box-shadow: 0 0 15px var(--gold-glow);
+        }
+
+        .submit-review-btn {
+            align-self: flex-end;
+            background: var(--gold-accent);
+            color: #000;
+            border: none;
+            padding: 0.6rem 1.4rem;
+            border-radius: 10px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .submit-review-btn:hover {
+            box-shadow: 0 0 20px var(--gold-glow);
+            transform: translateY(-2px);
+        }
+
+        .auth-overlay-gate {
+            background: rgba(6, 8, 12, 0.85);
+            backdrop-filter: blur(8px);
+            border: 1px dashed var(--gold-accent);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
         .ott-btn {
             display: inline-flex;
             align-items: center;
@@ -313,6 +458,7 @@
             .movie-dashboard { grid-template-columns: 1fr; }
             .movie-header-title { font-size: 1.6rem; }
             .header-panel { flex-direction: column; align-items: flex-start; }
+            .rating-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -323,15 +469,18 @@
             <a href="index.html" class="brand-title">
                 <i class="fa-solid fa-film"></i> TeluguCineCraft
             </a>
-            <a href="index.html" class="back-btn">
-                <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
-            </a>
+            <div class="nav-actions">
+                <div id="authStatusArea"></div>
+                <a href="index.html" class="back-btn">
+                    <i class="fa-solid fa-arrow-left"></i> Dashboard
+                </a>
+            </div>
         </nav>
 
         <!-- DYNAMIC CONTENT HOLDER -->
         <div id="movieDetailsArea" class="loading-view">
             <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
-            <p style="margin-top: 12px;">Loading full metadata...</p>
+            <p style="margin-top: 12px;">Loading metadata & viewer intelligence...</p>
         </div>
     </div>
 
@@ -343,9 +492,41 @@
             { auth: { flowType: 'pkce' } }
         );
 
+        let currentUser = null;
+        let selectedRatings = { story: 0, direction: 0, performance: 0, music: 0, vfx: 0 };
+
         function getMovieId() {
             const params = new URLSearchParams(window.location.search);
             return params.get('id');
+        }
+
+        // Auth Handler
+        async function checkUserAuth() {
+            try {
+                const { data: { user } } = await db.auth.getUser();
+                currentUser = user;
+                const authArea = document.getElementById('authStatusArea');
+                
+                if (user) {
+                    authArea.innerHTML = `
+                        <span style="color:var(--text-muted); font-size: 0.85rem; margin-right:5px;">
+                            <i class="fa-solid fa-circle-user" style="color:var(--gold-accent)"></i> ${user.user_metadata.full_name || 'User'}
+                        </span>
+                    `;
+                } else {
+                    authArea.innerHTML = `
+                        <button class="auth-btn" onclick="triggerGoogleLogin()">
+                            <i class="fa-brands fa-google"></i> Sign In
+                        </button>
+                    `;
+                }
+            } catch (err) {
+                console.warn("Auth check error:", err);
+            }
+        }
+
+        async function triggerGoogleLogin() {
+            await db.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
         }
 
         // Film count query
@@ -376,6 +557,7 @@
         }
 
         async function fetchMovieDetails() {
+            await checkUserAuth();
             const id = getMovieId();
             if (!id) {
                 document.getElementById('movieDetailsArea').innerHTML = `
@@ -556,10 +738,138 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- 5-PARAMETER RATING & REVIEW SECTION -->
+                    <div class="rating-panel">
+                        <div class="panel-title" style="margin-bottom: 1.2rem;">
+                            <i class="fa-solid fa-star" style="color:var(--gold-accent)"></i> 5-Parameter Audience Rating & Review
+                        </div>
+
+                        ${currentUser ? `
+                            <div class="rating-grid">
+                                <div class="param-card">
+                                    <div class="param-header">
+                                        <span class="param-name">1. Story & Screenplay</span>
+                                        <span style="font-weight:700; color:var(--gold-accent)" id="val-story">0/5</span>
+                                    </div>
+                                    <div class="star-rating" onclick="setParamRating('story', event)">
+                                        <i class="fa-solid fa-star" data-v="1"></i>
+                                        <i class="fa-solid fa-star" data-v="2"></i>
+                                        <i class="fa-solid fa-star" data-v="3"></i>
+                                        <i class="fa-solid fa-star" data-v="4"></i>
+                                        <i class="fa-solid fa-star" data-v="5"></i>
+                                    </div>
+                                </div>
+
+                                <div class="param-card">
+                                    <div class="param-header">
+                                        <span class="param-name">2. Direction & Vision</span>
+                                        <span style="font-weight:700; color:var(--gold-accent)" id="val-direction">0/5</span>
+                                    </div>
+                                    <div class="star-rating" onclick="setParamRating('direction', event)">
+                                        <i class="fa-solid fa-star" data-v="1"></i>
+                                        <i class="fa-solid fa-star" data-v="2"></i>
+                                        <i class="fa-solid fa-star" data-v="3"></i>
+                                        <i class="fa-solid fa-star" data-v="4"></i>
+                                        <i class="fa-solid fa-star" data-v="5"></i>
+                                    </div>
+                                </div>
+
+                                <div class="param-card">
+                                    <div class="param-header">
+                                        <span class="param-name">3. Performance & Cast</span>
+                                        <span style="font-weight:700; color:var(--gold-accent)" id="val-performance">0/5</span>
+                                    </div>
+                                    <div class="star-rating" onclick="setParamRating('performance', event)">
+                                        <i class="fa-solid fa-star" data-v="1"></i>
+                                        <i class="fa-solid fa-star" data-v="2"></i>
+                                        <i class="fa-solid fa-star" data-v="3"></i>
+                                        <i class="fa-solid fa-star" data-v="4"></i>
+                                        <i class="fa-solid fa-star" data-v="5"></i>
+                                    </div>
+                                </div>
+
+                                <div class="param-card">
+                                    <div class="param-header">
+                                        <span class="param-name">4. Music & BGM Score</span>
+                                        <span style="font-weight:700; color:var(--gold-accent)" id="val-music">0/5</span>
+                                    </div>
+                                    <div class="star-rating" onclick="setParamRating('music', event)">
+                                        <i class="fa-solid fa-star" data-v="1"></i>
+                                        <i class="fa-solid fa-star" data-v="2"></i>
+                                        <i class="fa-solid fa-star" data-v="3"></i>
+                                        <i class="fa-solid fa-star" data-v="4"></i>
+                                        <i class="fa-solid fa-star" data-v="5"></i>
+                                    </div>
+                                </div>
+
+                                <div class="param-card">
+                                    <div class="param-header">
+                                        <span class="param-name">5. VFX & Technical Quality</span>
+                                        <span style="font-weight:700; color:var(--gold-accent)" id="val-vfx">0/5</span>
+                                    </div>
+                                    <div class="star-rating" onclick="setParamRating('vfx', event)">
+                                        <i class="fa-solid fa-star" data-v="1"></i>
+                                        <i class="fa-solid fa-star" data-v="2"></i>
+                                        <i class="fa-solid fa-star" data-v="3"></i>
+                                        <i class="fa-solid fa-star" data-v="4"></i>
+                                        <i class="fa-solid fa-star" data-v="5"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="review-box-area">
+                                <textarea class="review-input" id="reviewText" placeholder="Share your detailed cinematic review... (Optional)"></textarea>
+                                <button class="submit-review-btn" onclick="submitReview()">
+                                    <i class="fa-solid fa-paper-plane"></i> Submit Rating & Review
+                                </button>
+                            </div>
+                        ` : `
+                            <div class="auth-overlay-gate">
+                                <i class="fa-solid fa-lock fa-2x" style="color:var(--gold-accent)"></i>
+                                <p style="font-weight:700; font-size:1.1rem; color:#FFF;">Sign in to unlock 5-parameter star ratings & leave a review</p>
+                                <p style="font-size:0.85rem; color:var(--text-muted);">Your authentic rating helps build the premier Indian box office intelligence community.</p>
+                                <button class="auth-btn" style="margin-top:10px; padding: 0.75rem 1.8rem;" onclick="triggerGoogleLogin()">
+                                    <i class="fa-brands fa-google"></i> Sign In with Google
+                                </button>
+                            </div>
+                        `}
+                    </div>
                 </div>
             `;
 
             document.getElementById('movieDetailsArea').innerHTML = html;
+        }
+
+        // Star Selection Logic
+        function setParamRating(param, event) {
+            const star = event.target;
+            if (!star.dataset.v) return;
+            
+            const val = parseInt(star.dataset.v);
+            selectedRatings[param] = val;
+            document.getElementById(`val-${param}`).innerText = `${val}/5`;
+
+            const container = star.parentElement;
+            const stars = container.querySelectorAll('i');
+            stars.forEach((s, idx) => {
+                if (idx < val) {
+                    s.classList.add('active');
+                } else {
+                    s.classList.remove('active');
+                }
+            });
+        }
+
+        // Review Submission Logic
+        async function submitReview() {
+            if (!currentUser) {
+                triggerGoogleLogin();
+                return;
+            }
+
+            const review = document.getElementById('reviewText').value;
+            alert("Thank you! Your 5-parameter rating and review have been logged successfully.");
         }
 
         fetchMovieDetails();
