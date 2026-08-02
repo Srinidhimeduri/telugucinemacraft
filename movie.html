@@ -685,6 +685,20 @@
             const releaseDate = m.release_date || m.year || m.release_year || 'N/A';
             const ottLink = m.ott_link || m.ott_platform_link || m.ott || null;
 
+            // Generate clickable links for playback singers
+            const singersText = m.playback_singer || m.playback_singers || null;
+            let singersDisplay = '<span style="color: var(--text-muted);">N/A</span>';
+            
+            if (singersText && singersText.trim() !== '' && singersText.toLowerCase() !== 'n/a') {
+                const singersArray = singersText.split(',');
+                const linkedSingers = singersArray.map(singer => {
+                    let cleanName = singer.trim();
+                    let linkUrl = `index.html?search=${encodeURIComponent(cleanName)}`;
+                    return `<a href="${linkUrl}" style="color: var(--cyan-accent); text-decoration: none; font-weight: 700;">${cleanName}</a>`;
+                });
+                singersDisplay = linkedSingers.join('<span style="color: var(--text-main); font-weight: normal;">, </span>');
+            }
+
             const [heroCount, heroineCount, directorCount, musicCount] = await Promise.all([
                 getFilmCount(hero),
                 getFilmCount(heroine),
@@ -805,6 +819,16 @@
                                 <span class="person-name"><i class="fa-solid fa-music" style="color:var(--cyan-accent)"></i> ${music}</span>
                                 <div class="person-badges"><span class="film-count-badge">${musicCount}</span>${getAwardHighlight(music)}</div>
                             </a>
+                        </div>
+
+                        <div class="person-row">
+                            <div class="person-role">Playback Singers</div>
+                            <div class="person-card-link" style="cursor:default;">
+                                <span class="person-name" style="flex-wrap: wrap; line-height: 1.4;">
+                                    <i class="fa-solid fa-microphone-lines" style="color:var(--purple-accent)"></i> 
+                                    ${singersDisplay}
+                                </span>
+                            </div>
                         </div>
 
                         <div class="person-row">
