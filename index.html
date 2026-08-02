@@ -372,12 +372,10 @@
             }
 
             // --- DIAGNOSTIC TOOL ---
-            // This prints the exact structure of your database to the console
             if (data.length > 0) {
                 console.log("=== DATABASE DIAGNOSTIC ===");
-                console.log("Here are the EXACT column names Supabase is returning for your first movie:");
+                console.log("Here are the EXACT column names Supabase is returning:");
                 console.table(data[0]);
-                console.log("Look at the left side of the table above. What is the name of the column that holds your collection data?");
                 console.log("===========================");
             }
 
@@ -415,8 +413,8 @@
                 const verdictClass = isHit ? 'hit' : 'flop';
                 const verdictIcon = isHit ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down';
 
-                // Try every possible combination of typical names
-                const finalCollection = m.worldwide_gross || m.collection || m.gross || m.revenue || m.total_collection || m.box_office || '-';
+                // Added even more fallback keys for the collection
+                const finalCollection = m.worldwide_gross || m.collection || m.gross || m.revenue || m.total_collection || m.box_office || m.ww_gross || m.worldwide_collection || '-';
 
                 html += `
                     <tr>
@@ -469,7 +467,7 @@
                 const searchString = [
                     m.movie_name, m.starring, m.director, m.producer, 
                     m.dop, m.cinematography, m.side_characters, m.supporting_cast, m.verdict,
-                    m.worldwide_gross, m.collection, m.gross, m.revenue, m.total_collection, m.box_office
+                    m.worldwide_gross, m.collection, m.gross, m.revenue, m.total_collection, m.box_office, m.ww_gross, m.worldwide_collection
                 ].map(val => (val || '').toLowerCase()).join(' ');
 
                 return searchString.includes(query);
