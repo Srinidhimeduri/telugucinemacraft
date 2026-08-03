@@ -687,42 +687,53 @@
             const name = personName.trim().replace(/'/g, "''"); 
             if (name.length < 2) return '';
 
-            let maxCount = 0;
-
-            // Safely query the core columns we know exist
             try {
-                const coreCols = `hero.ilike.%${name}%,heroine.ilike.%${name}%,villain.ilike.%${name}%,director.ilike.%${name}%,music_director.ilike.%${name}%,playback_singers.ilike.%${name}%,dop.ilike.%${name}%,stunt_director.ilike.%${name}%,vfx_team.ilike.%${name}%,producer.ilike.%${name}%,side_characters.ilike.%${name}%`;
+                // All potential column variations your sheets might be using
+                const possibleColumns = [
+                    'hero', 'heroine', 'villain', 'director', 'music_director', 
+                    'playback_singers', 'dop', 'stunt_director', 'stunts', 'stunt_man', 'action',
+                    'vfx_team', 'vfx', 'vfx_studio', 'producer', 'banner', 'production_house',
+                    'side_characters', 'supporting_cast', 'cast',
+                    'choreographer', 'choreographers', 'dance_director', 'choreography',
+                    'costume_designer', 'costume_designers', 'costume_design', 'costumes', 'costume', 'styling'
+                ];
+                
+                // Filters to ONLY use columns that explicitly exist in your Supabase to prevent crashes
+                let searchCols = possibleColumns;
+                if (window.validDbColumns && window.validDbColumns.length > 0) {
+                    searchCols = possibleColumns.filter(col => window.validDbColumns.includes(col));
+                } else {
+                    searchCols = ['hero', 'heroine', 'villain', 'director', 'music_director', 'playback_singers', 'dop', 'stunt_director', 'vfx_team', 'producer', 'side_characters', 'choreographer', 'costume_designer'];
+                }
 
-                let { count, error } = await db.from('box_office').select('*', { count: 'exact', head: true }).or(coreCols);
-                if (!error && count) maxCount = Math.max(maxCount, count);
-            } catch (err) {}
+                if (searchCols.length === 0) return '1 Movie';
 
-            try {
-                const coreCols = `hero.ilike.%${name}%,heroine.ilike.%${name}%,villain.ilike.%${name}%,director.ilike.%${name}%,music_director.ilike.%${name}%,playback_singers.ilike.%${name}%,dop.ilike.%${name}%,stunt_director.ilike.%${name}%,vfx_team.ilike.%${name}%,producer.ilike.%${name}%,side_characters.ilike.%${name}%`;
+                // Generates query securely
+                const searchStr = searchCols.map(col => `${col}.ilike.%${name}%`).join(',');
 
-                let { count, error } = await db.from('movies').select('*', { count: 'exact', head: true }).or(coreCols);
-                if (!error && count) maxCount = Math.max(maxCount, count);
-            } catch (err) {}
+                let maxCount = 0;
+                
+                let { count: count1, error: err1 } = await db
+                    .from('box_office')
+                    .select('*', { count: 'exact', head: true })
+                    .or(searchStr);
+                
+                if (!err1 && count1) maxCount = Math.max(maxCount, count1);
 
-            // Safely query variable columns one by one. If a column doesn't exist, it fails silently and moves on.
-            const extraCols = ['choreographer', 'dance_director', 'choreography', 'costume_designer', 'costumes', 'costume_design', 'styling'];
-            
-            for (const col of extraCols) {
-                try {
-                    let { count, error } = await db.from('box_office').select('*', { count: 'exact', head: true }).ilike(col, `%${name}%`);
-                    if (!error && count) maxCount = Math.max(maxCount, count);
-                } catch (e) {}
+                let { count: count2, error: err2 } = await db
+                    .from('movies')
+                    .select('*', { count: 'exact', head: true })
+                    .or(searchStr);
+                
+                if (!err2 && count2) maxCount = Math.max(maxCount, count2);
 
-                try {
-                    let { count, error } = await db.from('movies').select('*', { count: 'exact', head: true }).ilike(col, `%${name}%`);
-                    if (!error && count) maxCount = Math.max(maxCount, count);
-                } catch (e) {}
+                if (maxCount > 0) {
+                    return maxCount === 1 ? '1 Movie' : `${maxCount} Movies`;
+                }
+                return '1 Movie';
+            } catch (err) {
+                return '1 Movie';
             }
-
-            if (maxCount > 0) {
-                return maxCount === 1 ? '1 Movie' : `${maxCount} Movies`;
-            }
-            return '1 Movie';
         }
 
         function getAwardHighlight(name) {
@@ -848,6 +859,9 @@
                 return;
             }
 
+            // Extract the valid columns globally so getFilmCount can search the database safely!
+            window.validDbColumns = Object.keys(data);
+
             await renderMovieDashboard(data);
         }
 
@@ -883,6 +897,7 @@
             const releaseDate = extractYear(m) || m.release_date || m.year || m.release_year || 'N/A';
             const ottLink = m.ott_link || m.ott_platform_link || m.ott || null;
 
+            // Mapped all plural variables to ensure the names NEVER vanish
             const [
                 heroHtml, heroineHtml, villainHtml, sideCharactersHtml,
                 dopHtml, stuntHtml, vfxHtml, choreographerHtml, costumeHtml,
@@ -895,10 +910,10 @@
                 
                 // Technical Crew
                 renderPersonList(m.dop || m.cinematography, 'fa-solid fa-camera', 'var(--cyan-accent)', false),
-                renderPersonList(m.stunt_director || m.stunt_man || m.stunt, 'fa-solid fa-hand-fist', 'var(--gold-accent)', false),
+                renderPersonList(m.stunt_director || m.stunts || m.stunt_man || m.stunt || m.action, 'fa-solid fa-hand-fist', 'var(--gold-accent)', false),
                 renderPersonList(m.vfx_team || m.vfx || m.vfx_studio, 'fa-solid fa-laptop-code', 'var(--purple-accent)', false),
-                renderPersonList(m.choreographer || m.dance_director || m.choreography, 'fa-solid fa-shoe-prints', 'var(--cyan-accent)', false),
-                renderPersonList(m.costume_designer || m.costumes || m.styling, 'fa-solid fa-shirt', 'var(--gold-accent)', false),
+                renderPersonList(m.choreographer || m.choreographers || m.dance_director || m.choreography, 'fa-solid fa-shoe-prints', 'var(--cyan-accent)', false),
+                renderPersonList(m.costume_designer || m.costume_designers || m.costume_design || m.costumes || m.costume || m.styling, 'fa-solid fa-shirt', 'var(--gold-accent)', false),
                 
                 // Direction & Music
                 renderPersonList(m.director || m.directed_by, 'fa-solid fa-video', 'var(--gold-accent)', true),
