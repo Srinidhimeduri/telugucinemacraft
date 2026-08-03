@@ -222,13 +222,21 @@
             justify-content: space-between;
             align-items: flex-start;
             margin-bottom: 1rem;
+            gap: 10px;
         }
 
         .movie-name {
-            font-size: 1.4rem;
+            font-size: 1.35rem;
             font-weight: 800;
             color: #FFF;
-            line-height: 1.2;
+            line-height: 1.25;
+        }
+
+        .movie-year {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-left: 4px;
         }
 
         .verdict-badge {
@@ -240,6 +248,7 @@
             font-size: 0.75rem;
             font-weight: 700;
             text-transform: uppercase;
+            white-space: nowrap;
         }
 
         .verdict-badge.upcoming {
@@ -379,6 +388,35 @@
 
         let allMovies = [];
 
+        // Helper function to robustly extract 4-digit release year across all potential column variations
+        function extractYear(m) {
+            if (!m) return '';
+            const possibleKeys = [
+                'release_year', 'year', 'release_date', 'released_year', 
+                'year_of_release', 'Year', 'Release Year', 'RELEASE_YEAR', 
+                'date', 'Release_Date', 'year_released'
+            ];
+            
+            let val = '';
+            for (let key of possibleKeys) {
+                if (m[key] !== undefined && m[key] !== null && m[key] !== '') {
+                    val = m[key];
+                    break;
+                }
+            }
+
+            if (!val) {
+                for (let k in m) {
+                    if (k.toLowerCase().includes('year') || k.toLowerCase().includes('date')) {
+                        if (m[k]) { val = m[k]; break; }
+                    }
+                }
+            }
+
+            const match = String(val).match(/\b(19|20)\d{2}\b/);
+            return match ? match[0] : '';
+        }
+
         async function updateAuthUI() {
             try {
                 const { data: { user } } = await db.auth.getUser();
@@ -433,8 +471,8 @@
 
             // Sort logic: Latest movies first
             allMovies = data.sort((a, b) => {
-                const yearA = parseInt(a.release_year || a.year || 0);
-                const yearB = parseInt(b.release_year || b.year || 0);
+                const yearA = parseInt(extractYear(a) || '0', 10);
+                const yearB = parseInt(extractYear(b) || '0', 10);
                 return yearB - yearA; 
             });
 
@@ -458,7 +496,8 @@
                 const director = m.director || 'N/A';
                 const budget = m.budget || 'N/A';
                 const gross = m.collection || m.trade_gross || 'N/A';
-                const releaseYear = m.release_year || m.year || 'N/A'; // New field
+                const yearStr = extractYear(m);
+                const yearDisplay = yearStr ? `<span class="movie-year">(${yearStr})</span>` : '';
                 
                 let verdict = m.verdict || 'Blockbuster';
                 let verdictClass = "verdict-badge";
@@ -477,14 +516,11 @@
                     <a href="movie.html?id=${movieId}" class="movie-card">
                         <div>
                             <div class="card-top">
-                                <div class="movie-name">${movieName}</div>
+                                <div class="movie-name">${movieName} ${yearDisplay}</div>
                                 <div class="${verdictClass}">${verdict}</div>
                             </div>
                             
                             <div class="card-details">
-                                <div class="detail-row">
-                                    <span>Year:</span> <span>${releaseYear}</span>
-                                </div>
                                 <div class="detail-row">
                                     <span>Hero:</span> <span>${hero}</span>
                                 </div>
@@ -526,7 +562,8 @@
                 const name = (m.movie_name || m.title || '').toLowerCase();
                 const hero = (m.hero || m.starring || '').toLowerCase();
                 const director = (m.director || '').toLowerCase();
-                return name.includes(query) || hero.includes(query) || director.includes(query);
+                const year = extractYear(m).toLowerCase();
+                return name.includes(query) || hero.includes(query) || director.includes(query) || year.includes(query);
             });
 
             renderMovies(filtered);
