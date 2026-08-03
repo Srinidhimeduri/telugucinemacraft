@@ -1,4 +1,4 @@
-// Initialize Supabase Client
+// Initialize Supabase Client (Only declared ONCE here)
 const db = window.supabase.createClient(
     "https://eosgvjvpdwxmpxzerxit.supabase.co", 
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvc2d2anZwZHd4bXB4emVyeGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1Njk3MTMsImV4cCI6MjEwMTE0NTcxM30.fD14BdJBDPNqFUKGxS5DRgsDnN8CqYdWR4k8cuAbvcg",
@@ -36,7 +36,7 @@ function parseAmount(val) {
     let str = String(val).toUpperCase().trim();
     let num = parseFloat(str.replace(/[^0-9.]/g, ''));
     if (isNaN(num)) return null;
-    if (str.includes('CR')) num *= 100; // Standardizes Crores to Lakhs scale
+    if (str.includes('CR')) num *= 100;
     return num;
 }
 
