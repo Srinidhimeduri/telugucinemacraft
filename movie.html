@@ -688,7 +688,8 @@
             if (name.length < 2) return '';
 
             try {
-                const searchStr = `hero.ilike.%${name}%,heroine.ilike.%${name}%,villain.ilike.%${name}%,director.ilike.%${name}%,music_director.ilike.%${name}%,playback_singers.ilike.%${name}%,dop.ilike.%${name}%,stunt_director.ilike.%${name}%,vfx_team.ilike.%${name}%,producer.ilike.%${name}%,side_characters.ilike.%${name}%`;
+                // FIXED: choreographer and costume_designer safely added to the query search string!
+                const searchStr = `hero.ilike.%${name}%,heroine.ilike.%${name}%,villain.ilike.%${name}%,director.ilike.%${name}%,music_director.ilike.%${name}%,playback_singers.ilike.%${name}%,dop.ilike.%${name}%,stunt_director.ilike.%${name}%,vfx_team.ilike.%${name}%,choreographer.ilike.%${name}%,costume_designer.ilike.%${name}%,producer.ilike.%${name}%,side_characters.ilike.%${name}%`;
 
                 let { count, error } = await db
                     .from('box_office')
@@ -752,7 +753,8 @@
             const ignoredPlaceholders = ['N/A', 'NOT APPLICABLE', 'NONE', 'TBA', 'FEATURED ENSEMBLE', 'NOT LISTED', 'TOP ACTION MASTERS', 'ACCLAIMED DOP', 'PREMIER VISUAL EFFECTS', 'ENSEMBLE CAST', 'FEATURED ANTAGONIST', '-'];
             
             if (!cleanStr || ignoredPlaceholders.includes(upperStr)) {
-                return ''; // Returns absolutely nothing. Row will be hidden.
+                // FIXED: Now correctly returning the box WITHOUT the movie count instead of returning an empty string
+                return `<div class="person-card-link" style="cursor:default;"><span class="person-name"><i class="${iconClass}" style="color:${iconColor}"></i> ${cleanStr || 'N/A'}</span></div>`;
             }
 
             const names = cleanStr.split(/[,;\n/]+/).map(s => s.trim()).filter(s => s.length > 0);
@@ -867,7 +869,6 @@
             const releaseDate = extractYear(m) || m.release_date || m.year || m.release_year || 'N/A';
             const ottLink = m.ott_link || m.ott_platform_link || m.ott || null;
 
-            // FIX APPLIED HERE: Added choreographer and costume designer mapping to Promise.all array!
             const [
                 heroHtml, heroineHtml, villainHtml, sideCharactersHtml,
                 dopHtml, stuntHtml, vfxHtml, choreographerHtml, costumeHtml,
