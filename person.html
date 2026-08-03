@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeluguCineCraft | Individual Profile</title>
+
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Supabase JS Client v2 -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        :root {
+            --bg-base: #06080C;
+            --bg-glass: rgba(18, 24, 38, 0.75);
+            --bg-card: rgba(26, 34, 52, 0.6);
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(255, 199, 0, 0.4);
+            --gold-accent: #FFC700;
+            --cyan-accent: #38BDF8;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --danger: #EF4444;
+            --success: #22C55E;
+            --purple-accent: #C084FC;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-base);
+            background-image: 
+                radial-gradient(circle at 15% 10%, rgba(255, 199, 0, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(56, 189, 248, 0.04) 0%, transparent 40%);
+            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh;
+            padding: 1.2rem;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; width: 100%; }
+
+        nav {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0.85rem 1.6rem; background: var(--bg-glass);
+            backdrop-filter: blur(16px); border: 1px solid var(--border-glass);
+            border-radius: 16px; margin-bottom: 1.2rem;
+        }
+        .brand-title { font-size: 1.4rem; font-weight: 800; color: #FFF; text-decoration: none; }
+        .brand-title i { color: var(--gold-accent); margin-right: 8px;}
+        .back-btn {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-glass);
+            color: var(--text-main); padding: 0.55rem 1.2rem; border-radius: 10px;
+            cursor: pointer; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+        }
+        .back-btn:hover { border-color: var(--gold-accent); color: var(--gold-accent); }
+
+        /* Profile Header */
+        .profile-header {
+            background: var(--bg-card); border: 1px solid var(--border-glass);
+            border-radius: 18px; padding: 2rem; display: flex; align-items: center; gap: 2rem;
+            margin-bottom: 1.2rem; position: relative; overflow: hidden;
+        }
+        .profile-header::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%;
+            background: var(--gold-accent); box-shadow: 0 0 20px var(--gold-accent);
+        }
+        .profile-avatar {
+            width: 100px; height: 100px; border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05); border: 2px dashed var(--gold-accent);
+            display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: var(--gold-accent);
+        }
+        .profile-name { font-size: 2.5rem; font-weight: 800; line-height: 1.1; margin-bottom: 5px; }
+        .profile-role { font-size: 0.9rem; color: var(--cyan-accent); text-transform: uppercase; font-weight: 700; letter-spacing: 1px;}
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.2rem; margin-bottom: 1.2rem;
+        }
+        .metric-card {
+            background: var(--bg-card); border: 1px solid var(--border-glass);
+            border-radius: 16px; padding: 1.5rem; text-align: center;
+        }
+        .metric-title { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .metric-value { font-size: 1.8rem; font-weight: 800; color: #FFF; }
+        .metric-value.gold { color: var(--gold-accent); }
+        .metric-value.green { color: var(--success); }
+
+        /* Timeline / Filmography */
+        .timeline-container {
+            background: var(--bg-card); border: 1px solid var(--border-glass);
+            border-radius: 18px; padding: 2rem;
+        }
+        .timeline-header { font-size: 1.2rem; font-weight: 700; color: var(--cyan-accent); margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-glass); padding-bottom: 0.5rem;}
+        
+        .movie-row {
+            display: grid; grid-template-columns: 80px 2fr 1fr 1fr; gap: 1rem;
+            align-items: center; padding: 1rem 0; border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+        }
+        .movie-row:last-child { border-bottom: none; }
+        .movie-row:hover { background: rgba(255, 255, 255, 0.02); border-radius: 8px; }
+        
+        .m-year { font-weight: 800; color: var(--text-muted); }
+        .m-title { font-size: 1.1rem; font-weight: 700; color: #FFF; text-decoration: none;}
+        .m-title:hover { color: var(--gold-accent); }
+        
+        .verdict-badge {
+            font-size: 0.7rem; font-weight: 800; padding: 0.25rem 0.6rem; border-radius: 6px; text-transform: uppercase; text-align: center; display: inline-block;
+        }
+        .v-blockbuster { background: rgba(255, 199, 0, 0.15); color: var(--gold-accent); border: 1px solid rgba(255, 199, 0, 0.4); }
+        .v-hit { background: rgba(34, 197, 94, 0.15); color: var(--success); border: 1px solid rgba(34, 197, 94, 0.3); }
+        .v-average { background: rgba(56, 189, 248, 0.15); color: var(--cyan-accent); border: 1px solid rgba(56, 189, 248, 0.3); }
+        .v-flop { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
+        .v-upcoming { background: rgba(148, 163, 184, 0.15); color: var(--text-muted); border: 1px solid rgba(148, 163, 184, 0.3); }
+
+        .loading-view { text-align: center; padding: 5rem 0; color: var(--text-muted); font-size: 1.2rem; }
+
+        @media (max-width: 768px) {
+            .profile-header { flex-direction: column; text-align: center; gap: 1rem; }
+            .movie-row { grid-template-columns: 1fr; text-align: center; gap: 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <a href="index.html" class="brand-title"><i class="fa-solid fa-film"></i> TeluguCineCraft</a>
+            <a href="javascript:history.back()" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Back</a>
+        </nav>
+
+        <div id="profileArea" class="loading-view">
+            <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+            <p style="margin-top: 12px;">Compiling Cinematic Journey...</p>
+        </div>
+    </div>
+
+    <script>
+        const db = window.supabase.createClient(
+            "https://eosgvjvpdwxmpxzerxit.supabase.co", 
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvc2d2anZwZHd4bXB4emVyeGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1Njk3MTMsImV4cCI6MjEwMTE0NTcxM30.fD14BdJBDPNqFUKGxS5DRgsDnN8CqYdWR4k8cuAbvcg"
+        );
+
+        function getPersonName() {
+            return new URLSearchParams(window.location.search).get('name');
+        }
+
+        // Helper to format currency accurately
+        function extractCrores(collectionString) {
+            if(!collectionString) return 0;
+            const match = collectionString.replace(/,/g, '').match(/[\d.]+/);
+            return match ? parseFloat(match[0]) : 0;
+        }
+
+        // Get styled verdict badge
+        function getVerdictBadge(verdict) {
+            if (!verdict) return `<span class="verdict-badge v-average">N/A</span>`;
+            const v = verdict.toUpperCase();
+            if (v.includes('BLOCKBUSTER') || v.includes('SUPERHIT')) return `<span class="verdict-badge v-blockbuster">${verdict}</span>`;
+            if (v.includes('HIT')) return `<span class="verdict-badge v-hit">${verdict}</span>`;
+            if (v.includes('AVERAGE')) return `<span class="verdict-badge v-average">${verdict}</span>`;
+            if (v.includes('FLOP') || v.includes('DISASTER')) return `<span class="verdict-badge v-flop">${verdict}</span>`;
+            return `<span class="verdict-badge v-upcoming">${verdict}</span>`;
+        }
+
+        async function loadProfile() {
+            const name = getPersonName();
+            if (!name) {
+                document.getElementById('profileArea').innerHTML = `<h2 style="color:var(--danger)">No profile specified.</h2>`;
+                return;
+            }
+
+            const cleanName = name.trim().replace(/'/g, "''");
+
+            // Fetch ALL movies associated with this person
+            const { data: movies, error } = await db.from('box_office').select('*')
+                .or(`hero.ilike.%${cleanName}%,heroine.ilike.%${cleanName}%,villain.ilike.%${cleanName}%,director.ilike.%${cleanName}%,music_director.ilike.%${cleanName}%,playback_singers.ilike.%${cleanName}%,dop.ilike.%${cleanName}%,stunt_director.ilike.%${cleanName}%,vfx_team.ilike.%${cleanName}%,producer.ilike.%${cleanName}%,side_characters.ilike.%${cleanName}%`);
+
+            if (error || !movies || movies.length === 0) {
+                document.getElementById('profileArea').innerHTML = `<h3>No records found for ${name}.</h3>`;
+                return;
+            }
+
+            // --- INTELLIGENCE PROCESSING ---
+            let totalGross = 0;
+            let hits = 0; let flops = 0;
+            let roleTally = { hero:0, heroine:0, director:0, music_director:0, producer:0, dop:0, vfx_team:0, villain:0, playback_singers:0, side_characters:0 };
+
+            movies.forEach(m => {
+                // 1. Tally Roles to find Primary Profession
+                if (m.hero && m.hero.includes(name)) roleTally.hero++;
+                if (m.heroine && m.heroine.includes(name)) roleTally.heroine++;
+                if (m.director && m.director.includes(name)) roleTally.director++;
+                if (m.music_director && m.music_director.includes(name)) roleTally.music_director++;
+                if (m.producer && m.producer.includes(name)) roleTally.producer++;
+                if (m.dop && m.dop.includes(name)) roleTally.dop++;
+                if (m.vfx_team && m.vfx_team.includes(name)) roleTally.vfx_team++;
+                if (m.villain && m.villain.includes(name)) roleTally.villain++;
+                if (m.playback_singers && m.playback_singers.includes(name)) roleTally.playback_singers++;
+                if (m.side_characters && m.side_characters.includes(name)) roleTally.side_characters++;
+
+                // 2. Sum Gross
+                const gross = extractCrores(m.collection || m.worldwide_gross);
+                totalGross += gross;
+            });
+
+            // Determine Primary Role
+            const primaryRoleKey = Object.keys(roleTally).reduce((a, b) => roleTally[a] > roleTally[b] ? a : b);
+            const displayRoles = { hero:"Lead Actor", heroine:"Lead Actress", director:"Director", music_director:"Music Composer", producer:"Producer", dop:"Cinematographer", vfx_team:"VFX Studio", villain:"Antagonist", playback_singers:"Playback Singer", side_characters:"Supporting Cast" };
+            const primaryRoleName = displayRoles[primaryRoleKey];
+
+            // Determine if they are eligible for Hit/Flop analytics (Exclude side characters/singers)
+            const eligibleForVerdicts = ['hero', 'heroine', 'director', 'producer', 'dop', 'vfx_team', 'music_director'].includes(primaryRoleKey);
+
+            movies.forEach(m => {
+                if(eligibleForVerdicts) {
+                    let v = (primaryRoleKey === 'music_director' && m.album_verdict) ? m.album_verdict.toUpperCase() : (m.verdict || '').toUpperCase();
+                    if (v.includes('HIT') || v.includes('BLOCKBUSTER')) hits++;
+                    if (v.includes('FLOP') || v.includes('DISASTER')) flops++;
+                }
+            });
+
+            // Sort timeline by release date (or year) descending
+            movies.sort((a, b) => {
+                const dateA = a.release_date || a.year || '0000';
+                const dateB = b.release_date || b.year || '0000';
+                return dateB.localeCompare(dateA);
+            });
+
+            // --- RENDER UI ---
+            let timelineHtml = movies.map(m => {
+                const year = (m.release_date || m.year || 'TBA').substring(0,4);
+                
+                // If unreleased
+                const isUnreleased = m.collection === 'TBA' || !m.collection || m.verdict === 'UPCOMING';
+                let v = isUnreleased ? 'UPCOMING' : (m.verdict || 'N/A');
+                if (primaryRoleKey === 'music_director') v = m.album_verdict || v;
+                
+                return `
+                <div class="movie-row">
+                    <div class="m-year">${year}</div>
+                    <a href="movie.html?id=${m.movie_id || m.id}" class="m-title">${m.movie_name || m.title}</a>
+                    <div><span style="color:var(--gold-accent); font-weight:700;">${m.collection || 'TBA'}</span></div>
+                    <div>${eligibleForVerdicts ? getVerdictBadge(v) : '<span style="color:var(--text-muted); font-size:0.8rem;">Filmography</span>'}</div>
+                </div>`;
+            }).join('');
+
+            // Legacy Awards Check (If applicable to top tier)
+            let totalAwards = 0;
+            const lName = name.toLowerCase();
+            if (lName.includes('pawan kalyan') || lName.includes('prabhas') || lName.includes('allu arjun')) totalAwards = 5;
+            else if (lName.includes('rajamouli') || lName.includes('keeravani') || lName.includes('dsp')) totalAwards = 8;
+            else if (roleTally.hero > 0 || roleTally.director > 0) totalAwards = 2;
+
+            const html = `
+                <div class="profile-header">
+                    <div class="profile-avatar"><i class="fa-solid fa-user"></i></div>
+                    <div>
+                        <div class="profile-name">${name}</div>
+                        <div class="profile-role"><i class="fa-solid fa-star"></i> ${primaryRoleName}</div>
+                    </div>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-title">Total Movies</div>
+                        <div class="metric-value">${movies.length}</div>
+                    </div>
+                    
+                    ${eligibleForVerdicts ? `
+                    <div class="metric-card">
+                        <div class="metric-title">Lifetime Box Office</div>
+                        <div class="metric-value gold">₹${totalGross.toLocaleString('en-IN')} Cr</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Blockbusters & Hits</div>
+                        <div class="metric-value green">${hits}</div>
+                    </div>
+                    ` : ''}
+
+                    <div class="metric-card">
+                        <div class="metric-title">Recognized Awards</div>
+                        <div class="metric-value">${totalAwards}</div>
+                    </div>
+                </div>
+
+                <div class="timeline-container">
+                    <div class="timeline-header"><i class="fa-solid fa-clapperboard"></i> Cinematic Journey</div>
+                    <div class="movie-row" style="border-bottom: 1px solid var(--border-glass); padding-bottom: 0.5rem; margin-bottom: 0.5rem;">
+                        <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase;">Year</div>
+                        <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase;">Title</div>
+                        <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase;">Gross</div>
+                        <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; text-align:center;">Verdict</div>
+                    </div>
+                    ${timelineHtml}
+                </div>
+            `;
+
+            document.getElementById('profileArea').innerHTML = html;
+        }
+
+        loadProfile();
+    </script>
+</body>
+</html>

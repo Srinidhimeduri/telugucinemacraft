@@ -735,7 +735,7 @@
                 const count = counts[0];
                 const award = isAwardEligible ? getAwardHighlight(name) : '';
                 return `
-                <a href="index.html?search=${encodeURIComponent(name)}" class="person-card-link">
+                <a href="person.html?name=${encodeURIComponent(name)}" class="person-card-link">
                     <span class="person-name"><i class="${iconClass}" style="color:${iconColor}"></i> ${name}</span>
                     <div class="person-badges">${count ? `<span class="film-count-badge">${count}</span>` : ''}${award}</div>
                 </a>`;
@@ -748,7 +748,7 @@
                     const award = isAwardEligible ? getAwardHighlight(name) : '';
                     return `
                     <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <a href="index.html?search=${encodeURIComponent(name)}" class="individual-person-link">
+                        <a href="person.html?name=${encodeURIComponent(name)}" class="individual-person-link">
                             <i class="${iconClass}" style="color:${iconColor}; width:16px; text-align:center;"></i>
                             <span class="hover-underline">${name}</span>
                         </a>
@@ -834,7 +834,10 @@
                 renderPersonList(m.vfx_team || m.vfx || m.vfx_studio, 'fa-solid fa-laptop-code', 'var(--purple-accent)', false),
                 renderPersonList(m.director || m.directed_by, 'fa-solid fa-video', 'var(--gold-accent)', true),
                 renderPersonList(m.music_director || m.music, 'fa-solid fa-music', 'var(--cyan-accent)', true),
+                
+                // Playback Singers (Now utilizing the universal renderer for automatic person.html linking)
                 renderPersonList(m.playback_singers || m.playback_singer, 'fa-solid fa-microphone-lines', 'var(--purple-accent)', false),
+                
                 renderPersonList(m.producer || m.banner || m.production_house, 'fa-solid fa-building', 'var(--text-muted)', false)
             ]);
 
