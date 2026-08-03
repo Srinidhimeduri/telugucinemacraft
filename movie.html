@@ -325,6 +325,7 @@
             letter-spacing: 0.5px;
         }
 
+        /* SINGLE PERSON LINK (HOVERABLE BOX) */
         .person-card-link {
             display: flex;
             align-items: center;
@@ -342,6 +343,36 @@
             background: rgba(255, 199, 0, 0.08);
             border-color: var(--gold-accent);
             transform: translateX(3px);
+        }
+
+        /* MULTIPLE PERSON LIST (STATIC BOX, INDIVIDUAL INLINE LINKS) */
+        .person-list-container {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-glass);
+            padding: 0.6rem 0.75rem;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .individual-person-link {
+            color: var(--text-main);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            font-size: 0.88rem;
+            font-weight: 700;
+            transition: all 0.2s ease;
+            gap: 6px;
+        }
+
+        .individual-person-link:hover {
+            color: var(--cyan-accent);
+        }
+
+        .individual-person-link:hover .hover-underline {
+            text-decoration: underline;
         }
 
         .person-name {
@@ -629,18 +660,13 @@
             window.location.reload();
         }
 
-        // ==========================================
-        // UPGRADED EXACT FILM COUNT QUERY FUNCTION
-        // ==========================================
+        // Exact Film Count Database Query
         async function getFilmCount(personName) {
-            // Ignore placeholders to prevent unnecessary queries
-            if (!personName || personName === 'N/A' || personName === 'Featured Ensemble' || personName === 'Not Listed' || personName === 'Top Action Masters' || personName === 'Acclaimed DOP' || personName === 'Premier Visual Effects' || personName === 'Ensemble Cast') return '';
-            
-            const name = personName.trim().replace(/'/g, "''"); // Safe SQL string handling
+            if (!personName) return '';
+            const name = personName.trim().replace(/'/g, "''"); 
             if (name.length < 2) return '';
 
             try {
-                // Now querying across ALL relevant crew and cast columns in Supabase
                 const { count } = await db
                     .from('box_office')
                     .select('*', { count: 'exact', head: true })
@@ -649,7 +675,7 @@
                 if (count && count > 0) {
                     return count === 1 ? '1 Movie' : `${count} Movies`;
                 }
-                return '1 Movie'; // Fallback if record somehow isn't counted but exists on current page
+                return '1 Movie';
             } catch (err) {
                 return '1 Movie';
             }
@@ -658,7 +684,7 @@
         function getAwardHighlight(name) {
             if (!name || name === 'N/A') return '';
             const lower = name.toLowerCase();
-            if (lower.includes('pawan kalyan') || lower.includes('prabhas') || lower.includes('mahesh') || lower.includes('rajamouli') || lower.includes('dsp') || lower.includes('thaman')) {
+            if (lower.includes('pawan kalyan') || lower.includes('prabhas') || lower.includes('mahesh') || lower.includes('rajamouli') || lower.includes('dsp') || lower.includes('thaman') || lower.includes('sukumar')) {
                 return `<span class="award-badge"><i class="fa-solid fa-trophy"></i> National / Nandi</span>`;
             } else if (lower.includes('allu arjun') || lower.includes('ntr') || lower.includes('ram charan') || lower.includes('keeravani')) {
                 return `<span class="award-badge"><i class="fa-solid fa-award"></i> Filmfare / Oscar</span>`;
@@ -685,6 +711,55 @@
                 return `<span class="album-verdict-badge flop"><i class="fa-solid fa-circle-xmark"></i> ${str}</span>`;
             } else {
                 return `<span class="album-verdict-badge upcoming"><i class="fa-solid fa-compact-disc"></i> ${str}</span>`;
+            }
+        }
+
+        // ==========================================
+        // UNIVERSAL RENDERER: Solves the Box Selection Bug 
+        // Generates individual clickable links for comma-separated lists
+        // ==========================================
+        async function renderPersonList(rawString, iconClass, iconColor, isAwardEligible = false) {
+            const ignoredPlaceholders = ['N/A', 'Featured Ensemble', 'Not Listed', 'Top Action Masters', 'Acclaimed DOP', 'Premier Visual Effects', 'Ensemble Cast', 'Featured Antagonist'];
+            
+            if (!rawString || ignoredPlaceholders.includes(rawString)) {
+                return `<div class="person-card-link" style="cursor:default;"><span class="person-name"><i class="${iconClass}" style="color:${iconColor}"></i> ${rawString || 'N/A'}</span></div>`;
+            }
+
+            // Split correctly to query and list individually
+            const names = rawString.split(',').map(s => s.trim()).filter(s => s.length > 0);
+            const counts = await Promise.all(names.map(n => getFilmCount(n)));
+
+            // Single Person (Renders as a clean, full-width hoverable box)
+            if (names.length === 1) {
+                const name = names[0];
+                const count = counts[0];
+                const award = isAwardEligible ? getAwardHighlight(name) : '';
+                return `
+                <a href="index.html?search=${encodeURIComponent(name)}" class="person-card-link">
+                    <span class="person-name"><i class="${iconClass}" style="color:${iconColor}"></i> ${name}</span>
+                    <div class="person-badges">${count ? `<span class="film-count-badge">${count}</span>` : ''}${award}</div>
+                </a>`;
+            } 
+            
+            // Multiple Persons (Renders as a static container with independent inline links)
+            else {
+                let listHtml = names.map((name, idx) => {
+                    const count = counts[idx];
+                    const award = isAwardEligible ? getAwardHighlight(name) : '';
+                    return `
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <a href="index.html?search=${encodeURIComponent(name)}" class="individual-person-link">
+                            <i class="${iconClass}" style="color:${iconColor}; width:16px; text-align:center;"></i>
+                            <span class="hover-underline">${name}</span>
+                        </a>
+                        <div class="person-badges">${count ? `<span class="film-count-badge">${count}</span>` : ''}${award}</div>
+                    </div>`;
+                }).join('');
+
+                return `
+                <div class="person-list-container">
+                    ${listHtml}
+                </div>`;
             }
         }
 
@@ -741,54 +816,27 @@
 
             const rawAlbumVerdict = m.album_verdict || m.music_verdict || m.album_status || 'HIT ALBUM';
             const albumBadgeHTML = getAlbumVerdictBadge(rawAlbumVerdict, isUnreleased);
-
-            const hero = m.hero || m.starring || m.lead_actor || m.hero_name || 'N/A';
-            const heroine = m.heroine || m.female_lead || m.heroine_name || 'N/A';
-            const villain = m.villain || m.antagonist || m.negative_role || m.villain_name || 'Featured Antagonist';
-            const sideCharacters = m.side_characters || m.supporting_cast || m.cast || m.other_cast || 'Ensemble Cast';
-            
-            const director = m.director || m.director_name || m.directed_by || 'N/A';
-            
-            const music = m.music_director || m.music || m.music_by || m.musician || m.composer || 'N/A';
-            const singers = m.playback_singers || m.playback_singer || 'N/A';
-
-            const stunt = m.stunt_director || m.stunt_man || m.stunt || m.stunts || m.action_director || 'Top Action Masters';
-            const dop = m.dop || m.cinematography || m.cinematographer || m.camera || 'Acclaimed DOP';
-            const vfx = m.vfx_team || m.vfx || m.vfx_studio || m.cgi || m.visual_effects || 'Premier Visual Effects';
-            const producer = m.producer || m.banner || m.production_house || m.produced_by || 'N/A';
-            
             const releaseDate = m.release_date || m.year || m.release_year || 'N/A';
             const ottLink = m.ott_link || m.ott_platform_link || m.ott || null;
 
-            // ==========================================
-            // FETCH EXACT COUNTS FOR EVERY PERSON IN THE FILM
-            // ==========================================
-            const [heroCount, heroineCount, villainCount, directorCount, musicCount, dopCount, stuntCount, vfxCount, producerCount] = await Promise.all([
-                getFilmCount(hero),
-                getFilmCount(heroine),
-                getFilmCount(villain),
-                getFilmCount(director),
-                getFilmCount(music),
-                getFilmCount(dop),
-                getFilmCount(stunt),
-                getFilmCount(vfx),
-                getFilmCount(producer)
+            // Fetch and render every field independently
+            const [
+                heroHtml, heroineHtml, villainHtml, sideCharactersHtml,
+                dopHtml, stuntHtml, vfxHtml,
+                directorHtml, musicHtml, singersHtml, producerHtml
+            ] = await Promise.all([
+                renderPersonList(m.hero || m.starring || m.lead_actor, 'fa-solid fa-user-astronaut', 'var(--gold-accent)', true),
+                renderPersonList(m.heroine || m.female_lead, 'fa-solid fa-user-ninja', 'var(--cyan-accent)', false),
+                renderPersonList(m.villain || m.antagonist || m.negative_role, 'fa-solid fa-skull', 'var(--danger)', false),
+                renderPersonList(m.side_characters || m.supporting_cast || m.cast, 'fa-solid fa-users', 'var(--purple-accent)', false),
+                renderPersonList(m.dop || m.cinematography, 'fa-solid fa-camera', 'var(--cyan-accent)', false),
+                renderPersonList(m.stunt_director || m.stunt_man || m.stunt, 'fa-solid fa-hand-fist', 'var(--gold-accent)', false),
+                renderPersonList(m.vfx_team || m.vfx || m.vfx_studio, 'fa-solid fa-laptop-code', 'var(--purple-accent)', false),
+                renderPersonList(m.director || m.directed_by, 'fa-solid fa-video', 'var(--gold-accent)', true),
+                renderPersonList(m.music_director || m.music, 'fa-solid fa-music', 'var(--cyan-accent)', true),
+                renderPersonList(m.playback_singers || m.playback_singer, 'fa-solid fa-microphone-lines', 'var(--purple-accent)', false),
+                renderPersonList(m.producer || m.banner || m.production_house, 'fa-solid fa-building', 'var(--text-muted)', false)
             ]);
-
-            // ==========================================
-            // INDIVIDUALIZED PLAYBACK SINGER COUNT LOGIC
-            // ==========================================
-            let singersDisplay = '<span style="color: var(--text-muted);">N/A</span>';
-            if (singers !== 'N/A') {
-                const singersList = singers.split(',').map(s => s.trim());
-                // Fetch exact counts for each singer simultaneously 
-                const singerCounts = await Promise.all(singersList.map(s => getFilmCount(s)));
-                
-                singersDisplay = singersList.map((s, idx) => {
-                    const countBadge = singerCounts[idx] ? `<span class="film-count-badge" style="font-size:0.6rem; padding:0.1rem 0.35rem; margin-left:6px; vertical-align:middle;">${singerCounts[idx]}</span>` : '';
-                    return `<span style="display:inline-flex; align-items:center; margin-right:8px; margin-bottom:4px;"><a href="index.html?search=${encodeURIComponent(s)}" style="color: var(--cyan-accent); text-decoration: underline;">${s}</a>${countBadge}</span>`;
-                }).join('');
-            }
 
             const html = `
                 <div class="movie-dashboard">
@@ -827,107 +875,62 @@
                     <!-- PANEL 2: STAR CAST & ANTAGONISTS -->
                     <div class="glass-panel">
                         <div class="panel-title"><i class="fa-solid fa-masks-theater"></i> Star Ensemble</div>
-                        
                         <div class="person-row">
                             <div class="person-role">Hero / Male Lead</div>
-                            <a href="index.html?search=${encodeURIComponent(hero)}" class="person-card-link">
-                                <span class="person-name"><i class="fa-solid fa-user-astronaut" style="color:var(--gold-accent)"></i> ${hero}</span>
-                                <div class="person-badges">${heroCount ? `<span class="film-count-badge">${heroCount}</span>` : ''}${getAwardHighlight(hero)}</div>
-                            </a>
+                            ${heroHtml}
                         </div>
-
                         <div class="person-row">
                             <div class="person-role">Heroine / Female Lead</div>
-                            <a href="index.html?search=${encodeURIComponent(heroine)}" class="person-card-link">
-                                <span class="person-name"><i class="fa-solid fa-user-ninja" style="color:var(--cyan-accent)"></i> ${heroine}</span>
-                                <div class="person-badges">${heroineCount ? `<span class="film-count-badge">${heroineCount}</span>` : ''}</div>
-                            </a>
+                            ${heroineHtml}
                         </div>
-
                         <div class="person-row">
                             <div class="person-role">Antagonist / Villain</div>
-                            <a href="index.html?search=${encodeURIComponent(villain)}" class="person-card-link">
-                                <span class="person-name"><i class="fa-solid fa-skull" style="color:var(--danger)"></i> ${villain}</span>
-                                ${villainCount ? `<div class="person-badges"><span class="film-count-badge">${villainCount}</span></div>` : ''}
-                            </a>
+                            ${villainHtml}
                         </div>
-
                         <div class="person-row">
                             <div class="person-role">Supporting Characters</div>
-                            <div class="person-card-link" style="cursor:default;">
-                                <span class="person-name"><i class="fa-solid fa-users" style="color:var(--purple-accent)"></i> ${sideCharacters}</span>
-                            </div>
+                            ${sideCharactersHtml}
                         </div>
                     </div>
 
                     <!-- PANEL 3: TECHNICAL CREW -->
                     <div class="glass-panel">
                         <div class="panel-title"><i class="fa-solid fa-wand-magic-sparkles"></i> Technical Departments</div>
-                        
                         <div class="person-row">
                             <div class="person-role">Cinematography (DOP)</div>
-                            <a href="index.html?search=${encodeURIComponent(dop)}" class="person-card-link">
-                                <span class="person-name"><i class="fa-solid fa-camera" style="color:var(--cyan-accent)"></i> ${dop}</span>
-                                ${dopCount ? `<div class="person-badges"><span class="film-count-badge">${dopCount}</span></div>` : ''}
-                            </a>
+                            ${dopHtml}
                         </div>
-
                         <div class="person-row">
                             <div class="person-role">Stunts & Action</div>
-                            <a href="index.html?search=${encodeURIComponent(stunt)}" class="person-card-link">
-                                <span class="person-name"><i class="fa-solid fa-hand-fist" style="color:var(--gold-accent)"></i> ${stunt}</span>
-                                ${stuntCount ? `<div class="person-badges"><span class="film-count-badge">${stuntCount}</span></div>` : ''}
-                            </a>
+                            ${stuntHtml}
                         </div>
-
                         <div class="person-row">
                             <div class="person-role">VFX & CGI Studio</div>
-                            <div class="person-card-link" style="cursor:default;">
-                                <span class="person-name"><i class="fa-solid fa-laptop-code" style="color:var(--purple-accent)"></i> ${vfx}</span>
-                                ${vfxCount ? `<div class="person-badges"><span class="film-count-badge">${vfxCount}</span></div>` : ''}
-                            </div>
+                            ${vfxHtml}
                         </div>
                     </div>
 
                     <!-- PANEL 4: DIRECTION & MUSIC (WITH ALBUM VERDICT) -->
                     <div class="glass-panel">
                         <div class="panel-title"><i class="fa-solid fa-clapperboard"></i> Direction & Music</div>
-                        
                         <div class="person-row">
                             <div class="person-role">Director</div>
-                            <a href="index.html?search=${encodeURIComponent(director)}" class="person-card-link">
-                                <span class="person-name"><i class="fa-solid fa-video" style="color:var(--gold-accent)"></i> ${director}</span>
-                                <div class="person-badges">${directorCount ? `<span class="film-count-badge">${directorCount}</span>` : ''}</div>
-                            </a>
+                            ${directorHtml}
                         </div>
-
                         <div class="person-row">
                             <div class="person-role" style="display:flex; justify-content:space-between; align-items:center;">
                                 <span>Music Director & Album Verdict</span>
                                 ${albumBadgeHTML}
                             </div>
-                            <a href="index.html?search=${encodeURIComponent(music)}" class="person-card-link">
-                                <span class="person-name"><i class="fa-solid fa-music" style="color:var(--cyan-accent)"></i> ${music}</span>
-                                <div class="person-badges">${musicCount ? `<span class="film-count-badge">${musicCount}</span>` : ''}${getAwardHighlight(music)}</div>
-                            </a>
+                            ${musicHtml}
                         </div>
-
                         <div class="person-row">
                             <div class="person-role">Playback Singers</div>
-                            <div class="person-card-link" style="cursor:default;">
-                                <span class="person-name" style="flex-wrap: wrap; line-height: 1.6;">
-                                    <i class="fa-solid fa-microphone-lines" style="color:var(--purple-accent); margin-right:5px;"></i> 
-                                    ${singersDisplay}
-                                </span>
-                            </div>
+                            ${singersHtml}
                         </div>
-
                         <div class="person-row">
                             <div class="person-role">Producer / Banner</div>
-                            <div class="person-card-link" style="cursor:default;">
-                                <span class="person-name"><i class="fa-solid fa-building" style="color:var(--text-muted)"></i> ${producer}</span>
-                                ${producerCount ? `<div class="person-badges"><span class="film-count-badge">${producerCount}</span></div>` : ''}
-                            </div>
+                            ${producerHtml}
                         </div>
                     </div>
 
