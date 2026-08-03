@@ -688,7 +688,6 @@
             if (name.length < 2) return '';
 
             try {
-                // FIXED: Reverted to core search columns so the query doesn't crash on undefined fields
                 const searchStr = `hero.ilike.%${name}%,heroine.ilike.%${name}%,villain.ilike.%${name}%,director.ilike.%${name}%,music_director.ilike.%${name}%,playback_singers.ilike.%${name}%,dop.ilike.%${name}%,stunt_director.ilike.%${name}%,vfx_team.ilike.%${name}%,producer.ilike.%${name}%,side_characters.ilike.%${name}%`;
 
                 let { count, error } = await db
@@ -868,7 +867,7 @@
             const releaseDate = extractYear(m) || m.release_date || m.year || m.release_year || 'N/A';
             const ottLink = m.ott_link || m.ott_platform_link || m.ott || null;
 
-            // FIXED: Widespread data mapping applied for costume designers and choreographers
+            // BUG FIX APPLIED HERE: Added exhaustive column fallback mapping for Costume Designer
             const [
                 heroHtml, heroineHtml, villainHtml, sideCharactersHtml,
                 dopHtml, stuntHtml, vfxHtml, choreographerHtml, costumeHtml,
@@ -883,8 +882,8 @@
                 renderPersonList(m.dop || m.cinematography, 'fa-solid fa-camera', 'var(--cyan-accent)', false),
                 renderPersonList(m.stunt_director || m.stunt_man || m.stunt, 'fa-solid fa-hand-fist', 'var(--gold-accent)', false),
                 renderPersonList(m.vfx_team || m.vfx || m.vfx_studio, 'fa-solid fa-laptop-code', 'var(--purple-accent)', false),
-                renderPersonList(m.choreographer || m.choreography || m.choreographers || m.dance_director, 'fa-solid fa-shoe-prints', 'var(--cyan-accent)', false),
-                renderPersonList(m.costume_designer || m.costume_design || m.costumes || m.costume || m.styling, 'fa-solid fa-shirt', 'var(--gold-accent)', false),
+                renderPersonList(m.choreographer || m.choreographers || m.dance_director || m.choreography, 'fa-solid fa-shoe-prints', 'var(--cyan-accent)', false),
+                renderPersonList(m.costume_designer || m.costume_designers || m.costume_design || m.costumes || m.costume || m.styling, 'fa-solid fa-shirt', 'var(--gold-accent)', false),
                 
                 // Direction & Music
                 renderPersonList(m.director || m.directed_by, 'fa-solid fa-video', 'var(--gold-accent)', true),
@@ -935,7 +934,7 @@
                         ` : ''}
                     </div>
 
-                    <!-- PANEL 2: STAR CAST & ANTAGONISTS -->
+                    <!-- PANEL 2: CAST & ANTAGONISTS -->
                     <div class="glass-panel">
                         <div class="panel-title"><i class="fa-solid fa-masks-theater"></i> Cast</div>
                         ${createRow('Hero / Male Lead', heroHtml)}
@@ -950,7 +949,7 @@
                         ${createRow('Cinematography (DOP)', dopHtml)}
                         ${createRow('Stunts & Action', stuntHtml)}
                         ${createRow('VFX & CGI Studio', vfxHtml)}
-                        ${createRow('Choreographer', choreographerHtml)}
+                        ${createRow('Choreography', choreographerHtml)}
                         ${createRow('Costume Designer', costumeHtml)}
                     </div>
 
