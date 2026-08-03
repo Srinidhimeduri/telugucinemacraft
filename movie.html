@@ -674,7 +674,8 @@
                 const { count } = await db
                     .from('box_office')
                     .select('*', { count: 'exact', head: true })
-                    .or(`hero.ilike.%${name}%,heroine.ilike.%${name}%,villain.ilike.%${name}%,director.ilike.%${name}%,music_director.ilike.%${name}%,playback_singers.ilike.%${name}%,dop.ilike.%${name}%,stunt_director.ilike.%${name}%,vfx_team.ilike.%${name}%,producer.ilike.%${name}%,side_characters.ilike.%${name}%`);
+                    // Added choreographer and costume_designer to the search string below
+                    .or(`hero.ilike.%${name}%,heroine.ilike.%${name}%,villain.ilike.%${name}%,director.ilike.%${name}%,music_director.ilike.%${name}%,playback_singers.ilike.%${name}%,dop.ilike.%${name}%,stunt_director.ilike.%${name}%,vfx_team.ilike.%${name}%,choreographer.ilike.%${name}%,costume_designer.ilike.%${name}%,producer.ilike.%${name}%,side_characters.ilike.%${name}%`);
                 
                 if (count && count > 0) {
                     return count === 1 ? '1 Movie' : `${count} Movies`;
@@ -722,7 +723,8 @@
         // UNIVERSAL RENDERER: Splitting by commas, semicolons, slashes, or newlines
         // ==========================================
         async function renderPersonList(rawString, iconClass, iconColor, isAwardEligible = false) {
-            const ignoredPlaceholders = ['N/A', 'Featured Ensemble', 'Not Listed', 'Top Action Masters', 'Acclaimed DOP', 'Premier Visual Effects', 'Ensemble Cast', 'Featured Antagonist'];
+            // Added 'Not Applicable' to prevent weird parsing of blank database fields
+            const ignoredPlaceholders = ['N/A', 'Featured Ensemble', 'Not Listed', 'Top Action Masters', 'Acclaimed DOP', 'Premier Visual Effects', 'Ensemble Cast', 'Featured Antagonist', 'Not Applicable'];
             
             if (!rawString || ignoredPlaceholders.includes(rawString)) {
                 return `<div class="person-card-link" style="cursor:default;"><span class="person-name"><i class="${iconClass}" style="color:${iconColor}"></i> ${rawString || 'N/A'}</span></div>`;
@@ -835,16 +837,22 @@
             // Fetch and render every field independently
             const [
                 heroHtml, heroineHtml, villainHtml, sideCharactersHtml,
-                dopHtml, stuntHtml, vfxHtml,
+                dopHtml, stuntHtml, vfxHtml, choreographerHtml, costumeHtml,
                 directorHtml, musicHtml, singersHtml, producerHtml
             ] = await Promise.all([
                 renderPersonList(m.hero || m.starring || m.lead_actor, 'fa-solid fa-user-astronaut', 'var(--gold-accent)', true),
                 renderPersonList(m.heroine || m.female_lead, 'fa-solid fa-user-ninja', 'var(--cyan-accent)', false),
                 renderPersonList(m.villain || m.antagonist || m.negative_role, 'fa-solid fa-skull', 'var(--danger)', false),
                 renderPersonList(m.side_characters || m.supporting_cast || m.cast, 'fa-solid fa-users', 'var(--purple-accent)', false),
+                
+                // Technical Crew
                 renderPersonList(m.dop || m.cinematography, 'fa-solid fa-camera', 'var(--cyan-accent)', false),
                 renderPersonList(m.stunt_director || m.stunt_man || m.stunt, 'fa-solid fa-hand-fist', 'var(--gold-accent)', false),
                 renderPersonList(m.vfx_team || m.vfx || m.vfx_studio, 'fa-solid fa-laptop-code', 'var(--purple-accent)', false),
+                renderPersonList(m.choreographer || m.dance_director || m.choreography, 'fa-solid fa-shoe-prints', 'var(--cyan-accent)', false),
+                renderPersonList(m.costume_designer || m.costumes || m.styling, 'fa-solid fa-shirt', 'var(--gold-accent)', false),
+                
+                // Direction & Music
                 renderPersonList(m.director || m.directed_by, 'fa-solid fa-video', 'var(--gold-accent)', true),
                 renderPersonList(m.music_director || m.music, 'fa-solid fa-music', 'var(--cyan-accent)', true),
                 renderPersonList(m.playback_singers || m.playback_singer, 'fa-solid fa-microphone-lines', 'var(--purple-accent)', false),
@@ -928,6 +936,14 @@
                         <div class="person-row">
                             <div class="person-role">VFX & CGI Studio</div>
                             ${vfxHtml}
+                        </div>
+                        <div class="person-row">
+                            <div class="person-role">Choreography</div>
+                            ${choreographerHtml}
+                        </div>
+                        <div class="person-row">
+                            <div class="person-role">Costume Design</div>
+                            ${costumeHtml}
                         </div>
                     </div>
 
