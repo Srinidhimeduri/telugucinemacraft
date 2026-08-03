@@ -236,6 +236,13 @@
             letter-spacing: 0.5px;
         }
 
+        /* UPCOMING OVERRIDE STYLE FOR VERDICT PILL */
+        .verdict-pill.upcoming {
+            background: rgba(148, 163, 184, 0.15);
+            color: var(--cyan-accent);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
         /* METRICS GRID */
         .stats-grid {
             display: grid;
@@ -666,8 +673,25 @@
 
         async function renderMovieDashboard(m) {
             const title = m.movie_name || m.title || m.name || 'Untitled';
-            const verdict = m.verdict || m.status || 'Blockbuster';
             
+            const budget = m.budget || m.cost || 'N/A';
+            const gross = m.collection || m.trade_gross || m.worldwide_gross || m.box_office || 'N/A';
+
+            // --- Dynamic Unreleased / Verdict Check ---
+            let verdict = m.verdict || m.status || 'Blockbuster';
+            let verdictClass = "verdict-pill";
+
+            const isUnreleased = gross.toString().toUpperCase() === 'TBA' || 
+                               gross.toString().trim() === '0' || 
+                               verdict.toString().toUpperCase() === 'UPCOMING' || 
+                               verdict.toString().toUpperCase() === 'UNRELEASED';
+
+            if (isUnreleased) {
+                verdict = 'UPCOMING';
+                verdictClass = "verdict-pill upcoming";
+            }
+            // ------------------------------------------
+
             const hero = m.hero || m.starring || m.lead_actor || m.hero_name || 'N/A';
             const heroine = m.heroine || m.female_lead || m.heroine_name || 'N/A';
             const villain = m.villain || m.antagonist || m.negative_role || m.villain_name || 'Featured Antagonist';
@@ -675,18 +699,14 @@
             
             const director = m.director || m.director_name || m.directed_by || 'N/A';
             
-            // --- NEW MAPPING ---
             const music = m.music_director || m.music || m.music_by || m.musician || m.composer || 'N/A';
             const singers = m.playback_singers || m.playback_singer || 'N/A';
-            // -------------------
 
             const stunt = m.stunt_man || m.stunt || m.stunts || m.action_director || m.action_master || m.stunt_master || 'Top Action Masters';
             const dop = m.dop || m.cinematography || m.cinematographer || m.camera || 'Acclaimed DOP';
             const vfx = m.vfx || m.vfx_studio || m.cgi || m.visual_effects || 'Premier Visual Effects';
             const producer = m.producer || m.banner || m.production_house || m.produced_by || 'N/A';
             
-            const budget = m.budget || m.cost || 'N/A';
-            const gross = m.collection || m.trade_gross || m.worldwide_gross || m.box_office || 'N/A';
             const releaseDate = m.release_date || m.year || m.release_year || 'N/A';
             const ottLink = m.ott_link || m.ott_platform_link || m.ott || null;
 
@@ -715,7 +735,7 @@
                                 <i class="fa-regular fa-calendar"></i> Release Year: ${releaseDate}
                             </div>
                         </div>
-                        <div class="verdict-pill">${verdict}</div>
+                        <div class="${verdictClass}">${verdict}</div>
                     </div>
 
                     <!-- PANEL 1: BOX OFFICE & METRICS -->
