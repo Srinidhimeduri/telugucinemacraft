@@ -207,6 +207,22 @@
             justify-content: space-between;
         }
 
+        /* FINANCIAL GADGET (Prevents Vertical Stretching) */
+        .financial-gadget {
+            align-self: start; 
+            border-top: 3px solid var(--gold-accent);
+            background: rgba(18, 24, 38, 0.85);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 199, 0, 0.2);
+        }
+
+        .financial-gadget .stat-box {
+            padding: 0.6rem;
+        }
+
+        .financial-gadget .stat-box-value {
+            font-size: 1.05rem;
+        }
+
         /* HEADER PANEL */
         .header-panel {
             grid-column: 1 / -1;
@@ -262,7 +278,7 @@
         .album-verdict-badge.flop { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
         .album-verdict-badge.upcoming { background: rgba(148, 163, 184, 0.15); color: var(--text-muted); border: 1px solid rgba(148, 163, 184, 0.3); }
 
-        /* METRICS GRID: Balanced 2x2 Layout */
+        /* METRICS GRID */
         .stats-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -345,7 +361,7 @@
             transform: translateX(3px);
         }
 
-        /* MULTIPLE PERSON LIST: Scrollable Container with Custom Scrollbar */
+        /* MULTIPLE PERSON LIST: Scrollable Container */
         .person-list-container {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--border-glass);
@@ -572,6 +588,7 @@
 
         @media (max-width: 1200px) {
             .movie-dashboard { grid-template-columns: 1fr 1fr; }
+            .financial-gadget { align-self: stretch; } /* Ensures it looks good on tablets */
         }
 
         @media (max-width: 768px) {
@@ -674,7 +691,7 @@
                 const { count } = await db
                     .from('box_office')
                     .select('*', { count: 'exact', head: true })
-                    // Added choreographer and costume_designer to the search string below
+                    // Includes choreographer and costume_designer in the search string
                     .or(`hero.ilike.%${name}%,heroine.ilike.%${name}%,villain.ilike.%${name}%,director.ilike.%${name}%,music_director.ilike.%${name}%,playback_singers.ilike.%${name}%,dop.ilike.%${name}%,stunt_director.ilike.%${name}%,vfx_team.ilike.%${name}%,choreographer.ilike.%${name}%,costume_designer.ilike.%${name}%,producer.ilike.%${name}%,side_characters.ilike.%${name}%`);
                 
                 if (count && count > 0) {
@@ -720,21 +737,24 @@
         }
 
         // ==========================================
-        // UNIVERSAL RENDERER: Splitting by commas, semicolons, slashes, or newlines
+        // UNIVERSAL RENDERER
         // ==========================================
         async function renderPersonList(rawString, iconClass, iconColor, isAwardEligible = false) {
-            // Added 'Not Applicable' to prevent weird parsing of blank database fields
-            const ignoredPlaceholders = ['N/A', 'Featured Ensemble', 'Not Listed', 'Top Action Masters', 'Acclaimed DOP', 'Premier Visual Effects', 'Ensemble Cast', 'Featured Antagonist', 'Not Applicable'];
+            // FIX: If the field is empty or contains an ignored phrase, return empty string so the row hides entirely!
+            const cleanStr = rawString ? rawString.trim() : '';
+            const upperStr = cleanStr.toUpperCase();
             
-            if (!rawString || ignoredPlaceholders.includes(rawString)) {
-                return `<div class="person-card-link" style="cursor:default;"><span class="person-name"><i class="${iconClass}" style="color:${iconColor}"></i> ${rawString || 'N/A'}</span></div>`;
+            const ignoredPlaceholders = ['N/A', 'NOT APPLICABLE', 'NONE', 'TBA', 'FEATURED ENSEMBLE', 'NOT LISTED', 'TOP ACTION MASTERS', 'ACCLAIMED DOP', 'PREMIER VISUAL EFFECTS', 'ENSEMBLE CAST', 'FEATURED ANTAGONIST', '-'];
+            
+            if (!cleanStr || ignoredPlaceholders.includes(upperStr)) {
+                return ''; // Returns absolutely nothing. Row will be hidden.
             }
 
-            // Handles commas, semicolons, slashes, or linebreaks from Google Sheets uploads
-            const names = rawString.split(/[,;\n/]+/).map(s => s.trim()).filter(s => s.length > 0);
+            // FIX: Robust splitting for Google Sheets formatting (\n, commas, slashes, semicolons)
+            const names = cleanStr.split(/[,;\n/]+/).map(s => s.trim()).filter(s => s.length > 0);
             const counts = await Promise.all(names.map(n => getFilmCount(n)));
 
-            // Single Person (Clean full-width hoverable box)
+            // Single Person Layout
             if (names.length === 1) {
                 const name = names[0];
                 const count = counts[0];
@@ -746,7 +766,7 @@
                 </a>`;
             } 
             
-            // Multiple Persons (Scrollable container with individual links)
+            // Multiple Persons Layout
             else {
                 let listHtml = names.map((name, idx) => {
                     const count = counts[idx];
@@ -766,6 +786,20 @@
                     ${listHtml}
                 </div>`;
             }
+        }
+
+        // Row Generator (Hides row if content is empty)
+        function createRow(title, content, extraHtml = '') {
+            if (!content) return ''; // If 'N/A', this drops the entire row!
+            return `
+                <div class="person-row">
+                    <div class="person-role" ${extraHtml ? 'style="display:flex; justify-content:space-between; align-items:center;"' : ''}>
+                        <span>${title}</span>
+                        ${extraHtml}
+                    </div>
+                    ${content}
+                </div>
+            `;
         }
 
         async function fetchMovieDetails() {
@@ -806,7 +840,7 @@
             const budget = m.budget || m.cost || 'N/A';
             const gross = m.collection || m.trade_gross || m.worldwide_gross || m.box_office || 'N/A';
 
-            // Automatic CEO Financial Calculations (Profit & Recovery Ratio)
+            // Automatic CEO Financial Calculations
             const budgetNum = parseAmount(budget);
             const grossNum = parseAmount(gross);
             let roiDisplay = 'N/A';
@@ -823,7 +857,7 @@
                 }
             }
 
-            // Dynamic verdict calculation from app.js
+            // Dynamic verdict calculation
             const verdictObj = getVerdict(m);
             const verdict = verdictObj.label;
             const verdictClass = "verdict-pill " + verdictObj.label.toLowerCase().replace(/\s+/g, '');
@@ -872,8 +906,8 @@
                         <div class="${verdictClass}">${verdict}</div>
                     </div>
 
-                    <!-- PANEL 1: BOX OFFICE & FINANCIAL METRICS (BALANCED 2x2 GRID) -->
-                    <div class="glass-panel">
+                    <!-- PANEL 1: BOX OFFICE & FINANCIAL METRICS (GADGET MODE) -->
+                    <div class="glass-panel financial-gadget">
                         <div class="panel-title"><i class="fa-solid fa-chart-line"></i> Financial Metrics</div>
                         <div class="stats-grid">
                             <div class="stat-box">
@@ -904,71 +938,29 @@
                     <!-- PANEL 2: STAR CAST & ANTAGONISTS -->
                     <div class="glass-panel">
                         <div class="panel-title"><i class="fa-solid fa-masks-theater"></i> Star Ensemble</div>
-                        <div class="person-row">
-                            <div class="person-role">Hero / Male Lead</div>
-                            ${heroHtml}
-                        </div>
-                        <div class="person-row">
-                            <div class="person-role">Heroine / Female Lead</div>
-                            ${heroineHtml}
-                        </div>
-                        <div class="person-row">
-                            <div class="person-role">Antagonist / Villain</div>
-                            ${villainHtml}
-                        </div>
-                        <div class="person-row">
-                            <div class="person-role">Supporting Characters</div>
-                            ${sideCharactersHtml}
-                        </div>
+                        ${createRow('Hero / Male Lead', heroHtml)}
+                        ${createRow('Heroine / Female Lead', heroineHtml)}
+                        ${createRow('Antagonist / Villain', villainHtml)}
+                        ${createRow('Supporting Characters', sideCharactersHtml)}
                     </div>
 
                     <!-- PANEL 3: TECHNICAL CREW -->
                     <div class="glass-panel">
                         <div class="panel-title"><i class="fa-solid fa-wand-magic-sparkles"></i> Technical Departments</div>
-                        <div class="person-row">
-                            <div class="person-role">Cinematography (DOP)</div>
-                            ${dopHtml}
-                        </div>
-                        <div class="person-row">
-                            <div class="person-role">Stunts & Action</div>
-                            ${stuntHtml}
-                        </div>
-                        <div class="person-row">
-                            <div class="person-role">VFX & CGI Studio</div>
-                            ${vfxHtml}
-                        </div>
-                        <div class="person-row">
-                            <div class="person-role">Choreography</div>
-                            ${choreographerHtml}
-                        </div>
-                        <div class="person-row">
-                            <div class="person-role">Costume Design</div>
-                            ${costumeHtml}
-                        </div>
+                        ${createRow('Cinematography (DOP)', dopHtml)}
+                        ${createRow('Stunts & Action', stuntHtml)}
+                        ${createRow('VFX & CGI Studio', vfxHtml)}
+                        ${createRow('Choreography', choreographerHtml)}
+                        ${createRow('Costume Design', costumeHtml)}
                     </div>
 
                     <!-- PANEL 4: DIRECTION & MUSIC -->
                     <div class="glass-panel">
                         <div class="panel-title"><i class="fa-solid fa-clapperboard"></i> Direction & Music</div>
-                        <div class="person-row">
-                            <div class="person-role">Director</div>
-                            ${directorHtml}
-                        </div>
-                        <div class="person-row">
-                            <div class="person-role" style="display:flex; justify-content:space-between; align-items:center;">
-                                <span>Music Director & Album Verdict</span>
-                                ${albumBadgeHTML}
-                            </div>
-                            ${musicHtml}
-                        </div>
-                        <div class="person-row">
-                            <div class="person-role">Playback Singers</div>
-                            ${singersHtml}
-                        </div>
-                        <div class="person-row">
-                            <div class="person-role">Producer / Banner</div>
-                            ${producerHtml}
-                        </div>
+                        ${createRow('Director', directorHtml)}
+                        ${createRow('Music Director', musicHtml, albumBadgeHTML)}
+                        ${createRow('Playback Singers', singersHtml)}
+                        ${createRow('Producer / Banner', producerHtml)}
                     </div>
 
                     <!-- 5-PARAMETER RATING & REVIEW SECTION -->
