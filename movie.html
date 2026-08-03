@@ -207,22 +207,6 @@
             justify-content: space-between;
         }
 
-        /* FINANCIAL GADGET (Prevents Vertical Stretching) */
-        .financial-gadget {
-            align-self: start; 
-            border-top: 3px solid var(--gold-accent);
-            background: rgba(18, 24, 38, 0.85);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 199, 0, 0.2);
-        }
-
-        .financial-gadget .stat-box {
-            padding: 0.6rem;
-        }
-
-        .financial-gadget .stat-box-value {
-            font-size: 1.05rem;
-        }
-
         /* HEADER PANEL */
         .header-panel {
             grid-column: 1 / -1;
@@ -278,7 +262,7 @@
         .album-verdict-badge.flop { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
         .album-verdict-badge.upcoming { background: rgba(148, 163, 184, 0.15); color: var(--text-muted); border: 1px solid rgba(148, 163, 184, 0.3); }
 
-        /* METRICS GRID */
+        /* METRICS GRID: Balanced 2x2 Layout */
         .stats-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -588,7 +572,6 @@
 
         @media (max-width: 1200px) {
             .movie-dashboard { grid-template-columns: 1fr 1fr; }
-            .financial-gadget { align-self: stretch; } /* Ensures it looks good on tablets */
         }
 
         @media (max-width: 768px) {
@@ -688,11 +671,20 @@
             if (name.length < 2) return '';
 
             try {
-                const { count } = await db
+                // Reverted search string to core columns to prevent "Column Not Found" Supabase crashes
+                // This guarantees the database successfully counts the films without throwing an error
+                const searchStr = `hero.ilike.%${name}%,heroine.ilike.%${name}%,villain.ilike.%${name}%,director.ilike.%${name}%,music_director.ilike.%${name}%,playback_singers.ilike.%${name}%,dop.ilike.%${name}%,stunt_director.ilike.%${name}%,vfx_team.ilike.%${name}%,producer.ilike.%${name}%,side_characters.ilike.%${name}%`;
+
+                let { count, error } = await db
                     .from('box_office')
                     .select('*', { count: 'exact', head: true })
-                    // Includes choreographer and costume_designer in the search string
-                    .or(`hero.ilike.%${name}%,heroine.ilike.%${name}%,villain.ilike.%${name}%,director.ilike.%${name}%,music_director.ilike.%${name}%,playback_singers.ilike.%${name}%,dop.ilike.%${name}%,stunt_director.ilike.%${name}%,vfx_team.ilike.%${name}%,choreographer.ilike.%${name}%,costume_designer.ilike.%${name}%,producer.ilike.%${name}%,side_characters.ilike.%${name}%`);
+                    .or(searchStr);
+                
+                // Fallback to movies table in case the person only exists there
+                if (error || count === null || count === 0) {
+                    const res = await db.from('movies').select('*', { count: 'exact', head: true }).or(searchStr);
+                    if (res.count && res.count > 0) count = res.count;
+                }
                 
                 if (count && count > 0) {
                     return count === 1 ? '1 Movie' : `${count} Movies`;
@@ -740,7 +732,6 @@
         // UNIVERSAL RENDERER
         // ==========================================
         async function renderPersonList(rawString, iconClass, iconColor, isAwardEligible = false) {
-            // FIX: If the field is empty or contains an ignored phrase, return empty string so the row hides entirely!
             const cleanStr = rawString ? rawString.trim() : '';
             const upperStr = cleanStr.toUpperCase();
             
@@ -750,7 +741,7 @@
                 return ''; // Returns absolutely nothing. Row will be hidden.
             }
 
-            // FIX: Robust splitting for Google Sheets formatting (\n, commas, slashes, semicolons)
+            // Robust splitting for Google Sheets formatting (\n, commas, slashes, semicolons)
             const names = cleanStr.split(/[,;\n/]+/).map(s => s.trim()).filter(s => s.length > 0);
             const counts = await Promise.all(names.map(n => getFilmCount(n)));
 
@@ -907,7 +898,7 @@
                     </div>
 
                     <!-- PANEL 1: BOX OFFICE & FINANCIAL METRICS (GADGET MODE) -->
-                    <div class="glass-panel financial-gadget">
+                    <div class="glass-panel" style="align-self: start;">
                         <div class="panel-title"><i class="fa-solid fa-chart-line"></i> Financial Metrics</div>
                         <div class="stats-grid">
                             <div class="stat-box">
