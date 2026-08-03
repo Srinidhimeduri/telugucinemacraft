@@ -207,6 +207,22 @@
             justify-content: space-between;
         }
 
+        /* FINANCIAL GADGET (Prevents Vertical Stretching) */
+        .financial-gadget {
+            align-self: start; 
+            border-top: 3px solid var(--gold-accent);
+            background: rgba(18, 24, 38, 0.85);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 199, 0, 0.2);
+        }
+
+        .financial-gadget .stat-box {
+            padding: 0.6rem;
+        }
+
+        .financial-gadget .stat-box-value {
+            font-size: 1.05rem;
+        }
+
         /* HEADER PANEL */
         .header-panel {
             grid-column: 1 / -1;
@@ -262,7 +278,7 @@
         .album-verdict-badge.flop { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
         .album-verdict-badge.upcoming { background: rgba(148, 163, 184, 0.15); color: var(--text-muted); border: 1px solid rgba(148, 163, 184, 0.3); }
 
-        /* METRICS GRID: Balanced 2x2 Layout */
+        /* METRICS GRID */
         .stats-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -572,6 +588,7 @@
 
         @media (max-width: 1200px) {
             .movie-dashboard { grid-template-columns: 1fr 1fr; }
+            .financial-gadget { align-self: stretch; } /* Ensures it looks good on tablets */
         }
 
         @media (max-width: 768px) {
@@ -671,8 +688,6 @@
             if (name.length < 2) return '';
 
             try {
-                // Reverted search string to core columns to prevent "Column Not Found" Supabase crashes
-                // This guarantees the database successfully counts the films without throwing an error
                 const searchStr = `hero.ilike.%${name}%,heroine.ilike.%${name}%,villain.ilike.%${name}%,director.ilike.%${name}%,music_director.ilike.%${name}%,playback_singers.ilike.%${name}%,dop.ilike.%${name}%,stunt_director.ilike.%${name}%,vfx_team.ilike.%${name}%,producer.ilike.%${name}%,side_characters.ilike.%${name}%`;
 
                 let { count, error } = await db
@@ -680,7 +695,6 @@
                     .select('*', { count: 'exact', head: true })
                     .or(searchStr);
                 
-                // Fallback to movies table in case the person only exists there
                 if (error || count === null || count === 0) {
                     const res = await db.from('movies').select('*', { count: 'exact', head: true }).or(searchStr);
                     if (res.count && res.count > 0) count = res.count;
@@ -741,11 +755,9 @@
                 return ''; // Returns absolutely nothing. Row will be hidden.
             }
 
-            // Robust splitting for Google Sheets formatting (\n, commas, slashes, semicolons)
             const names = cleanStr.split(/[,;\n/]+/).map(s => s.trim()).filter(s => s.length > 0);
             const counts = await Promise.all(names.map(n => getFilmCount(n)));
 
-            // Single Person Layout
             if (names.length === 1) {
                 const name = names[0];
                 const count = counts[0];
@@ -757,7 +769,6 @@
                 </a>`;
             } 
             
-            // Multiple Persons Layout
             else {
                 let listHtml = names.map((name, idx) => {
                     const count = counts[idx];
@@ -779,9 +790,8 @@
             }
         }
 
-        // Row Generator (Hides row if content is empty)
         function createRow(title, content, extraHtml = '') {
-            if (!content) return ''; // If 'N/A', this drops the entire row!
+            if (!content) return ''; 
             return `
                 <div class="person-row">
                     <div class="person-role" ${extraHtml ? 'style="display:flex; justify-content:space-between; align-items:center;"' : ''}>
@@ -831,7 +841,6 @@
             const budget = m.budget || m.cost || 'N/A';
             const gross = m.collection || m.trade_gross || m.worldwide_gross || m.box_office || 'N/A';
 
-            // Automatic CEO Financial Calculations
             const budgetNum = parseAmount(budget);
             const grossNum = parseAmount(gross);
             let roiDisplay = 'N/A';
@@ -848,7 +857,6 @@
                 }
             }
 
-            // Dynamic verdict calculation
             const verdictObj = getVerdict(m);
             const verdict = verdictObj.label;
             const verdictClass = "verdict-pill " + verdictObj.label.toLowerCase().replace(/\s+/g, '');
@@ -859,7 +867,7 @@
             const releaseDate = extractYear(m) || m.release_date || m.year || m.release_year || 'N/A';
             const ottLink = m.ott_link || m.ott_platform_link || m.ott || null;
 
-            // Fetch and render every field independently
+            // FIX APPLIED HERE: Added choreographer and costume designer mapping to Promise.all array!
             const [
                 heroHtml, heroineHtml, villainHtml, sideCharactersHtml,
                 dopHtml, stuntHtml, vfxHtml, choreographerHtml, costumeHtml,
@@ -898,7 +906,7 @@
                     </div>
 
                     <!-- PANEL 1: BOX OFFICE & FINANCIAL METRICS (GADGET MODE) -->
-                    <div class="glass-panel" style="align-self: start;">
+                    <div class="glass-panel financial-gadget">
                         <div class="panel-title"><i class="fa-solid fa-chart-line"></i> Financial Metrics</div>
                         <div class="stats-grid">
                             <div class="stat-box">
