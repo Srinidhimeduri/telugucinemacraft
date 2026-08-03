@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Supabase JS Client v2 -->
+    <!-- Supabase JS Client v2 & Shared App Logic -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="app.js"></script>
 
@@ -57,7 +57,7 @@
             width: 100%;
         }
 
-        /* --- NAV BAR & PERSONAL DASHBOARD BADGE --- */
+        /* --- NAV BAR --- */
         nav {
             display: flex;
             justify-content: space-between;
@@ -262,10 +262,10 @@
         .album-verdict-badge.flop { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
         .album-verdict-badge.upcoming { background: rgba(148, 163, 184, 0.15); color: var(--text-muted); border: 1px solid rgba(148, 163, 184, 0.3); }
 
-        /* METRICS GRID */
+        /* METRICS GRID: Balanced 2x2 Layout */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            grid-template-columns: 1fr 1fr;
             gap: 0.8rem;
             margin-top: 0.5rem;
         }
@@ -345,7 +345,7 @@
             transform: translateX(3px);
         }
 
-        /* MULTIPLE PERSON LIST (STATIC BOX, INDIVIDUAL INLINE LINKS) */
+        /* MULTIPLE PERSON LIST: Scrollable Container with Custom Scrollbar */
         .person-list-container {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--border-glass);
@@ -354,6 +354,17 @@
             display: flex;
             flex-direction: column;
             gap: 0.6rem;
+            max-height: 160px;
+            overflow-y: auto;
+        }
+
+        .person-list-container::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .person-list-container::-webkit-scrollbar-thumb {
+            background: var(--gold-accent);
+            border-radius: 4px;
         }
 
         .individual-person-link {
@@ -708,8 +719,7 @@
         }
 
         // ==========================================
-        // UNIVERSAL RENDERER: Solves the Box Selection Bug 
-        // Generates individual clickable links for comma-separated lists
+        // UNIVERSAL RENDERER: Splitting by commas, semicolons, slashes, or newlines
         // ==========================================
         async function renderPersonList(rawString, iconClass, iconColor, isAwardEligible = false) {
             const ignoredPlaceholders = ['N/A', 'Featured Ensemble', 'Not Listed', 'Top Action Masters', 'Acclaimed DOP', 'Premier Visual Effects', 'Ensemble Cast', 'Featured Antagonist'];
@@ -718,11 +728,11 @@
                 return `<div class="person-card-link" style="cursor:default;"><span class="person-name"><i class="${iconClass}" style="color:${iconColor}"></i> ${rawString || 'N/A'}</span></div>`;
             }
 
-            // Split correctly to query and list individually
-            const names = rawString.split(',').map(s => s.trim()).filter(s => s.length > 0);
+            // Handles commas, semicolons, slashes, or linebreaks from Google Sheets uploads
+            const names = rawString.split(/[,;\n/]+/).map(s => s.trim()).filter(s => s.length > 0);
             const counts = await Promise.all(names.map(n => getFilmCount(n)));
 
-            // Single Person (Renders as a clean, full-width hoverable box)
+            // Single Person (Clean full-width hoverable box)
             if (names.length === 1) {
                 const name = names[0];
                 const count = counts[0];
@@ -734,7 +744,7 @@
                 </a>`;
             } 
             
-            // Multiple Persons (Renders as a static container with independent inline links)
+            // Multiple Persons (Scrollable container with individual links)
             else {
                 let listHtml = names.map((name, idx) => {
                     const count = counts[idx];
@@ -794,6 +804,23 @@
             const budget = m.budget || m.cost || 'N/A';
             const gross = m.collection || m.trade_gross || m.worldwide_gross || m.box_office || 'N/A';
 
+            // Automatic CEO Financial Calculations (Profit & Recovery Ratio)
+            const budgetNum = parseAmount(budget);
+            const grossNum = parseAmount(gross);
+            let roiDisplay = 'N/A';
+            let recoveryDisplay = 'N/A';
+
+            if (budgetNum && grossNum && budgetNum > 0) {
+                const profit = grossNum - budgetNum;
+                const ratio = (grossNum / budgetNum).toFixed(2);
+                recoveryDisplay = `${ratio}x`;
+                if (profit >= 0) {
+                    roiDisplay = `+${((profit / budgetNum) * 100).toFixed(0)}%`;
+                } else {
+                    roiDisplay = `${((profit / budgetNum) * 100).toFixed(0)}%`;
+                }
+            }
+
             // Dynamic verdict calculation from app.js
             const verdictObj = getVerdict(m);
             const verdict = verdictObj.label;
@@ -837,7 +864,7 @@
                         <div class="${verdictClass}">${verdict}</div>
                     </div>
 
-                    <!-- PANEL 1: BOX OFFICE & METRICS -->
+                    <!-- PANEL 1: BOX OFFICE & FINANCIAL METRICS (BALANCED 2x2 GRID) -->
                     <div class="glass-panel">
                         <div class="panel-title"><i class="fa-solid fa-chart-line"></i> Financial Metrics</div>
                         <div class="stats-grid">
@@ -848,6 +875,14 @@
                             <div class="stat-box">
                                 <div class="stat-box-label">Worldwide Gross</div>
                                 <div class="stat-box-value">${gross}</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-box-label">Profit / ROI</div>
+                                <div class="stat-box-value" style="color: ${roiDisplay.startsWith('+') ? 'var(--success)' : 'var(--gold-accent)'};">${roiDisplay}</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-box-label">Recovery Ratio</div>
+                                <div class="stat-box-value">${recoveryDisplay}</div>
                             </div>
                         </div>
 
@@ -896,7 +931,7 @@
                         </div>
                     </div>
 
-                    <!-- PANEL 4: DIRECTION & MUSIC (WITH ALBUM VERDICT) -->
+                    <!-- PANEL 4: DIRECTION & MUSIC -->
                     <div class="glass-panel">
                         <div class="panel-title"><i class="fa-solid fa-clapperboard"></i> Direction & Music</div>
                         <div class="person-row">
