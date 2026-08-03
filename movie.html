@@ -688,8 +688,8 @@
             if (name.length < 2) return '';
 
             try {
-                // FIXED: choreographer and costume_designer safely added to the query search string!
-                const searchStr = `hero.ilike.%${name}%,heroine.ilike.%${name}%,villain.ilike.%${name}%,director.ilike.%${name}%,music_director.ilike.%${name}%,playback_singers.ilike.%${name}%,dop.ilike.%${name}%,stunt_director.ilike.%${name}%,vfx_team.ilike.%${name}%,choreographer.ilike.%${name}%,costume_designer.ilike.%${name}%,producer.ilike.%${name}%,side_characters.ilike.%${name}%`;
+                // FIXED: Reverted to core search columns so the query doesn't crash on undefined fields
+                const searchStr = `hero.ilike.%${name}%,heroine.ilike.%${name}%,villain.ilike.%${name}%,director.ilike.%${name}%,music_director.ilike.%${name}%,playback_singers.ilike.%${name}%,dop.ilike.%${name}%,stunt_director.ilike.%${name}%,vfx_team.ilike.%${name}%,producer.ilike.%${name}%,side_characters.ilike.%${name}%`;
 
                 let { count, error } = await db
                     .from('box_office')
@@ -753,7 +753,6 @@
             const ignoredPlaceholders = ['N/A', 'NOT APPLICABLE', 'NONE', 'TBA', 'FEATURED ENSEMBLE', 'NOT LISTED', 'TOP ACTION MASTERS', 'ACCLAIMED DOP', 'PREMIER VISUAL EFFECTS', 'ENSEMBLE CAST', 'FEATURED ANTAGONIST', '-'];
             
             if (!cleanStr || ignoredPlaceholders.includes(upperStr)) {
-                // FIXED: Safely returns a plain div when N/A so the row DOES NOT disappear!
                 return `<div class="person-card-link" style="cursor:default;"><span class="person-name"><i class="${iconClass}" style="color:${iconColor}"></i> ${cleanStr || 'N/A'}</span></div>`;
             }
 
@@ -869,7 +868,7 @@
             const releaseDate = extractYear(m) || m.release_date || m.year || m.release_year || 'N/A';
             const ottLink = m.ott_link || m.ott_platform_link || m.ott || null;
 
-            // FIXED: Added plural variations (m.choreographers & m.costume_designers) just in case the sheet is named differently
+            // FIXED: Widespread data mapping applied for costume designers and choreographers
             const [
                 heroHtml, heroineHtml, villainHtml, sideCharactersHtml,
                 dopHtml, stuntHtml, vfxHtml, choreographerHtml, costumeHtml,
@@ -884,8 +883,8 @@
                 renderPersonList(m.dop || m.cinematography, 'fa-solid fa-camera', 'var(--cyan-accent)', false),
                 renderPersonList(m.stunt_director || m.stunt_man || m.stunt, 'fa-solid fa-hand-fist', 'var(--gold-accent)', false),
                 renderPersonList(m.vfx_team || m.vfx || m.vfx_studio, 'fa-solid fa-laptop-code', 'var(--purple-accent)', false),
-                renderPersonList(m.choreographer || m.choreographers || m.dance_director || m.choreography, 'fa-solid fa-shoe-prints', 'var(--cyan-accent)', false),
-                renderPersonList(m.costume_designer || m.costume_designers || m.costumes || m.styling, 'fa-solid fa-shirt', 'var(--gold-accent)', false),
+                renderPersonList(m.choreographer || m.choreography || m.choreographers || m.dance_director, 'fa-solid fa-shoe-prints', 'var(--cyan-accent)', false),
+                renderPersonList(m.costume_designer || m.costume_design || m.costumes || m.costume || m.styling, 'fa-solid fa-shirt', 'var(--gold-accent)', false),
                 
                 // Direction & Music
                 renderPersonList(m.director || m.directed_by, 'fa-solid fa-video', 'var(--gold-accent)', true),
@@ -938,7 +937,7 @@
 
                     <!-- PANEL 2: STAR CAST & ANTAGONISTS -->
                     <div class="glass-panel">
-                        <div class="panel-title"><i class="fa-solid fa-masks-theater"></i> Star Ensemble</div>
+                        <div class="panel-title"><i class="fa-solid fa-masks-theater"></i> Cast</div>
                         ${createRow('Hero / Male Lead', heroHtml)}
                         ${createRow('Heroine / Female Lead', heroineHtml)}
                         ${createRow('Antagonist / Villain', villainHtml)}
@@ -951,8 +950,8 @@
                         ${createRow('Cinematography (DOP)', dopHtml)}
                         ${createRow('Stunts & Action', stuntHtml)}
                         ${createRow('VFX & CGI Studio', vfxHtml)}
-                        ${createRow('Choreography', choreographerHtml)}
-                        ${createRow('Costume Design', costumeHtml)}
+                        ${createRow('Choreographer', choreographerHtml)}
+                        ${createRow('Costume Designer', costumeHtml)}
                     </div>
 
                     <!-- PANEL 4: DIRECTION & MUSIC -->
