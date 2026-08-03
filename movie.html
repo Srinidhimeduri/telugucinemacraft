@@ -625,6 +625,7 @@
     <script>
         let currentUser = null;
         let selectedRatings = { story: 0, direction: 0, performance: 0, music: 0, vfx: 0 };
+        let validDbColumns = []; // Dynamically holds all columns that truly exist in your DB
 
         function getMovieId() {
             const params = new URLSearchParams(window.location.search);
@@ -688,7 +689,27 @@
             if (name.length < 2) return '';
 
             try {
-                const searchStr = `hero.ilike.%${name}%,heroine.ilike.%${name}%,villain.ilike.%${name}%,director.ilike.%${name}%,music_director.ilike.%${name}%,playback_singers.ilike.%${name}%,dop.ilike.%${name}%,stunt_director.ilike.%${name}%,vfx_team.ilike.%${name}%,producer.ilike.%${name}%,side_characters.ilike.%${name}%`;
+                // All potential column variations your sheets might be using
+                const possibleColumns = [
+                    'hero', 'heroine', 'villain', 'director', 'music_director', 
+                    'playback_singers', 'dop', 'stunt_director', 'vfx_team', 'producer', 'side_characters',
+                    'choreographer', 'choreographers', 'dance_director', 'choreography',
+                    'costume_designer', 'costume_designers', 'costume_design', 'costumes', 'costume', 'styling'
+                ];
+                
+                // Filters to ONLY use columns that explicitly exist in your Supabase to prevent crashes
+                let searchCols = possibleColumns;
+                if (validDbColumns.length > 0) {
+                    searchCols = possibleColumns.filter(col => validDbColumns.includes(col));
+                }
+                
+                // Absolute fallback just in case
+                if (searchCols.length === 0) {
+                    searchCols = ['hero', 'heroine', 'villain', 'director', 'music_director'];
+                }
+
+                // Generates query securely
+                const searchStr = searchCols.map(col => `${col}.ilike.%${name}%`).join(',');
 
                 let { count, error } = await db
                     .from('box_office')
@@ -832,6 +853,9 @@
                 return;
             }
 
+            // Maps exactly which columns exist in your Supabase to safely search for film counts
+            validDbColumns = Object.keys(data);
+
             await renderMovieDashboard(data);
         }
 
@@ -867,7 +891,6 @@
             const releaseDate = extractYear(m) || m.release_date || m.year || m.release_year || 'N/A';
             const ottLink = m.ott_link || m.ott_platform_link || m.ott || null;
 
-            // BUG FIX APPLIED HERE: Added exhaustive column fallback mapping for Costume Designer
             const [
                 heroHtml, heroineHtml, villainHtml, sideCharactersHtml,
                 dopHtml, stuntHtml, vfxHtml, choreographerHtml, costumeHtml,
@@ -949,7 +972,7 @@
                         ${createRow('Cinematography (DOP)', dopHtml)}
                         ${createRow('Stunts & Action', stuntHtml)}
                         ${createRow('VFX & CGI Studio', vfxHtml)}
-                        ${createRow('Choreography', choreographerHtml)}
+                        ${createRow('Choreographer', choreographerHtml)}
                         ${createRow('Costume Designer', costumeHtml)}
                     </div>
 
