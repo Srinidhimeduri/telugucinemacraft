@@ -236,14 +236,13 @@
             letter-spacing: 0.5px;
         }
 
-        /* UPCOMING OVERRIDE STYLE FOR VERDICT PILL */
         .verdict-pill.upcoming {
             background: rgba(148, 163, 184, 0.15);
             color: var(--cyan-accent);
             border: 1px solid rgba(56, 189, 248, 0.3);
         }
 
-        /* ALBUM VERDICT BADGES (DYNAMIC COLORING) */
+        /* ALBUM VERDICT BADGES */
         .album-verdict-badge {
             font-size: 0.72rem;
             font-weight: 800;
@@ -257,36 +256,11 @@
             gap: 4px;
         }
 
-        .album-verdict-badge.blockbuster {
-            background: rgba(255, 199, 0, 0.15);
-            color: var(--gold-accent);
-            border: 1px solid rgba(255, 199, 0, 0.4);
-            box-shadow: 0 0 10px var(--gold-glow);
-        }
-
-        .album-verdict-badge.hit {
-            background: rgba(34, 197, 94, 0.15);
-            color: var(--success);
-            border: 1px solid rgba(34, 197, 94, 0.3);
-        }
-
-        .album-verdict-badge.average {
-            background: rgba(56, 189, 248, 0.15);
-            color: var(--cyan-accent);
-            border: 1px solid rgba(56, 189, 248, 0.3);
-        }
-
-        .album-verdict-badge.flop {
-            background: rgba(239, 68, 68, 0.15);
-            color: var(--danger);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-        }
-
-        .album-verdict-badge.upcoming {
-            background: rgba(148, 163, 184, 0.15);
-            color: var(--text-muted);
-            border: 1px solid rgba(148, 163, 184, 0.3);
-        }
+        .album-verdict-badge.blockbuster { background: rgba(255, 199, 0, 0.15); color: var(--gold-accent); border: 1px solid rgba(255, 199, 0, 0.4); box-shadow: 0 0 10px var(--gold-glow); }
+        .album-verdict-badge.hit { background: rgba(34, 197, 94, 0.15); color: var(--success); border: 1px solid rgba(34, 197, 94, 0.3); }
+        .album-verdict-badge.average { background: rgba(56, 189, 248, 0.15); color: var(--cyan-accent); border: 1px solid rgba(56, 189, 248, 0.3); }
+        .album-verdict-badge.flop { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
+        .album-verdict-badge.upcoming { background: rgba(148, 163, 184, 0.15); color: var(--text-muted); border: 1px solid rgba(148, 163, 184, 0.3); }
 
         /* METRICS GRID */
         .stats-grid {
@@ -605,7 +579,6 @@
             return params.get('id');
         }
 
-        // Time-of-Day Greeting Logic
         function getLocalGreeting() {
             const hour = new Date().getHours();
             if (hour >= 5 && hour < 12) return "Good morning";
@@ -613,7 +586,6 @@
             return "Good evening";
         }
 
-        // Auth Handler with Personalized Dashboard UI
         async function checkUserAuth() {
             try {
                 const { data: { user } } = await db.auth.getUser();
@@ -657,19 +629,29 @@
             window.location.reload();
         }
 
-        // Film count query
+        // ==========================================
+        // UPGRADED EXACT FILM COUNT QUERY FUNCTION
+        // ==========================================
         async function getFilmCount(personName) {
-            if (!personName || personName === 'N/A' || personName === 'Featured Ensemble' || personName === 'Not Listed') return '1 Film';
+            // Ignore placeholders to prevent unnecessary queries
+            if (!personName || personName === 'N/A' || personName === 'Featured Ensemble' || personName === 'Not Listed' || personName === 'Top Action Masters' || personName === 'Acclaimed DOP' || personName === 'Premier Visual Effects' || personName === 'Ensemble Cast') return '';
             
+            const name = personName.trim().replace(/'/g, "''"); // Safe SQL string handling
+            if (name.length < 2) return '';
+
             try {
+                // Now querying across ALL relevant crew and cast columns in Supabase
                 const { count } = await db
                     .from('box_office')
                     .select('*', { count: 'exact', head: true })
-                    .or(`hero.ilike.%${personName}%,director.ilike.%${personName}%,starring.ilike.%${personName}%`);
+                    .or(`hero.ilike.%${name}%,heroine.ilike.%${name}%,villain.ilike.%${name}%,director.ilike.%${name}%,music_director.ilike.%${name}%,playback_singers.ilike.%${name}%,dop.ilike.%${name}%,stunt_director.ilike.%${name}%,vfx_team.ilike.%${name}%,producer.ilike.%${name}%,side_characters.ilike.%${name}%`);
                 
-                return count ? `${count} Movies` : '1+ Film';
+                if (count && count > 0) {
+                    return count === 1 ? '1 Movie' : `${count} Movies`;
+                }
+                return '1 Movie'; // Fallback if record somehow isn't counted but exists on current page
             } catch (err) {
-                return '1+ Film';
+                return '1 Movie';
             }
         }
 
@@ -684,7 +666,6 @@
             return `<span class="award-badge"><i class="fa-solid fa-star"></i> Industry Veteran</span>`;
         }
 
-        // Helper to format Album Verdict with Matching Color Badges
         function getAlbumVerdictBadge(rawVerdict, isUnreleased) {
             if (isUnreleased) {
                 return `<span class="album-verdict-badge upcoming"><i class="fa-solid fa-clock"></i> UPCOMING</span>`;
@@ -745,7 +726,6 @@
             const budget = m.budget || m.cost || 'N/A';
             const gross = m.collection || m.trade_gross || m.worldwide_gross || m.box_office || 'N/A';
 
-            // --- Dynamic Unreleased / Verdict Check ---
             let verdict = m.verdict || m.status || 'Blockbuster';
             let verdictClass = "verdict-pill";
 
@@ -758,9 +738,7 @@
                 verdict = 'UPCOMING';
                 verdictClass = "verdict-pill upcoming";
             }
-            // ------------------------------------------
 
-            // Album Verdict Field Mapping
             const rawAlbumVerdict = m.album_verdict || m.music_verdict || m.album_status || 'HIT ALBUM';
             const albumBadgeHTML = getAlbumVerdictBadge(rawAlbumVerdict, isUnreleased);
 
@@ -774,28 +752,43 @@
             const music = m.music_director || m.music || m.music_by || m.musician || m.composer || 'N/A';
             const singers = m.playback_singers || m.playback_singer || 'N/A';
 
-            const stunt = m.stunt_man || m.stunt || m.stunts || m.action_director || m.action_master || m.stunt_master || 'Top Action Masters';
+            const stunt = m.stunt_director || m.stunt_man || m.stunt || m.stunts || m.action_director || 'Top Action Masters';
             const dop = m.dop || m.cinematography || m.cinematographer || m.camera || 'Acclaimed DOP';
-            const vfx = m.vfx || m.vfx_studio || m.cgi || m.visual_effects || 'Premier Visual Effects';
+            const vfx = m.vfx_team || m.vfx || m.vfx_studio || m.cgi || m.visual_effects || 'Premier Visual Effects';
             const producer = m.producer || m.banner || m.production_house || m.produced_by || 'N/A';
             
             const releaseDate = m.release_date || m.year || m.release_year || 'N/A';
             const ottLink = m.ott_link || m.ott_platform_link || m.ott || null;
 
-            // Generate clickable singer links
-            let singersDisplay = '<span style="color: var(--text-muted);">N/A</span>';
-            if (singers !== 'N/A') {
-                singersDisplay = singers.split(',').map(s => 
-                    `<a href="index.html?search=${encodeURIComponent(s.trim())}" style="color: var(--cyan-accent); text-decoration: underline;">${s.trim()}</a>`
-                ).join(', ');
-            }
-
-            const [heroCount, heroineCount, directorCount, musicCount] = await Promise.all([
+            // ==========================================
+            // FETCH EXACT COUNTS FOR EVERY PERSON IN THE FILM
+            // ==========================================
+            const [heroCount, heroineCount, villainCount, directorCount, musicCount, dopCount, stuntCount, vfxCount, producerCount] = await Promise.all([
                 getFilmCount(hero),
                 getFilmCount(heroine),
+                getFilmCount(villain),
                 getFilmCount(director),
-                getFilmCount(music)
+                getFilmCount(music),
+                getFilmCount(dop),
+                getFilmCount(stunt),
+                getFilmCount(vfx),
+                getFilmCount(producer)
             ]);
+
+            // ==========================================
+            // INDIVIDUALIZED PLAYBACK SINGER COUNT LOGIC
+            // ==========================================
+            let singersDisplay = '<span style="color: var(--text-muted);">N/A</span>';
+            if (singers !== 'N/A') {
+                const singersList = singers.split(',').map(s => s.trim());
+                // Fetch exact counts for each singer simultaneously 
+                const singerCounts = await Promise.all(singersList.map(s => getFilmCount(s)));
+                
+                singersDisplay = singersList.map((s, idx) => {
+                    const countBadge = singerCounts[idx] ? `<span class="film-count-badge" style="font-size:0.6rem; padding:0.1rem 0.35rem; margin-left:6px; vertical-align:middle;">${singerCounts[idx]}</span>` : '';
+                    return `<span style="display:inline-flex; align-items:center; margin-right:8px; margin-bottom:4px;"><a href="index.html?search=${encodeURIComponent(s)}" style="color: var(--cyan-accent); text-decoration: underline;">${s}</a>${countBadge}</span>`;
+                }).join('');
+            }
 
             const html = `
                 <div class="movie-dashboard">
@@ -839,7 +832,7 @@
                             <div class="person-role">Hero / Male Lead</div>
                             <a href="index.html?search=${encodeURIComponent(hero)}" class="person-card-link">
                                 <span class="person-name"><i class="fa-solid fa-user-astronaut" style="color:var(--gold-accent)"></i> ${hero}</span>
-                                <div class="person-badges"><span class="film-count-badge">${heroCount}</span>${getAwardHighlight(hero)}</div>
+                                <div class="person-badges">${heroCount ? `<span class="film-count-badge">${heroCount}</span>` : ''}${getAwardHighlight(hero)}</div>
                             </a>
                         </div>
 
@@ -847,7 +840,7 @@
                             <div class="person-role">Heroine / Female Lead</div>
                             <a href="index.html?search=${encodeURIComponent(heroine)}" class="person-card-link">
                                 <span class="person-name"><i class="fa-solid fa-user-ninja" style="color:var(--cyan-accent)"></i> ${heroine}</span>
-                                <div class="person-badges"><span class="film-count-badge">${heroineCount}</span></div>
+                                <div class="person-badges">${heroineCount ? `<span class="film-count-badge">${heroineCount}</span>` : ''}</div>
                             </a>
                         </div>
 
@@ -855,6 +848,7 @@
                             <div class="person-role">Antagonist / Villain</div>
                             <a href="index.html?search=${encodeURIComponent(villain)}" class="person-card-link">
                                 <span class="person-name"><i class="fa-solid fa-skull" style="color:var(--danger)"></i> ${villain}</span>
+                                ${villainCount ? `<div class="person-badges"><span class="film-count-badge">${villainCount}</span></div>` : ''}
                             </a>
                         </div>
 
@@ -874,6 +868,7 @@
                             <div class="person-role">Cinematography (DOP)</div>
                             <a href="index.html?search=${encodeURIComponent(dop)}" class="person-card-link">
                                 <span class="person-name"><i class="fa-solid fa-camera" style="color:var(--cyan-accent)"></i> ${dop}</span>
+                                ${dopCount ? `<div class="person-badges"><span class="film-count-badge">${dopCount}</span></div>` : ''}
                             </a>
                         </div>
 
@@ -881,6 +876,7 @@
                             <div class="person-role">Stunts & Action</div>
                             <a href="index.html?search=${encodeURIComponent(stunt)}" class="person-card-link">
                                 <span class="person-name"><i class="fa-solid fa-hand-fist" style="color:var(--gold-accent)"></i> ${stunt}</span>
+                                ${stuntCount ? `<div class="person-badges"><span class="film-count-badge">${stuntCount}</span></div>` : ''}
                             </a>
                         </div>
 
@@ -888,6 +884,7 @@
                             <div class="person-role">VFX & CGI Studio</div>
                             <div class="person-card-link" style="cursor:default;">
                                 <span class="person-name"><i class="fa-solid fa-laptop-code" style="color:var(--purple-accent)"></i> ${vfx}</span>
+                                ${vfxCount ? `<div class="person-badges"><span class="film-count-badge">${vfxCount}</span></div>` : ''}
                             </div>
                         </div>
                     </div>
@@ -900,7 +897,7 @@
                             <div class="person-role">Director</div>
                             <a href="index.html?search=${encodeURIComponent(director)}" class="person-card-link">
                                 <span class="person-name"><i class="fa-solid fa-video" style="color:var(--gold-accent)"></i> ${director}</span>
-                                <div class="person-badges"><span class="film-count-badge">${directorCount}</span></div>
+                                <div class="person-badges">${directorCount ? `<span class="film-count-badge">${directorCount}</span>` : ''}</div>
                             </a>
                         </div>
 
@@ -911,15 +908,15 @@
                             </div>
                             <a href="index.html?search=${encodeURIComponent(music)}" class="person-card-link">
                                 <span class="person-name"><i class="fa-solid fa-music" style="color:var(--cyan-accent)"></i> ${music}</span>
-                                <div class="person-badges"><span class="film-count-badge">${musicCount}</span>${getAwardHighlight(music)}</div>
+                                <div class="person-badges">${musicCount ? `<span class="film-count-badge">${musicCount}</span>` : ''}${getAwardHighlight(music)}</div>
                             </a>
                         </div>
 
                         <div class="person-row">
                             <div class="person-role">Playback Singers</div>
                             <div class="person-card-link" style="cursor:default;">
-                                <span class="person-name" style="flex-wrap: wrap; line-height: 1.4;">
-                                    <i class="fa-solid fa-microphone-lines" style="color:var(--purple-accent)"></i> 
+                                <span class="person-name" style="flex-wrap: wrap; line-height: 1.6;">
+                                    <i class="fa-solid fa-microphone-lines" style="color:var(--purple-accent); margin-right:5px;"></i> 
                                     ${singersDisplay}
                                 </span>
                             </div>
@@ -929,6 +926,7 @@
                             <div class="person-role">Producer / Banner</div>
                             <div class="person-card-link" style="cursor:default;">
                                 <span class="person-name"><i class="fa-solid fa-building" style="color:var(--text-muted)"></i> ${producer}</span>
+                                ${producerCount ? `<div class="person-badges"><span class="film-count-badge">${producerCount}</span></div>` : ''}
                             </div>
                         </div>
                     </div>
