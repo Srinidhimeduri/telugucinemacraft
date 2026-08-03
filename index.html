@@ -242,6 +242,13 @@
             text-transform: uppercase;
         }
 
+        /* UPCOMING OVERRIDE STYLE FOR VERDICT BADGE */
+        .verdict-badge.upcoming {
+            background: rgba(148, 163, 184, 0.15);
+            color: var(--cyan-accent);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
         .card-details {
             display: flex;
             flex-direction: column;
@@ -448,14 +455,28 @@
                 const director = m.director || 'N/A';
                 const budget = m.budget || 'N/A';
                 const gross = m.collection || m.trade_gross || 'N/A';
-                const verdict = m.verdict || 'Blockbuster';
+                
+                // --- Dynamic Unreleased / Verdict Check ---
+                let verdict = m.verdict || 'Blockbuster';
+                let verdictClass = "verdict-badge";
+
+                const isUnreleased = gross.toString().toUpperCase() === 'TBA' || 
+                                     gross.toString().trim() === '0' || 
+                                     verdict.toString().toUpperCase() === 'UPCOMING' || 
+                                     verdict.toString().toUpperCase() === 'UNRELEASED';
+
+                if (isUnreleased) {
+                    verdict = 'UPCOMING';
+                    verdictClass = "verdict-badge upcoming";
+                }
+                // ------------------------------------------
 
                 html += `
                     <a href="movie.html?id=${movieId}" class="movie-card">
                         <div>
                             <div class="card-top">
                                 <div class="movie-name">${movieName}</div>
-                                <div class="verdict-badge">${verdict}</div>
+                                <div class="${verdictClass}">${verdict}</div>
                             </div>
                             
                             <div class="card-details">
