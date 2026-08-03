@@ -242,7 +242,6 @@
             text-transform: uppercase;
         }
 
-        /* UPCOMING OVERRIDE STYLE FOR VERDICT BADGE */
         .verdict-badge.upcoming {
             background: rgba(148, 163, 184, 0.15);
             color: var(--cyan-accent);
@@ -326,6 +325,11 @@
             .hero-title { font-size: 1.8rem; }
             .grid-container { grid-template-columns: 1fr; }
         }
+
+        /* Added for button mobile convenience */
+        @media (max-width: 480px) {
+            .auth-btn { padding: 0.5rem 0.8rem; font-size: 0.8rem; }
+        }
     </style>
 </head>
 <body>
@@ -367,7 +371,6 @@
     </div>
 
     <script>
-        // Supabase Initialization using the JWT anon key for proper client authentication
         const db = window.supabase.createClient(
             "https://eosgvjvpdwxmpxzerxit.supabase.co", 
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvc2d2anZwZHd4bXB4emVyeGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1Njk3MTMsImV4cCI6MjEwMTE0NTcxM30.fD14BdJBDPNqFUKGxS5DRgsDnN8CqYdWR4k8cuAbvcg",
@@ -376,7 +379,6 @@
 
         let allMovies = [];
 
-        // Auth Handler
         async function updateAuthUI() {
             try {
                 const { data: { user } } = await db.auth.getUser();
@@ -410,32 +412,33 @@
             window.location.reload();
         }
 
-        // Dual Table Fetch Engine (Tries box_office first, falls back to movies)
         async function init() {
             updateAuthUI();
             
             let { data, error } = await db.from('box_office').select('*');
             
-            // Fallback check to 'movies' table if 'box_office' is empty or inaccessible
             if (error || !data || data.length === 0) {
-                console.warn("box_office fetch unfulfilled, attempting fallback to movies table...", error);
                 const res = await db.from('movies').select('*');
                 data = res.data;
                 error = res.error;
             }
 
             if (error || !data || data.length === 0) {
-                console.error("Supabase Error Details:", error);
                 document.getElementById('content').innerHTML = `
                     <div style="text-align: center; color: var(--danger); padding: 3rem;">
                         <p style="font-weight: 700; font-size: 1.1rem; margin-bottom: 0.5rem;">Unable to load movies.</p>
-                        <p style="color: var(--text-muted); font-size: 0.85rem;">Run table permission grants in Supabase SQL editor if issues persist.</p>
                     </div>`;
                 return;
             }
 
-            allMovies = data;
-            renderMovies(allMovies.slice(0, 10)); // Top 10 initial view
+            // Sort logic: Latest movies first
+            allMovies = data.sort((a, b) => {
+                const yearA = parseInt(a.release_year || a.year || 0);
+                const yearB = parseInt(b.release_year || b.year || 0);
+                return yearB - yearA; 
+            });
+
+            renderMovies(allMovies.slice(0, 10)); 
         }
 
         function renderMovies(movies) {
@@ -455,8 +458,8 @@
                 const director = m.director || 'N/A';
                 const budget = m.budget || 'N/A';
                 const gross = m.collection || m.trade_gross || 'N/A';
+                const releaseYear = m.release_year || m.year || 'N/A'; // New field
                 
-                // --- Dynamic Unreleased / Verdict Check ---
                 let verdict = m.verdict || 'Blockbuster';
                 let verdictClass = "verdict-badge";
 
@@ -469,7 +472,6 @@
                     verdict = 'UPCOMING';
                     verdictClass = "verdict-badge upcoming";
                 }
-                // ------------------------------------------
 
                 html += `
                     <a href="movie.html?id=${movieId}" class="movie-card">
@@ -480,6 +482,9 @@
                             </div>
                             
                             <div class="card-details">
+                                <div class="detail-row">
+                                    <span>Year:</span> <span>${releaseYear}</span>
+                                </div>
                                 <div class="detail-row">
                                     <span>Hero:</span> <span>${hero}</span>
                                 </div>
@@ -510,7 +515,6 @@
             document.getElementById('content').innerHTML = html;
         }
 
-        // Instant Search Filter Logic
         function filterMovies() {
             const query = document.getElementById('searchInput').value.toLowerCase().trim();
             if (!query) {
