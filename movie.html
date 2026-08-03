@@ -753,7 +753,7 @@
             const ignoredPlaceholders = ['N/A', 'NOT APPLICABLE', 'NONE', 'TBA', 'FEATURED ENSEMBLE', 'NOT LISTED', 'TOP ACTION MASTERS', 'ACCLAIMED DOP', 'PREMIER VISUAL EFFECTS', 'ENSEMBLE CAST', 'FEATURED ANTAGONIST', '-'];
             
             if (!cleanStr || ignoredPlaceholders.includes(upperStr)) {
-                // FIXED: Now correctly returning the box WITHOUT the movie count instead of returning an empty string
+                // FIXED: Safely returns a plain div when N/A so the row DOES NOT disappear!
                 return `<div class="person-card-link" style="cursor:default;"><span class="person-name"><i class="${iconClass}" style="color:${iconColor}"></i> ${cleanStr || 'N/A'}</span></div>`;
             }
 
@@ -869,6 +869,7 @@
             const releaseDate = extractYear(m) || m.release_date || m.year || m.release_year || 'N/A';
             const ottLink = m.ott_link || m.ott_platform_link || m.ott || null;
 
+            // FIXED: Added plural variations (m.choreographers & m.costume_designers) just in case the sheet is named differently
             const [
                 heroHtml, heroineHtml, villainHtml, sideCharactersHtml,
                 dopHtml, stuntHtml, vfxHtml, choreographerHtml, costumeHtml,
@@ -883,8 +884,8 @@
                 renderPersonList(m.dop || m.cinematography, 'fa-solid fa-camera', 'var(--cyan-accent)', false),
                 renderPersonList(m.stunt_director || m.stunt_man || m.stunt, 'fa-solid fa-hand-fist', 'var(--gold-accent)', false),
                 renderPersonList(m.vfx_team || m.vfx || m.vfx_studio, 'fa-solid fa-laptop-code', 'var(--purple-accent)', false),
-                renderPersonList(m.choreographer || m.dance_director || m.choreography, 'fa-solid fa-shoe-prints', 'var(--cyan-accent)', false),
-                renderPersonList(m.costume_designer || m.costumes || m.styling, 'fa-solid fa-shirt', 'var(--gold-accent)', false),
+                renderPersonList(m.choreographer || m.choreographers || m.dance_director || m.choreography, 'fa-solid fa-shoe-prints', 'var(--cyan-accent)', false),
+                renderPersonList(m.costume_designer || m.costume_designers || m.costumes || m.styling, 'fa-solid fa-shirt', 'var(--gold-accent)', false),
                 
                 // Direction & Music
                 renderPersonList(m.director || m.directed_by, 'fa-solid fa-video', 'var(--gold-accent)', true),
