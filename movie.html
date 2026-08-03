@@ -12,7 +12,7 @@
     
     <!-- Supabase JS Client v2 -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="app.js"></script>
+    <script src="app.js"></script>
 
     <style>
         :root {
@@ -226,9 +226,6 @@
         }
 
         .verdict-pill {
-            background: rgba(34, 197, 94, 0.15);
-            color: var(--success);
-            border: 1px solid rgba(34, 197, 94, 0.3);
             padding: 0.4rem 1rem;
             border-radius: 20px;
             font-size: 0.85rem;
@@ -237,11 +234,13 @@
             letter-spacing: 0.5px;
         }
 
-        .verdict-pill.upcoming {
-            background: rgba(148, 163, 184, 0.15);
-            color: var(--cyan-accent);
-            border: 1px solid rgba(56, 189, 248, 0.3);
-        }
+        .verdict-pill.blockbuster { background: rgba(34, 197, 94, 0.2); color: #22C55E; border: 1px solid rgba(34, 197, 94, 0.4); }
+        .verdict-pill.superhit { background: rgba(255, 199, 0, 0.18); color: #FFC700; border: 1px solid rgba(255, 199, 0, 0.4); }
+        .verdict-pill.hit { background: rgba(56, 189, 248, 0.18); color: #38BDF8; border: 1px solid rgba(56, 189, 248, 0.4); }
+        .verdict-pill.average { background: rgba(245, 158, 11, 0.18); color: #F59E0B; border: 1px solid rgba(245, 158, 11, 0.4); }
+        .verdict-pill.flop { background: rgba(239, 68, 68, 0.18); color: #EF4444; border: 1px solid rgba(239, 68, 68, 0.4); }
+        .verdict-pill.disaster { background: rgba(185, 28, 28, 0.25); color: #F87171; border: 1px solid rgba(185, 28, 28, 0.5); }
+        .verdict-pill.upcoming { background: rgba(148, 163, 184, 0.15); color: var(--cyan-accent); border: 1px solid rgba(56, 189, 248, 0.3); }
 
         /* ALBUM VERDICT BADGES */
         .album-verdict-badge {
@@ -596,13 +595,6 @@
     </div>
 
     <script>
-        // Supabase Client Initialization
-        const db = window.supabase.createClient(
-            "https://eosgvjvpdwxmpxzerxit.supabase.co", 
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvc2d2anZwZHd4bXB4emVyeGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1Njk3MTMsImV4cCI6MjEwMTE0NTcxM30.fD14BdJBDPNqFUKGxS5DRgsDnN8CqYdWR4k8cuAbvcg",
-            { auth: { flowType: 'pkce' } }
-        );
-
         let currentUser = null;
         let selectedRatings = { story: 0, direction: 0, performance: 0, music: 0, vfx: 0 };
 
@@ -802,22 +794,15 @@
             const budget = m.budget || m.cost || 'N/A';
             const gross = m.collection || m.trade_gross || m.worldwide_gross || m.box_office || 'N/A';
 
-            let verdict = m.verdict || m.status || 'Blockbuster';
-            let verdictClass = "verdict-pill";
-
-            const isUnreleased = gross.toString().toUpperCase() === 'TBA' || 
-                               gross.toString().trim() === '0' || 
-                               verdict.toString().toUpperCase() === 'UPCOMING' || 
-                               verdict.toString().toUpperCase() === 'UNRELEASED';
-
-            if (isUnreleased) {
-                verdict = 'UPCOMING';
-                verdictClass = "verdict-pill upcoming";
-            }
+            // Dynamic verdict calculation from app.js
+            const verdictObj = getVerdict(m);
+            const verdict = verdictObj.label;
+            const verdictClass = "verdict-pill " + verdictObj.label.toLowerCase().replace(/\s+/g, '');
+            const isUnreleased = verdict === 'UPCOMING';
 
             const rawAlbumVerdict = m.album_verdict || m.music_verdict || m.album_status || 'HIT ALBUM';
             const albumBadgeHTML = getAlbumVerdictBadge(rawAlbumVerdict, isUnreleased);
-            const releaseDate = m.release_date || m.year || m.release_year || 'N/A';
+            const releaseDate = extractYear(m) || m.release_date || m.year || m.release_year || 'N/A';
             const ottLink = m.ott_link || m.ott_platform_link || m.ott || null;
 
             // Fetch and render every field independently
@@ -835,10 +820,7 @@
                 renderPersonList(m.vfx_team || m.vfx || m.vfx_studio, 'fa-solid fa-laptop-code', 'var(--purple-accent)', false),
                 renderPersonList(m.director || m.directed_by, 'fa-solid fa-video', 'var(--gold-accent)', true),
                 renderPersonList(m.music_director || m.music, 'fa-solid fa-music', 'var(--cyan-accent)', true),
-                
-                // Playback Singers (Now utilizing the universal renderer for automatic person.html linking)
                 renderPersonList(m.playback_singers || m.playback_singer, 'fa-solid fa-microphone-lines', 'var(--purple-accent)', false),
-                
                 renderPersonList(m.producer || m.banner || m.production_house, 'fa-solid fa-building', 'var(--text-muted)', false)
             ]);
 
