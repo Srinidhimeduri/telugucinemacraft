@@ -625,7 +625,6 @@
     <script>
         let currentUser = null;
         let selectedRatings = { story: 0, direction: 0, performance: 0, music: 0, vfx: 0 };
-        let validDbColumns = []; // Dynamically holds all columns that truly exist in your DB
 
         function getMovieId() {
             const params = new URLSearchParams(window.location.search);
@@ -689,27 +688,7 @@
             if (name.length < 2) return '';
 
             try {
-                // All potential column variations your sheets might be using
-                const possibleColumns = [
-                    'hero', 'heroine', 'villain', 'director', 'music_director', 
-                    'playback_singers', 'dop', 'stunt_director', 'vfx_team', 'producer', 'side_characters',
-                    'choreographer', 'choreographers', 'dance_director', 'choreography',
-                    'costume_designer', 'costume_designers', 'costume_design', 'costumes', 'costume', 'styling'
-                ];
-                
-                // Filters to ONLY use columns that explicitly exist in your Supabase to prevent crashes
-                let searchCols = possibleColumns;
-                if (validDbColumns.length > 0) {
-                    searchCols = possibleColumns.filter(col => validDbColumns.includes(col));
-                }
-                
-                // Absolute fallback just in case
-                if (searchCols.length === 0) {
-                    searchCols = ['hero', 'heroine', 'villain', 'director', 'music_director'];
-                }
-
-                // Generates query securely
-                const searchStr = searchCols.map(col => `${col}.ilike.%${name}%`).join(',');
+                const searchStr = `hero.ilike.%${name}%,heroine.ilike.%${name}%,villain.ilike.%${name}%,director.ilike.%${name}%,music_director.ilike.%${name}%,playback_singers.ilike.%${name}%,dop.ilike.%${name}%,stunt_director.ilike.%${name}%,vfx_team.ilike.%${name}%,choreographer.ilike.%${name}%,costume_designer.ilike.%${name}%,producer.ilike.%${name}%,side_characters.ilike.%${name}%`;
 
                 let { count, error } = await db
                     .from('box_office')
@@ -853,9 +832,6 @@
                 return;
             }
 
-            // Maps exactly which columns exist in your Supabase to safely search for film counts
-            validDbColumns = Object.keys(data);
-
             await renderMovieDashboard(data);
         }
 
@@ -905,8 +881,8 @@
                 renderPersonList(m.dop || m.cinematography, 'fa-solid fa-camera', 'var(--cyan-accent)', false),
                 renderPersonList(m.stunt_director || m.stunt_man || m.stunt, 'fa-solid fa-hand-fist', 'var(--gold-accent)', false),
                 renderPersonList(m.vfx_team || m.vfx || m.vfx_studio, 'fa-solid fa-laptop-code', 'var(--purple-accent)', false),
-                renderPersonList(m.choreographer || m.choreographers || m.dance_director || m.choreography, 'fa-solid fa-shoe-prints', 'var(--cyan-accent)', false),
-                renderPersonList(m.costume_designer || m.costume_designers || m.costume_design || m.costumes || m.costume || m.styling, 'fa-solid fa-shirt', 'var(--gold-accent)', false),
+                renderPersonList(m.choreographer || m.dance_director || m.choreography, 'fa-solid fa-shoe-prints', 'var(--cyan-accent)', true),
+                renderPersonList(m.costume_designer || m.costumes || m.styling, 'fa-solid fa-shirt', 'var(--gold-accent)', true),
                 
                 // Direction & Music
                 renderPersonList(m.director || m.directed_by, 'fa-solid fa-video', 'var(--gold-accent)', true),
