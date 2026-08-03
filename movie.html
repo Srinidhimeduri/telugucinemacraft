@@ -243,6 +243,51 @@
             border: 1px solid rgba(56, 189, 248, 0.3);
         }
 
+        /* ALBUM VERDICT BADGES (DYNAMIC COLORING) */
+        .album-verdict-badge {
+            font-size: 0.72rem;
+            font-weight: 800;
+            padding: 0.2rem 0.6rem;
+            border-radius: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .album-verdict-badge.blockbuster {
+            background: rgba(255, 199, 0, 0.15);
+            color: var(--gold-accent);
+            border: 1px solid rgba(255, 199, 0, 0.4);
+            box-shadow: 0 0 10px var(--gold-glow);
+        }
+
+        .album-verdict-badge.hit {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--success);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .album-verdict-badge.average {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--cyan-accent);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
+        .album-verdict-badge.flop {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .album-verdict-badge.upcoming {
+            background: rgba(148, 163, 184, 0.15);
+            color: var(--text-muted);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+        }
+
         /* METRICS GRID */
         .stats-grid {
             display: grid;
@@ -639,6 +684,29 @@
             return `<span class="award-badge"><i class="fa-solid fa-star"></i> Industry Veteran</span>`;
         }
 
+        // Helper to format Album Verdict with Matching Color Badges
+        function getAlbumVerdictBadge(rawVerdict, isUnreleased) {
+            if (isUnreleased) {
+                return `<span class="album-verdict-badge upcoming"><i class="fa-solid fa-clock"></i> UPCOMING</span>`;
+            }
+            if (!rawVerdict || rawVerdict === 'N/A') {
+                return `<span class="album-verdict-badge average"><i class="fa-solid fa-compact-disc"></i> HIT ALBUM</span>`;
+            }
+
+            const str = rawVerdict.toString().toUpperCase().trim();
+            if (str.includes('BLOCKBUSTER') || str.includes('SUPERHIT')) {
+                return `<span class="album-verdict-badge blockbuster"><i class="fa-solid fa-fire"></i> ${str}</span>`;
+            } else if (str.includes('HIT')) {
+                return `<span class="album-verdict-badge hit"><i class="fa-solid fa-circle-check"></i> ${str}</span>`;
+            } else if (str.includes('AVERAGE')) {
+                return `<span class="album-verdict-badge average"><i class="fa-solid fa-sliders"></i> ${str}</span>`;
+            } else if (str.includes('FLOP')) {
+                return `<span class="album-verdict-badge flop"><i class="fa-solid fa-circle-xmark"></i> ${str}</span>`;
+            } else {
+                return `<span class="album-verdict-badge upcoming"><i class="fa-solid fa-compact-disc"></i> ${str}</span>`;
+            }
+        }
+
         async function fetchMovieDetails() {
             await checkUserAuth();
             const id = getMovieId();
@@ -691,6 +759,10 @@
                 verdictClass = "verdict-pill upcoming";
             }
             // ------------------------------------------
+
+            // Album Verdict Field Mapping
+            const rawAlbumVerdict = m.album_verdict || m.music_verdict || m.album_status || 'HIT ALBUM';
+            const albumBadgeHTML = getAlbumVerdictBadge(rawAlbumVerdict, isUnreleased);
 
             const hero = m.hero || m.starring || m.lead_actor || m.hero_name || 'N/A';
             const heroine = m.heroine || m.female_lead || m.heroine_name || 'N/A';
@@ -820,7 +892,7 @@
                         </div>
                     </div>
 
-                    <!-- PANEL 4: DIRECTION & MUSIC -->
+                    <!-- PANEL 4: DIRECTION & MUSIC (WITH ALBUM VERDICT) -->
                     <div class="glass-panel">
                         <div class="panel-title"><i class="fa-solid fa-clapperboard"></i> Direction & Music</div>
                         
@@ -833,7 +905,10 @@
                         </div>
 
                         <div class="person-row">
-                            <div class="person-role">Music Director</div>
+                            <div class="person-role" style="display:flex; justify-content:space-between; align-items:center;">
+                                <span>Music Director & Album Verdict</span>
+                                ${albumBadgeHTML}
+                            </div>
                             <a href="index.html?search=${encodeURIComponent(music)}" class="person-card-link">
                                 <span class="person-name"><i class="fa-solid fa-music" style="color:var(--cyan-accent)"></i> ${music}</span>
                                 <div class="person-badges"><span class="film-count-badge">${musicCount}</span>${getAwardHighlight(music)}</div>
