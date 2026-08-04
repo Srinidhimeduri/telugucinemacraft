@@ -315,7 +315,7 @@
                                 foundAward = personalSegments.join(' • '); 
                                 break;
                             } else if (segments.length === 1 && !val.includes('(') && !val.includes(';')) {
-                                // Safe Fallback for generic strings like "Best Director" that apply to the primary role
+                                // Safe Fallback for generic strings
                                 foundAward = segments[0];
                                 break;
                             }
@@ -341,7 +341,12 @@
             const isLeadStar = ['hero', 'heroine', 'villain'].includes(primaryRoleKey);
             const isDirector = primaryRoleKey === 'director';
             const isProducer = primaryRoleKey === 'producer';
+            
+            // Separated Music Director from Playback Singer to apply strict logic rules
             const isMusicRole = ['music_director', 'playback_singers'].includes(primaryRoleKey);
+            const isMusicDirector = primaryRoleKey === 'music_director';
+            const isPlaybackSinger = primaryRoleKey === 'playback_singers';
+            
             const isPureCrew = ['dop', 'vfx_team', 'side_characters', 'choreographer', 'costume_designer', 'stunt_director'].includes(primaryRoleKey);
 
             movies.forEach(m => {
@@ -430,7 +435,8 @@
                         <div class="metric-value cyan">${totalAwards}</div>
                     </div>
                 `;
-            } else if (isMusicRole) {
+            } else if (isMusicDirector) {
+                // EXCLUSIVE for Music Directors
                 metricsCardsHtml += `
                     <div class="metric-card">
                         <div class="metric-title">Chartbuster Albums</div>
@@ -443,6 +449,18 @@
                     <div class="metric-card">
                         <div class="metric-title">Recognized Awards</div>
                         <div class="metric-value cyan">${totalAwards}</div>
+                    </div>
+                `;
+            } else if (isPlaybackSinger) {
+                // EXCLUSIVE for Playback Singers (No Strike Rate)
+                metricsCardsHtml += `
+                    <div class="metric-card">
+                        <div class="metric-title">Department</div>
+                        <div class="metric-value cyan" style="font-size:1.2rem; padding-top:0.4rem;">${primaryRoleName}</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Recognized Awards</div>
+                        <div class="metric-value gold">${totalAwards}</div>
                     </div>
                 `;
             } else {
