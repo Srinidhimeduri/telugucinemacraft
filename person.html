@@ -114,7 +114,7 @@
 
         .movie-row {
             display: grid; gap: 1rem;
-            align-items: center; padding: 0.85rem 0.5rem; border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+            align-items: center; padding: 1rem 0.5rem; border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
             transition: all 0.2s ease;
         }
         .movie-row:last-child { border-bottom: none; }
@@ -123,30 +123,22 @@
         .m-year { font-weight: 800; color: var(--text-muted); }
         .m-title { font-size: 1.05rem; font-weight: 700; color: #FFF; text-decoration: none; transition: color 0.2s ease;}
         .m-title:hover { color: var(--gold-accent); }
-        
-        .verdict-badge {
-            font-size: 0.7rem; font-weight: 800; padding: 0.25rem 0.6rem; border-radius: 6px; text-transform: uppercase; text-align: center; display: inline-block; white-space: nowrap;
-        }
-        .v-blockbuster { background: rgba(255, 199, 0, 0.15); color: var(--gold-accent); border: 1px solid rgba(255, 199, 0, 0.4); }
-        .v-hit { background: rgba(34, 197, 94, 0.15); color: var(--success); border: 1px solid rgba(34, 197, 94, 0.3); }
-        .v-average { background: rgba(56, 189, 248, 0.15); color: var(--cyan-accent); border: 1px solid rgba(56, 189, 248, 0.3); }
-        .v-flop { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
-        .v-upcoming { background: rgba(148, 163, 184, 0.15); color: var(--text-muted); border: 1px solid rgba(148, 163, 184, 0.3); }
 
         .movie-award-badge {
-            background: rgba(255, 199, 0, 0.15);
+            background: rgba(255, 199, 0, 0.12);
             color: var(--gold-accent);
             border: 1px solid rgba(255, 199, 0, 0.4);
-            padding: 0.2rem 0.5rem;
-            border-radius: 6px;
-            font-size: 0.65rem;
+            padding: 0.35rem 0.7rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
             font-weight: 800;
             text-transform: uppercase;
             display: inline-flex;
             align-items: center;
-            gap: 4px;
-            margin-top: 6px;
+            gap: 6px;
             line-height: 1.3;
+            white-space: normal;
+            text-align: left;
         }
 
         .loading-view { text-align: center; padding: 5rem 0; color: var(--text-muted); font-size: 1.2rem; }
@@ -155,6 +147,8 @@
             .profile-header { flex-direction: column; text-align: center; gap: 1rem; }
             .profile-header::before { width: 100%; height: 4px; top: 0; left: 0; }
             .movie-row, .movie-table-header { grid-template-columns: 1fr !important; text-align: center; gap: 0.5rem; }
+            .movie-row > div { display: flex; justify-content: center; }
+            .movie-award-badge { justify-content: center; text-align: center; }
         }
     </style>
 </head>
@@ -185,16 +179,6 @@
             if(!collectionString) return 0;
             const match = collectionString.toString().replace(/,/g, '').match(/[\d.]+/);
             return match ? parseFloat(match[0]) : 0;
-        }
-
-        function getVerdictBadge(verdict) {
-            if (!verdict || verdict === 'N/A') return `<span class="verdict-badge v-average">N/A</span>`;
-            const v = verdict.toString().toUpperCase();
-            if (v.includes('BLOCKBUSTER') || v.includes('SUPERHIT')) return `<span class="verdict-badge v-blockbuster">${verdict}</span>`;
-            if (v.includes('HIT')) return `<span class="verdict-badge v-hit">${verdict}</span>`;
-            if (v.includes('AVERAGE')) return `<span class="verdict-badge v-average">${verdict}</span>`;
-            if (v.includes('FLOP') || v.includes('DISASTER')) return `<span class="verdict-badge v-flop">${verdict}</span>`;
-            return `<span class="verdict-badge v-upcoming">${verdict}</span>`;
         }
 
         async function loadProfile() {
@@ -254,13 +238,7 @@
                 return;
             }
 
-            // --- INTELLIGENCE PROCESSING ---
-            let totalGross = 0;
-            let totalBudget = 0;
-            let hits = 0; 
-            let flops = 0;
-            let calculatedAwardsCount = 0;
-
+            // LOOP 1: Determine the Primary Role
             let roleTally = { 
                 hero:0, heroine:0, director:0, music_director:0, producer:0, 
                 dop:0, vfx_team:0, villain:0, playback_singers:0, side_characters:0,
@@ -283,40 +261,78 @@
                 if (checkInStr(m.choreographer) || checkInStr(m.choreographers) || checkInStr(m.dance_director) || checkInStr(m.choreography)) roleTally.choreographer++;
                 if (checkInStr(m.costume_designer) || checkInStr(m.costume_designers) || checkInStr(m.costume_design) || checkInStr(m.costumes) || checkInStr(m.costume) || checkInStr(m.styling)) roleTally.costume_designer++;
                 if (checkInStr(m.stunt_director) || checkInStr(m.stunts) || checkInStr(m.stunt_man) || checkInStr(m.stunt) || checkInStr(m.action)) roleTally.stunt_director++;
+            });
 
+            const primaryRoleKey = Object.keys(roleTally).reduce((a, b) => roleTally[a] >= roleTally[b] ? a : b);
+            
+            // Department Keywords Mapping for advanced Award extraction
+            const roleKeywords = {
+                hero: ['actor', 'hero', 'male lead', 'best male'],
+                heroine: ['actress', 'heroine', 'female lead', 'best female'],
+                director: ['director', 'direction', 'helmer'],
+                music_director: ['music', 'bgm', 'score', 'album', 'composer', 'audio'],
+                producer: ['film', 'movie', 'producer', 'production', 'picture'],
+                dop: ['cinematography', 'camera', 'dop', 'cinematographer'],
+                vfx_team: ['vfx', 'visual effects', 'cg', 'graphics'],
+                villain: ['villain', 'antagonist', 'negative'],
+                playback_singers: ['singer', 'playback', 'vocal', 'song', 'chorus'],
+                side_characters: ['supporting', 'character actor', 'comedian', 'comedy'],
+                choreographer: ['choreography', 'dance', 'choreographer'],
+                costume_designer: ['costume', 'styling', 'apparel', 'designer', 'makeup'],
+                stunt_director: ['stunt', 'action', 'fight', 'master']
+            };
+            const myKeywords = roleKeywords[primaryRoleKey] || [];
+
+            // LOOP 2: Process Financials, Hits, and Smart Awards
+            let totalGross = 0;
+            let totalBudget = 0;
+            let hits = 0; 
+            let flops = 0;
+            let calculatedAwardsCount = 0;
+            
+            const searchName = name.toLowerCase().trim();
+            const nameParts = searchName.split(' ').filter(n => n.length >= 3); // Extracted for precise NLP matching
+
+            movies.forEach(m => {
                 // Financial Sums
                 const gross = extractCrores(m.collection || m.worldwide_gross || m.trade_gross);
                 const budget = extractCrores(m.budget || m.cost);
                 totalGross += gross;
                 totalBudget += budget;
 
-                // SMART AWARD SCANNER: Dynamically searches and FILTERS awards for the specific individual
+                // Smart Award Scanner
                 let foundAward = null;
-                const searchName = name.toLowerCase();
-                const nameKeywords = searchName.split(' ').filter(n => n.length > 2);
 
                 for (const key in m) {
                     const lKey = key.toLowerCase();
-                    // Identify if the column represents an award
                     if ((lKey.includes('award') || lKey.includes('accolade') || lKey === 'recognition') && !lKey.includes('verdict')) {
                         const val = m[key];
                         if (val && typeof val === 'string' && val.trim() !== 'N/A' && val.trim() !== 'No') {
                             
-                            // Split combined DB strings
+                            // Split combined DB strings safely
                             const segments = val.split(/[;\n|]/).map(s => s.trim()).filter(s => s.length > 0);
                             
-                            // Filter to ONLY include segments mentioning this exact person
                             const personalSegments = segments.filter(seg => {
                                 const lSeg = seg.toLowerCase();
-                                return lSeg.includes(searchName) || nameKeywords.some(kw => lSeg.includes(kw));
+                                
+                                // Rule 1: Explicit Name Match
+                                if (lSeg.includes(searchName)) return true;
+                                for (let part of nameParts) {
+                                    if (lSeg.includes(part)) return true;
+                                }
+
+                                // Rule 2: Explicit Department Match (If generic award text)
+                                // Prevents assigning another person's award to the current profile
+                                const mentionsOtherPerson = /[\(\)\:\–]/.test(seg) || / - /.test(seg);
+                                if (!mentionsOtherPerson) {
+                                    if (myKeywords.some(kw => lSeg.includes(kw))) return true;
+                                }
+
+                                return false;
                             });
 
                             if (personalSegments.length > 0) {
                                 foundAward = personalSegments.join(' • '); 
-                                break;
-                            } else if (segments.length === 1 && !val.includes('(') && !val.includes(';')) {
-                                // Safe Fallback for generic strings
-                                foundAward = segments[0];
                                 break;
                             }
                         }
@@ -325,10 +341,14 @@
                 
                 m.extracted_award = foundAward;
                 if (foundAward) calculatedAwardsCount++;
+
+                // Hits and Flops Calculation
+                const isMusicRole = ['music_director', 'playback_singers'].includes(primaryRoleKey);
+                let v = (isMusicRole && m.album_verdict) ? m.album_verdict.toUpperCase() : (m.verdict || '').toUpperCase();
+                if (v.includes('HIT') || v.includes('BLOCKBUSTER') || v.includes('SUPERHIT')) hits++;
+                if (v.includes('FLOP') || v.includes('DISASTER')) flops++;
             });
 
-            const primaryRoleKey = Object.keys(roleTally).reduce((a, b) => roleTally[a] >= roleTally[b] ? a : b);
-            
             const displayRoles = { 
                 hero: "Lead Actor", heroine: "Lead Actress", director: "Film Director", 
                 music_director: "Music Composer", producer: "Film Producer", dop: "Cinematographer (DOP)", 
@@ -341,19 +361,8 @@
             const isLeadStar = ['hero', 'heroine', 'villain'].includes(primaryRoleKey);
             const isDirector = primaryRoleKey === 'director';
             const isProducer = primaryRoleKey === 'producer';
-            
-            // Separated Music Director from Playback Singer to apply strict logic rules
-            const isMusicRole = ['music_director', 'playback_singers'].includes(primaryRoleKey);
             const isMusicDirector = primaryRoleKey === 'music_director';
             const isPlaybackSinger = primaryRoleKey === 'playback_singers';
-            
-            const isPureCrew = ['dop', 'vfx_team', 'side_characters', 'choreographer', 'costume_designer', 'stunt_director'].includes(primaryRoleKey);
-
-            movies.forEach(m => {
-                let v = (isMusicRole && m.album_verdict) ? m.album_verdict.toUpperCase() : (m.verdict || '').toUpperCase();
-                if (v.includes('HIT') || v.includes('BLOCKBUSTER') || v.includes('SUPERHIT')) hits++;
-                if (v.includes('FLOP') || v.includes('DISASTER')) flops++;
-            });
 
             const totalReleased = movies.filter(m => m.verdict && m.verdict.toUpperCase() !== 'UPCOMING').length || movies.length;
             const successRate = totalReleased > 0 ? ((hits / totalReleased) * 100).toFixed(0) : 0;
@@ -365,7 +374,7 @@
                 return dateB.toString().localeCompare(dateA.toString());
             });
 
-            // Recognized Awards Detection
+            // Recognized Awards Validation
             let totalAwards = 0;
             if (calculatedAwardsCount > 0) {
                 totalAwards = calculatedAwardsCount;
@@ -436,7 +445,6 @@
                     </div>
                 `;
             } else if (isMusicDirector) {
-                // EXCLUSIVE for Music Directors
                 metricsCardsHtml += `
                     <div class="metric-card">
                         <div class="metric-title">Chartbuster Albums</div>
@@ -452,7 +460,6 @@
                     </div>
                 `;
             } else if (isPlaybackSinger) {
-                // EXCLUSIVE for Playback Singers (No Strike Rate)
                 metricsCardsHtml += `
                     <div class="metric-card">
                         <div class="metric-title">Department</div>
@@ -464,7 +471,6 @@
                     </div>
                 `;
             } else {
-                // Pure Crew / Supporting Cast
                 metricsCardsHtml += `
                     <div class="metric-card">
                         <div class="metric-title">Department</div>
@@ -478,41 +484,26 @@
             }
 
             // --- BUILD DYNAMIC FILMOGRAPHY TABLE ---
+            // Verdict and Status fields completely removed as requested
             const showGrossInTable = isLeadStar || isDirector || isProducer;
-            const showVerdictInTable = !isPureCrew; // Hides verdict/status column completely for Pure Crew
-
-            let gridTemplate = "80px 1fr"; 
-            if (showGrossInTable && showVerdictInTable) {
-                gridTemplate = "80px 2fr 1fr 1fr"; 
-            } else if (showVerdictInTable) {
-                gridTemplate = "80px 2fr 1fr"; 
-            }
+            const gridTemplate = showGrossInTable ? "80px 2.5fr 1fr 1.5fr" : "80px 2.5fr 1.5fr"; 
 
             let timelineHtml = movies.map(m => {
                 const year = (m.release_date || m.year || m.release_year || 'TBA').toString().substring(0,4);
-                const isUnreleased = m.collection === 'TBA' || !m.collection || m.verdict === 'UPCOMING';
-                let verdictText = isUnreleased ? 'UPCOMING' : (m.verdict || 'N/A');
-
-                if (isMusicRole) {
-                    verdictText = m.album_verdict || 'HIT ALBUM';
-                }
-
-                // DEDICATED REWARDS EXTRACTION
+                
+                // Formatted Dedicated Award
                 const movieAward = m.extracted_award; 
                 const awardHtml = movieAward ? `
-                    <div class="movie-award-badge">
+                    <div class="movie-award-badge" style="margin-top:0;">
                         <i class="fa-solid fa-trophy"></i> ${movieAward}
-                    </div>` : '';
+                    </div>` : '<span style="color:var(--text-muted); font-size:0.8rem;">-</span>';
 
                 return `
                 <div class="movie-row" style="grid-template-columns: ${gridTemplate};">
                     <div class="m-year">${year}</div>
-                    <div style="display: flex; flex-direction: column; align-items: flex-start;">
-                        <a href="movie.html?id=${m.movie_id || m.id}" class="m-title">${m.movie_name || m.title}</a>
-                        ${awardHtml}
-                    </div>
+                    <a href="movie.html?id=${m.movie_id || m.id}" class="m-title">${m.movie_name || m.title}</a>
                     ${showGrossInTable ? `<div><span style="color:var(--gold-accent); font-weight:700;">${m.collection || 'TBA'}</span></div>` : ''}
-                    ${showVerdictInTable ? `<div>${getVerdictBadge(verdictText)}</div>` : ''}
+                    <div>${awardHtml}</div>
                 </div>`;
             }).join('');
 
@@ -536,7 +527,7 @@
                         <div>Year</div>
                         <div>Movie Title</div>
                         ${showGrossInTable ? `<div>Gross Collection</div>` : ''}
-                        ${showVerdictInTable ? `<div>${isMusicRole ? 'Album Verdict' : 'Verdict'}</div>` : ''}
+                        <div>Recognized Awards</div>
                     </div>
                     ${timelineHtml}
                 </div>
