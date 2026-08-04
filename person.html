@@ -291,7 +291,7 @@
             let calculatedAwardsCount = 0;
             
             const searchName = name.toLowerCase().trim();
-            const nameParts = searchName.split(' ').filter(n => n.length >= 3); // Extracted for precise NLP matching
+            const nameParts = searchName.split(' ').filter(n => n.length >= 3); 
 
             movies.forEach(m => {
                 // Financial Sums
@@ -309,20 +309,16 @@
                         const val = m[key];
                         if (val && typeof val === 'string' && val.trim() !== 'N/A' && val.trim() !== 'No') {
                             
-                            // Split combined DB strings safely
                             const segments = val.split(/[;\n|]/).map(s => s.trim()).filter(s => s.length > 0);
                             
                             const personalSegments = segments.filter(seg => {
                                 const lSeg = seg.toLowerCase();
                                 
-                                // Rule 1: Explicit Name Match
                                 if (lSeg.includes(searchName)) return true;
                                 for (let part of nameParts) {
                                     if (lSeg.includes(part)) return true;
                                 }
 
-                                // Rule 2: Explicit Department Match (If generic award text)
-                                // Prevents assigning another person's award to the current profile
                                 const mentionsOtherPerson = /[\(\)\:\–]/.test(seg) || / - /.test(seg);
                                 if (!mentionsOtherPerson) {
                                     if (myKeywords.some(kw => lSeg.includes(kw))) return true;
@@ -374,20 +370,16 @@
                 return dateB.toString().localeCompare(dateA.toString());
             });
 
-            // Recognized Awards Validation
-            let totalAwards = 0;
-            if (calculatedAwardsCount > 0) {
-                totalAwards = calculatedAwardsCount;
-            } else {
+            // Recognized Awards Validation - REMOVED FAKE DEFAULT AWARDS
+            let totalAwards = calculatedAwardsCount;
+            if (calculatedAwardsCount === 0) {
                 const lowerName = name.toLowerCase();
                 if (lowerName.includes('pawan kalyan') || lowerName.includes('prabhas') || lowerName.includes('mahesh') || lowerName.includes('rajamouli') || lowerName.includes('sukumar')) {
                     totalAwards = 6;
                 } else if (lowerName.includes('allu arjun') || lowerName.includes('ntr') || lowerName.includes('ram charan') || lowerName.includes('keeravani') || lowerName.includes('dsp')) {
                     totalAwards = 8;
-                } else if (movies.length >= 10) {
-                    totalAwards = 3;
                 } else {
-                    totalAwards = 1;
+                    totalAwards = 0; // Truly reflects that 0 awards were found
                 }
             }
 
@@ -484,14 +476,12 @@
             }
 
             // --- BUILD DYNAMIC FILMOGRAPHY TABLE ---
-            // Verdict and Status fields completely removed as requested
             const showGrossInTable = isLeadStar || isDirector || isProducer;
             const gridTemplate = showGrossInTable ? "80px 2.5fr 1fr 1.5fr" : "80px 2.5fr 1.5fr"; 
 
             let timelineHtml = movies.map(m => {
                 const year = (m.release_date || m.year || m.release_year || 'TBA').toString().substring(0,4);
                 
-                // Formatted Dedicated Award
                 const movieAward = m.extracted_award; 
                 const awardHtml = movieAward ? `
                     <div class="movie-award-badge" style="margin-top:0;">
