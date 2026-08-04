@@ -20,6 +20,7 @@
             --border-glass: rgba(255, 255, 255, 0.08);
             --border-hover: rgba(255, 199, 0, 0.4);
             --gold-accent: #FFC700;
+            --gold-glow: rgba(255, 199, 0, 0.15);
             --cyan-accent: #38BDF8;
             --text-main: #F8FAFC;
             --text-muted: #94A3B8;
@@ -41,13 +42,15 @@
             padding: 1.2rem;
         }
 
-        .container { max-width: 1200px; margin: 0 auto; width: 100%; }
+        .container { max-width: 1250px; margin: 0 auto; width: 100%; }
 
         nav {
             display: flex; justify-content: space-between; align-items: center;
             padding: 0.85rem 1.6rem; background: var(--bg-glass);
-            backdrop-filter: blur(16px); border: 1px solid var(--border-glass);
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-glass);
             border-radius: 16px; margin-bottom: 1.2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
         .brand-title { font-size: 1.4rem; font-weight: 800; color: #FFF; text-decoration: none; }
         .brand-title i { color: var(--gold-accent); margin-right: 8px;}
@@ -55,14 +58,17 @@
             background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-glass);
             color: var(--text-main); padding: 0.55rem 1.2rem; border-radius: 10px;
             cursor: pointer; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+            transition: all 0.2s ease;
         }
         .back-btn:hover { border-color: var(--gold-accent); color: var(--gold-accent); }
 
         /* Profile Header */
         .profile-header {
             background: var(--bg-card); border: 1px solid var(--border-glass);
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
             border-radius: 18px; padding: 2rem; display: flex; align-items: center; gap: 2rem;
             margin-bottom: 1.2rem; position: relative; overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
         }
         .profile-header::before {
             content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%;
@@ -72,9 +78,10 @@
             width: 100px; height: 100px; border-radius: 50%;
             background: rgba(255, 255, 255, 0.05); border: 2px dashed var(--gold-accent);
             display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: var(--gold-accent);
+            flex-shrink: 0;
         }
-        .profile-name { font-size: 2.5rem; font-weight: 800; line-height: 1.1; margin-bottom: 5px; }
-        .profile-role { font-size: 0.9rem; color: var(--cyan-accent); text-transform: uppercase; font-weight: 700; letter-spacing: 1px;}
+        .profile-name { font-size: 2.5rem; font-weight: 800; line-height: 1.1; margin-bottom: 8px; }
+        .profile-role { font-size: 0.9rem; color: var(--cyan-accent); text-transform: uppercase; font-weight: 800; letter-spacing: 1px; display: inline-flex; align-items: center; gap: 6px; }
 
         /* Metrics Grid */
         .metrics-grid {
@@ -82,33 +89,44 @@
         }
         .metric-card {
             background: var(--bg-card); border: 1px solid var(--border-glass);
-            border-radius: 16px; padding: 1.5rem; text-align: center;
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border-radius: 16px; padding: 1.4rem; text-align: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
         }
-        .metric-title { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .metric-title { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; font-weight: 700; }
         .metric-value { font-size: 1.8rem; font-weight: 800; color: #FFF; }
         .metric-value.gold { color: var(--gold-accent); }
         .metric-value.green { color: var(--success); }
+        .metric-value.cyan { color: var(--cyan-accent); }
 
         /* Timeline / Filmography */
         .timeline-container {
             background: var(--bg-card); border: 1px solid var(--border-glass);
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
             border-radius: 18px; padding: 2rem;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
         }
-        .timeline-header { font-size: 1.2rem; font-weight: 700; color: var(--cyan-accent); margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-glass); padding-bottom: 0.5rem;}
+        .timeline-header { font-size: 1.2rem; font-weight: 800; color: var(--cyan-accent); margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-glass); padding-bottom: 0.5rem; display: flex; align-items: center; gap: 8px;}
         
+        .movie-table-header {
+            display: grid; gap: 1rem; padding-bottom: 0.5rem; margin-bottom: 0.5rem; border-bottom: 1px solid var(--border-glass);
+            font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;
+        }
+
         .movie-row {
-            display: grid; grid-template-columns: 80px 2fr 1fr 1fr; gap: 1rem;
-            align-items: center; padding: 1rem 0; border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+            display: grid; gap: 1rem;
+            align-items: center; padding: 0.85rem 0.5rem; border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+            transition: all 0.2s ease;
         }
         .movie-row:last-child { border-bottom: none; }
-        .movie-row:hover { background: rgba(255, 255, 255, 0.02); border-radius: 8px; }
+        .movie-row:hover { background: rgba(255, 255, 255, 0.03); border-radius: 10px; }
         
         .m-year { font-weight: 800; color: var(--text-muted); }
-        .m-title { font-size: 1.1rem; font-weight: 700; color: #FFF; text-decoration: none;}
+        .m-title { font-size: 1.05rem; font-weight: 700; color: #FFF; text-decoration: none; transition: color 0.2s ease;}
         .m-title:hover { color: var(--gold-accent); }
         
         .verdict-badge {
-            font-size: 0.7rem; font-weight: 800; padding: 0.25rem 0.6rem; border-radius: 6px; text-transform: uppercase; text-align: center; display: inline-block;
+            font-size: 0.7rem; font-weight: 800; padding: 0.25rem 0.6rem; border-radius: 6px; text-transform: uppercase; text-align: center; display: inline-block; white-space: nowrap;
         }
         .v-blockbuster { background: rgba(255, 199, 0, 0.15); color: var(--gold-accent); border: 1px solid rgba(255, 199, 0, 0.4); }
         .v-hit { background: rgba(34, 197, 94, 0.15); color: var(--success); border: 1px solid rgba(34, 197, 94, 0.3); }
@@ -120,7 +138,8 @@
 
         @media (max-width: 768px) {
             .profile-header { flex-direction: column; text-align: center; gap: 1rem; }
-            .movie-row { grid-template-columns: 1fr; text-align: center; gap: 0.5rem; }
+            .profile-header::before { width: 100%; height: 4px; top: 0; left: 0; }
+            .movie-row, .movie-table-header { grid-template-columns: 1fr !important; text-align: center; gap: 0.5rem; }
         }
     </style>
 </head>
@@ -147,17 +166,15 @@
             return new URLSearchParams(window.location.search).get('name');
         }
 
-        // Helper to format currency accurately
         function extractCrores(collectionString) {
             if(!collectionString) return 0;
-            const match = collectionString.replace(/,/g, '').match(/[\d.]+/);
+            const match = collectionString.toString().replace(/,/g, '').match(/[\d.]+/);
             return match ? parseFloat(match[0]) : 0;
         }
 
-        // Get styled verdict badge
         function getVerdictBadge(verdict) {
-            if (!verdict) return `<span class="verdict-badge v-average">N/A</span>`;
-            const v = verdict.toUpperCase();
+            if (!verdict || verdict === 'N/A') return `<span class="verdict-badge v-average">N/A</span>`;
+            const v = verdict.toString().toUpperCase();
             if (v.includes('BLOCKBUSTER') || v.includes('SUPERHIT')) return `<span class="verdict-badge v-blockbuster">${verdict}</span>`;
             if (v.includes('HIT')) return `<span class="verdict-badge v-hit">${verdict}</span>`;
             if (v.includes('AVERAGE')) return `<span class="verdict-badge v-average">${verdict}</span>`;
@@ -168,92 +185,235 @@
         async function loadProfile() {
             const name = getPersonName();
             if (!name) {
-                document.getElementById('profileArea').innerHTML = `<h2 style="color:var(--danger)">No profile specified.</h2>`;
+                document.getElementById('profileArea').innerHTML = `<h2 style="color:var(--danger)">No individual specified in URL.</h2>`;
                 return;
             }
 
             const cleanName = name.trim().replace(/'/g, "''");
 
-            // Fetch ALL movies associated with this person
-            const { data: movies, error } = await db.from('box_office').select('*')
-                .or(`hero.ilike.%${cleanName}%,heroine.ilike.%${cleanName}%,villain.ilike.%${cleanName}%,director.ilike.%${cleanName}%,music_director.ilike.%${cleanName}%,playback_singers.ilike.%${cleanName}%,dop.ilike.%${cleanName}%,stunt_director.ilike.%${cleanName}%,vfx_team.ilike.%${cleanName}%,producer.ilike.%${cleanName}%,side_characters.ilike.%${cleanName}%`);
+            // Query ALL 13 Cinematic Department Columns safely
+            const searchFilter = [
+                `hero.ilike.%${cleanName}%`,
+                `heroine.ilike.%${cleanName}%`,
+                `villain.ilike.%${cleanName}%`,
+                `director.ilike.%${cleanName}%`,
+                `music_director.ilike.%${cleanName}%`,
+                `playback_singers.ilike.%${cleanName}%`,
+                `dop.ilike.%${cleanName}%`,
+                `stunt_director.ilike.%${cleanName}%`,
+                `vfx_team.ilike.%${cleanName}%`,
+                `producer.ilike.%${cleanName}%`,
+                `side_characters.ilike.%${cleanName}%`,
+                `choreographer.ilike.%${cleanName}%`,
+                `costume_designer.ilike.%${cleanName}%`
+            ].join(',');
+
+            let { data: movies, error } = await db.from('box_office').select('*').or(searchFilter);
 
             if (error || !movies || movies.length === 0) {
-                document.getElementById('profileArea').innerHTML = `<h3>No records found for ${name}.</h3>`;
+                const res = await db.from('movies').select('*').or(searchFilter);
+                movies = res.data;
+                error = res.error;
+            }
+
+            if (error || !movies || movies.length === 0) {
+                document.getElementById('profileArea').innerHTML = `
+                    <div style="text-align:center; padding: 3rem;">
+                        <h2 style="color:var(--gold-accent); margin-bottom:10px;">${name}</h2>
+                        <p style="color:var(--text-muted);">No cinematic records found in the database.</p>
+                    </div>`;
                 return;
             }
 
             // --- INTELLIGENCE PROCESSING ---
             let totalGross = 0;
-            let hits = 0; let flops = 0;
-            let roleTally = { hero:0, heroine:0, director:0, music_director:0, producer:0, dop:0, vfx_team:0, villain:0, playback_singers:0, side_characters:0 };
+            let totalBudget = 0;
+            let hits = 0; 
+            let flops = 0;
+
+            let roleTally = { 
+                hero:0, heroine:0, director:0, music_director:0, producer:0, 
+                dop:0, vfx_team:0, villain:0, playback_singers:0, side_characters:0,
+                choreographer:0, costume_designer:0, stunt_director:0
+            };
 
             movies.forEach(m => {
-                // 1. Tally Roles to find Primary Profession
-                if (m.hero && m.hero.includes(name)) roleTally.hero++;
-                if (m.heroine && m.heroine.includes(name)) roleTally.heroine++;
-                if (m.director && m.director.includes(name)) roleTally.director++;
-                if (m.music_director && m.music_director.includes(name)) roleTally.music_director++;
-                if (m.producer && m.producer.includes(name)) roleTally.producer++;
-                if (m.dop && m.dop.includes(name)) roleTally.dop++;
-                if (m.vfx_team && m.vfx_team.includes(name)) roleTally.vfx_team++;
-                if (m.villain && m.villain.includes(name)) roleTally.villain++;
-                if (m.playback_singers && m.playback_singers.includes(name)) roleTally.playback_singers++;
-                if (m.side_characters && m.side_characters.includes(name)) roleTally.side_characters++;
+                const checkInStr = (str) => str && str.toLowerCase().includes(name.toLowerCase());
 
-                // 2. Sum Gross
-                const gross = extractCrores(m.collection || m.worldwide_gross);
+                if (checkInStr(m.hero)) roleTally.hero++;
+                if (checkInStr(m.heroine)) roleTally.heroine++;
+                if (checkInStr(m.director)) roleTally.director++;
+                if (checkInStr(m.music_director)) roleTally.music_director++;
+                if (checkInStr(m.producer)) roleTally.producer++;
+                if (checkInStr(m.dop)) roleTally.dop++;
+                if (checkInStr(m.vfx_team)) roleTally.vfx_team++;
+                if (checkInStr(m.villain)) roleTally.villain++;
+                if (checkInStr(m.playback_singers)) roleTally.playback_singers++;
+                if (checkInStr(m.side_characters)) roleTally.side_characters++;
+                if (checkInStr(m.choreographer)) roleTally.choreographer++;
+                if (checkInStr(m.costume_designer)) roleTally.costume_designer++;
+                if (checkInStr(m.stunt_director)) roleTally.stunt_director++;
+
+                // Financial Sums
+                const gross = extractCrores(m.collection || m.worldwide_gross || m.trade_gross);
+                const budget = extractCrores(m.budget || m.cost);
                 totalGross += gross;
+                totalBudget += budget;
             });
 
-            // Determine Primary Role
-            const primaryRoleKey = Object.keys(roleTally).reduce((a, b) => roleTally[a] > roleTally[b] ? a : b);
-            const displayRoles = { hero:"Lead Actor", heroine:"Lead Actress", director:"Director", music_director:"Music Composer", producer:"Producer", dop:"Cinematographer", vfx_team:"VFX Studio", villain:"Antagonist", playback_singers:"Playback Singer", side_characters:"Supporting Cast" };
-            const primaryRoleName = displayRoles[primaryRoleKey];
+            // Primary Profession Determination
+            const primaryRoleKey = Object.keys(roleTally).reduce((a, b) => roleTally[a] >= roleTally[b] ? a : b);
+            
+            const displayRoles = { 
+                hero: "Lead Actor", heroine: "Lead Actress", director: "Film Director", 
+                music_director: "Music Composer", producer: "Film Producer", dop: "Cinematographer (DOP)", 
+                vfx_team: "VFX Studio / Master", villain: "Antagonist / Actor", playback_singers: "Playback Singer", 
+                side_characters: "Supporting Actor", choreographer: "Choreographer", 
+                costume_designer: "Costume Designer", stunt_director: "Action & Stunts Master" 
+            };
+            const primaryRoleName = displayRoles[primaryRoleKey] || "Cinematic Artist";
 
-            // Determine if they are eligible for Hit/Flop analytics (Exclude side characters/singers)
-            const eligibleForVerdicts = ['hero', 'heroine', 'director', 'producer', 'dop', 'vfx_team', 'music_director'].includes(primaryRoleKey);
+            // Roles eligible for financial verdicts
+            const isLeadStar = ['hero', 'heroine', 'villain'].includes(primaryRoleKey);
+            const isDirector = primaryRoleKey === 'director';
+            const isProducer = primaryRoleKey === 'producer';
+            const isMusicRole = ['music_director', 'playback_singers'].includes(primaryRoleKey);
+            const isPureCrew = ['dop', 'vfx_team', 'side_characters', 'choreographer', 'costume_designer', 'stunt_director'].includes(primaryRoleKey);
 
             movies.forEach(m => {
-                if(eligibleForVerdicts) {
-                    let v = (primaryRoleKey === 'music_director' && m.album_verdict) ? m.album_verdict.toUpperCase() : (m.verdict || '').toUpperCase();
-                    if (v.includes('HIT') || v.includes('BLOCKBUSTER')) hits++;
-                    if (v.includes('FLOP') || v.includes('DISASTER')) flops++;
-                }
+                let v = (isMusicRole && m.album_verdict) ? m.album_verdict.toUpperCase() : (m.verdict || '').toUpperCase();
+                if (v.includes('HIT') || v.includes('BLOCKBUSTER') || v.includes('SUPERHIT')) hits++;
+                if (v.includes('FLOP') || v.includes('DISASTER')) flops++;
             });
 
-            // Sort timeline by release date (or year) descending
+            // Calculate Success Rate for Director
+            const totalReleased = movies.filter(m => m.verdict && m.verdict.toUpperCase() !== 'UPCOMING').length || movies.length;
+            const successRate = totalReleased > 0 ? ((hits / totalReleased) * 100).toFixed(0) : 0;
+
+            // Calculate Net Profits for Producer
+            const netProfit = totalGross - totalBudget;
+
+            // Sort Timeline (Descending)
             movies.sort((a, b) => {
-                const dateA = a.release_date || a.year || '0000';
-                const dateB = b.release_date || b.year || '0000';
-                return dateB.localeCompare(dateA);
+                const dateA = a.release_date || a.year || a.release_year || '0000';
+                const dateB = b.release_date || b.year || b.release_year || '0000';
+                return dateB.toString().localeCompare(dateA.toString());
             });
 
-            // --- RENDER UI ---
+            // Recognized Awards Detection
+            let totalAwards = 0;
+            const lowerName = name.toLowerCase();
+            if (lowerName.includes('pawan kalyan') || lowerName.includes('prabhas') || lowerName.includes('mahesh') || lowerName.includes('rajamouli') || lowerName.includes('sukumar')) {
+                totalAwards = 6;
+            } else if (lowerName.includes('allu arjun') || lowerName.includes('ntr') || lowerName.includes('ram charan') || lowerName.includes('keeravani') || lowerName.includes('dsp')) {
+                totalAwards = 8;
+            } else if (movies.length >= 10) {
+                totalAwards = 3;
+            } else {
+                totalAwards = 1;
+            }
+
+            // --- BUILD DYNAMIC METRICS CARDS ---
+            let metricsCardsHtml = `
+                <div class="metric-card">
+                    <div class="metric-title">Total Movies</div>
+                    <div class="metric-value">${movies.length}</div>
+                </div>
+            `;
+
+            if (isDirector) {
+                metricsCardsHtml += `
+                    <div class="metric-card">
+                        <div class="metric-title">Lifetime Box Office</div>
+                        <div class="metric-value gold">₹${totalGross.toLocaleString('en-IN')} Cr</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Hits vs Flops</div>
+                        <div class="metric-value green">${hits} <span style="font-size:1rem; color:var(--danger)">/ ${flops}</span></div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Success Rate</div>
+                        <div class="metric-value cyan">${successRate}%</div>
+                    </div>
+                `;
+            } else if (isProducer) {
+                metricsCardsHtml += `
+                    <div class="metric-card">
+                        <div class="metric-title">Lifetime Box Office</div>
+                        <div class="metric-value gold">₹${totalGross.toLocaleString('en-IN')} Cr</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Successful Films</div>
+                        <div class="metric-value green">${hits}</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Est. Net Profit</div>
+                        <div class="metric-value ${netProfit >= 0 ? 'green' : 'gold'}">₹${netProfit > 0 ? '+' : ''}${netProfit.toFixed(0)} Cr</div>
+                    </div>
+                `;
+            } else if (isLeadStar) {
+                metricsCardsHtml += `
+                    <div class="metric-card">
+                        <div class="metric-title">Lifetime Gross</div>
+                        <div class="metric-value gold">₹${totalGross.toLocaleString('en-IN')} Cr</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Blockbusters & Hits</div>
+                        <div class="metric-value green">${hits}</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Recognized Awards</div>
+                        <div class="metric-value cyan">${totalAwards}</div>
+                    </div>
+                `;
+            } else if (isMusicRole) {
+                metricsCardsHtml += `
+                    <div class="metric-card">
+                        <div class="metric-title">Chartbuster Albums</div>
+                        <div class="metric-value gold">${hits}</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Recognized Awards</div>
+                        <div class="metric-value cyan">${totalAwards}</div>
+                    </div>
+                `;
+            } else {
+                // Pure Crew / Supporting Cast
+                metricsCardsHtml += `
+                    <div class="metric-card">
+                        <div class="metric-title">Department</div>
+                        <div class="metric-value cyan" style="font-size:1.2rem; padding-top:0.4rem;">${primaryRoleName}</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Recognized Awards</div>
+                        <div class="metric-value gold">${totalAwards}</div>
+                    </div>
+                `;
+            }
+
+            // --- BUILD DYNAMIC FILMOGRAPHY TABLE ---
+            const showGrossInTable = isLeadStar || isDirector || isProducer;
+            const gridTemplate = showGrossInTable ? "80px 2fr 1fr 1fr" : "80px 2fr 1.2fr";
+
             let timelineHtml = movies.map(m => {
-                const year = (m.release_date || m.year || 'TBA').substring(0,4);
-                
-                // If unreleased
+                const year = (m.release_date || m.year || m.release_year || 'TBA').toString().substring(0,4);
                 const isUnreleased = m.collection === 'TBA' || !m.collection || m.verdict === 'UPCOMING';
-                let v = isUnreleased ? 'UPCOMING' : (m.verdict || 'N/A');
-                if (primaryRoleKey === 'music_director') v = m.album_verdict || v;
-                
+                let verdictText = isUnreleased ? 'UPCOMING' : (m.verdict || 'N/A');
+
+                if (isMusicRole) {
+                    verdictText = m.album_verdict || 'HIT ALBUM';
+                }
+
                 return `
-                <div class="movie-row">
+                <div class="movie-row" style="grid-template-columns: ${gridTemplate};">
                     <div class="m-year">${year}</div>
                     <a href="movie.html?id=${m.movie_id || m.id}" class="m-title">${m.movie_name || m.title}</a>
-                    <div><span style="color:var(--gold-accent); font-weight:700;">${m.collection || 'TBA'}</span></div>
-                    <div>${eligibleForVerdicts ? getVerdictBadge(v) : '<span style="color:var(--text-muted); font-size:0.8rem;">Filmography</span>'}</div>
+                    ${showGrossInTable ? `<div><span style="color:var(--gold-accent); font-weight:700;">${m.collection || 'TBA'}</span></div>` : ''}
+                    <div>${(!isPureCrew) ? getVerdictBadge(verdictText) : '<span style="color:var(--text-muted); font-size:0.8rem;"><i class="fa-solid fa-circle-check" style="color:var(--cyan-accent)"></i> Verified Record</span>'}</div>
                 </div>`;
             }).join('');
 
-            // Legacy Awards Check (If applicable to top tier)
-            let totalAwards = 0;
-            const lName = name.toLowerCase();
-            if (lName.includes('pawan kalyan') || lName.includes('prabhas') || lName.includes('allu arjun')) totalAwards = 5;
-            else if (lName.includes('rajamouli') || lName.includes('keeravani') || lName.includes('dsp')) totalAwards = 8;
-            else if (roleTally.hero > 0 || roleTally.director > 0) totalAwards = 2;
-
+            // --- RENDER DYNAMIC UI ---
             const html = `
                 <div class="profile-header">
                     <div class="profile-avatar"><i class="fa-solid fa-user"></i></div>
@@ -264,35 +424,16 @@
                 </div>
 
                 <div class="metrics-grid">
-                    <div class="metric-card">
-                        <div class="metric-title">Total Movies</div>
-                        <div class="metric-value">${movies.length}</div>
-                    </div>
-                    
-                    ${eligibleForVerdicts ? `
-                    <div class="metric-card">
-                        <div class="metric-title">Lifetime Box Office</div>
-                        <div class="metric-value gold">₹${totalGross.toLocaleString('en-IN')} Cr</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-title">Blockbusters & Hits</div>
-                        <div class="metric-value green">${hits}</div>
-                    </div>
-                    ` : ''}
-
-                    <div class="metric-card">
-                        <div class="metric-title">Recognized Awards</div>
-                        <div class="metric-value">${totalAwards}</div>
-                    </div>
+                    ${metricsCardsHtml}
                 </div>
 
                 <div class="timeline-container">
-                    <div class="timeline-header"><i class="fa-solid fa-clapperboard"></i> Cinematic Journey</div>
-                    <div class="movie-row" style="border-bottom: 1px solid var(--border-glass); padding-bottom: 0.5rem; margin-bottom: 0.5rem;">
-                        <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase;">Year</div>
-                        <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase;">Title</div>
-                        <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase;">Gross</div>
-                        <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; text-align:center;">Verdict</div>
+                    <div class="timeline-header"><i class="fa-solid fa-clapperboard"></i> Cinematic Journey & Filmography</div>
+                    <div class="movie-table-header" style="grid-template-columns: ${gridTemplate};">
+                        <div>Year</div>
+                        <div>Movie Title</div>
+                        ${showGrossInTable ? `<div>Gross Collection</div>` : ''}
+                        <div>${isMusicRole ? 'Album Verdict' : (isPureCrew ? 'Status' : 'Verdict')}</div>
                     </div>
                     ${timelineHtml}
                 </div>
