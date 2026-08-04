@@ -146,7 +146,7 @@
             align-items: center;
             gap: 4px;
             white-space: nowrap;
-            margin-top: 4px;
+            margin-top: 6px;
         }
 
         .loading-view { text-align: center; padding: 5rem 0; color: var(--text-muted); font-size: 1.2rem; }
@@ -259,6 +259,7 @@
             let totalBudget = 0;
             let hits = 0; 
             let flops = 0;
+            let calculatedAwardsCount = 0;
 
             let roleTally = { 
                 hero:0, heroine:0, director:0, music_director:0, producer:0, 
@@ -288,6 +289,22 @@
                 const budget = extractCrores(m.budget || m.cost);
                 totalGross += gross;
                 totalBudget += budget;
+
+                // SMART AWARD SCANNER: Dynamically searches ALL columns for any award won in this movie
+                let foundAward = null;
+                for (const key in m) {
+                    const lKey = key.toLowerCase();
+                    // Checks if column name contains 'award', 'accolade', or 'recognition' (ignores album_verdict)
+                    if ((lKey.includes('award') || lKey.includes('accolade') || lKey === 'recognition') && !lKey.includes('verdict')) {
+                        const val = m[key];
+                        if (val && val !== 'N/A' && val !== 'No' && val !== false) {
+                            foundAward = typeof val === 'string' ? val : 'Award Winner';
+                            break; // Stop searching once we find an award for this movie
+                        }
+                    }
+                }
+                m.extracted_award = foundAward; // Save the award directly to the movie row data
+                if (foundAward) calculatedAwardsCount++;
             });
 
             const primaryRoleKey = Object.keys(roleTally).reduce((a, b) => roleTally[a] >= roleTally[b] ? a : b);
@@ -323,16 +340,21 @@
                 return dateB.toString().localeCompare(dateA.toString());
             });
 
+            // Recognized Awards Detection (Falls back to defaults ONLY if database has no records)
             let totalAwards = 0;
-            const lowerName = name.toLowerCase();
-            if (lowerName.includes('pawan kalyan') || lowerName.includes('prabhas') || lowerName.includes('mahesh') || lowerName.includes('rajamouli') || lowerName.includes('sukumar')) {
-                totalAwards = 6;
-            } else if (lowerName.includes('allu arjun') || lowerName.includes('ntr') || lowerName.includes('ram charan') || lowerName.includes('keeravani') || lowerName.includes('dsp')) {
-                totalAwards = 8;
-            } else if (movies.length >= 10) {
-                totalAwards = 3;
+            if (calculatedAwardsCount > 0) {
+                totalAwards = calculatedAwardsCount;
             } else {
-                totalAwards = 1;
+                const lowerName = name.toLowerCase();
+                if (lowerName.includes('pawan kalyan') || lowerName.includes('prabhas') || lowerName.includes('mahesh') || lowerName.includes('rajamouli') || lowerName.includes('sukumar')) {
+                    totalAwards = 6;
+                } else if (lowerName.includes('allu arjun') || lowerName.includes('ntr') || lowerName.includes('ram charan') || lowerName.includes('keeravani') || lowerName.includes('dsp')) {
+                    totalAwards = 8;
+                } else if (movies.length >= 10) {
+                    totalAwards = 3;
+                } else {
+                    totalAwards = 1;
+                }
             }
 
             // --- BUILD DYNAMIC METRICS CARDS ---
@@ -415,7 +437,15 @@
 
             // --- BUILD DYNAMIC FILMOGRAPHY TABLE ---
             const showGrossInTable = isLeadStar || isDirector || isProducer;
-            const gridTemplate = showGrossInTable ? "80px 2fr 1fr 1fr" : "80px 2fr 1.2fr";
+            const showVerdictInTable = !isPureCrew; // Hides verdict/status column completely for Pure Crew
+
+            // Cleanly adjust column widths based on who is viewing it
+            let gridTemplate = "80px 1fr"; // Baseline for Pure Crew (Just Year + Title)
+            if (showGrossInTable && showVerdictInTable) {
+                gridTemplate = "80px 2fr 1fr 1fr"; // Leads, Directors, Producers
+            } else if (showVerdictInTable) {
+                gridTemplate = "80px 2fr 1fr"; // Music Directors, Singers
+            }
 
             let timelineHtml = movies.map(m => {
                 const year = (m.release_date || m.year || m.release_year || 'TBA').toString().substring(0,4);
@@ -426,14 +456,11 @@
                     verdictText = m.album_verdict || 'HIT ALBUM';
                 }
 
-                // DEDICATED REWARDS EXTRACTION FOR THE SPECIFIC MOVIE ROW
-                const movieAward = m.award || m.awards || m.special_award;
-                const awardHtml = movieAward ? `
+                // Inject the dynamically found award under the movie title
+                const awardHtml = m.extracted_award ? `
                     <div class="movie-award-badge">
-                        <i class="fa-solid fa-trophy"></i> ${movieAward}
+                        <i class="fa-solid fa-trophy"></i> ${m.extracted_award}
                     </div>` : '';
-
-                const statusHtml = (!isPureCrew) ? getVerdictBadge(verdictText) : '<span style="color:var(--text-muted); font-size:0.8rem;"><i class="fa-solid fa-circle-check" style="color:var(--cyan-accent)"></i> Verified Record</span>';
 
                 return `
                 <div class="movie-row" style="grid-template-columns: ${gridTemplate};">
@@ -443,7 +470,7 @@
                         ${awardHtml}
                     </div>
                     ${showGrossInTable ? `<div><span style="color:var(--gold-accent); font-weight:700;">${m.collection || 'TBA'}</span></div>` : ''}
-                    <div>${statusHtml}</div>
+                    ${showVerdictInTable ? `<div>${getVerdictBadge(verdictText)}</div>` : ''}
                 </div>`;
             }).join('');
 
@@ -467,7 +494,7 @@
                         <div>Year</div>
                         <div>Movie Title</div>
                         ${showGrossInTable ? `<div>Gross Collection</div>` : ''}
-                        <div>${isMusicRole ? 'Album Verdict' : (isPureCrew ? 'Status' : 'Verdict')}</div>
+                        ${showVerdictInTable ? `<div>${isMusicRole ? 'Album Verdict' : 'Verdict'}</div>` : ''}
                     </div>
                     ${timelineHtml}
                 </div>
