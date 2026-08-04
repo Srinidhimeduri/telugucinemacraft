@@ -133,6 +133,22 @@
         .v-flop { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
         .v-upcoming { background: rgba(148, 163, 184, 0.15); color: var(--text-muted); border: 1px solid rgba(148, 163, 184, 0.3); }
 
+        .movie-award-badge {
+            background: rgba(255, 199, 0, 0.15);
+            color: var(--gold-accent);
+            border: 1px solid rgba(255, 199, 0, 0.4);
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+            margin-top: 4px;
+        }
+
         .loading-view { text-align: center; padding: 5rem 0; color: var(--text-muted); font-size: 1.2rem; }
 
         @media (max-width: 768px) {
@@ -191,7 +207,6 @@
             const cleanName = name.trim().replace(/'/g, "''");
 
             // Absolute Safe Schema DB Fetching Method
-            // We hold all potential column variations so it works no matter what you named it in Google Sheets
             const possibleColumns = [
                 'hero', 'heroine', 'villain', 'director', 'music_director', 
                 'playback_singers', 'dop', 'stunt_director', 'stunts', 'stunt_man', 'action',
@@ -203,22 +218,16 @@
 
             let moviesMap = new Map();
 
-            // Function to query a table safely by reading its column headers first!
             async function fetchSafelyFromTable(tableName) {
-                // 1. Get 1 single row to see what columns actually exist
                 const { data: schemaCheck } = await db.from(tableName).select('*').limit(1);
-                if (!schemaCheck || schemaCheck.length === 0) return; // Skip if table is totally empty
+                if (!schemaCheck || schemaCheck.length === 0) return; 
                 
                 const validCols = Object.keys(schemaCheck[0]);
-                
-                // 2. Filter out columns that don't exist
                 const colsToSearch = possibleColumns.filter(c => validCols.includes(c));
                 if (colsToSearch.length === 0) return;
 
-                // 3. Build the safe search filter
                 const searchFilter = colsToSearch.map(c => `${c}.ilike.%${cleanName}%`).join(',');
                 
-                // 4. Safely execute search without crashing
                 const { data: results, error } = await db.from(tableName).select('*').or(searchFilter);
                 
                 if (!error && results) {
@@ -281,7 +290,6 @@
                 totalBudget += budget;
             });
 
-            // Primary Profession Determination
             const primaryRoleKey = Object.keys(roleTally).reduce((a, b) => roleTally[a] >= roleTally[b] ? a : b);
             
             const displayRoles = { 
@@ -293,7 +301,6 @@
             };
             const primaryRoleName = displayRoles[primaryRoleKey] || "Cinematic Artist";
 
-            // Rules exactly as requested:
             const isLeadStar = ['hero', 'heroine', 'villain'].includes(primaryRoleKey);
             const isDirector = primaryRoleKey === 'director';
             const isProducer = primaryRoleKey === 'producer';
@@ -306,21 +313,16 @@
                 if (v.includes('FLOP') || v.includes('DISASTER')) flops++;
             });
 
-            // Calculate Success Rate for Director
             const totalReleased = movies.filter(m => m.verdict && m.verdict.toUpperCase() !== 'UPCOMING').length || movies.length;
             const successRate = totalReleased > 0 ? ((hits / totalReleased) * 100).toFixed(0) : 0;
-
-            // Calculate Net Profits for Producer
             const netProfit = totalGross - totalBudget;
 
-            // Sort Timeline (Descending)
             movies.sort((a, b) => {
                 const dateA = a.release_date || a.year || a.release_year || '0000';
                 const dateB = b.release_date || b.year || b.release_year || '0000';
                 return dateB.toString().localeCompare(dateA.toString());
             });
 
-            // Recognized Awards Detection
             let totalAwards = 0;
             const lowerName = name.toLowerCase();
             if (lowerName.includes('pawan kalyan') || lowerName.includes('prabhas') || lowerName.includes('mahesh') || lowerName.includes('rajamouli') || lowerName.includes('sukumar')) {
@@ -424,12 +426,24 @@
                     verdictText = m.album_verdict || 'HIT ALBUM';
                 }
 
+                // DEDICATED REWARDS EXTRACTION FOR THE SPECIFIC MOVIE ROW
+                const movieAward = m.award || m.awards || m.special_award;
+                const awardHtml = movieAward ? `
+                    <div class="movie-award-badge">
+                        <i class="fa-solid fa-trophy"></i> ${movieAward}
+                    </div>` : '';
+
+                const statusHtml = (!isPureCrew) ? getVerdictBadge(verdictText) : '<span style="color:var(--text-muted); font-size:0.8rem;"><i class="fa-solid fa-circle-check" style="color:var(--cyan-accent)"></i> Verified Record</span>';
+
                 return `
                 <div class="movie-row" style="grid-template-columns: ${gridTemplate};">
                     <div class="m-year">${year}</div>
-                    <a href="movie.html?id=${m.movie_id || m.id}" class="m-title">${m.movie_name || m.title}</a>
+                    <div style="display: flex; flex-direction: column; align-items: flex-start;">
+                        <a href="movie.html?id=${m.movie_id || m.id}" class="m-title">${m.movie_name || m.title}</a>
+                        ${awardHtml}
+                    </div>
                     ${showGrossInTable ? `<div><span style="color:var(--gold-accent); font-weight:700;">${m.collection || 'TBA'}</span></div>` : ''}
-                    <div>${(!isPureCrew) ? getVerdictBadge(verdictText) : '<span style="color:var(--text-muted); font-size:0.8rem;"><i class="fa-solid fa-circle-check" style="color:var(--cyan-accent)"></i> Verified Record</span>'}</div>
+                    <div>${statusHtml}</div>
                 </div>`;
             }).join('');
 
