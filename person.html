@@ -293,7 +293,7 @@
                 // SMART AWARD SCANNER: Dynamically searches and FILTERS awards for the specific individual
                 let foundAward = null;
                 const searchName = name.toLowerCase();
-                const nameKeywords = searchName.split(' ').filter(n => n.length > 2); // Pulls main keywords from their name
+                const nameKeywords = searchName.split(' ').filter(n => n.length > 2);
 
                 for (const key in m) {
                     const lKey = key.toLowerCase();
@@ -302,7 +302,7 @@
                         const val = m[key];
                         if (val && typeof val === 'string' && val.trim() !== 'N/A' && val.trim() !== 'No') {
                             
-                            // Split combined DB strings (e.g., "Prasad (Award); Anup (Award)")
+                            // Split combined DB strings
                             const segments = val.split(/[;\n|]/).map(s => s.trim()).filter(s => s.length > 0);
                             
                             // Filter to ONLY include segments mentioning this exact person
@@ -435,6 +435,10 @@
                     <div class="metric-card">
                         <div class="metric-title">Chartbuster Albums</div>
                         <div class="metric-value gold">${hits}</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Audio Strike Rate</div>
+                        <div class="metric-value green">${successRate}%</div>
                     </div>
                     <div class="metric-card">
                         <div class="metric-title">Recognized Awards</div>
