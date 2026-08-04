@@ -20,7 +20,6 @@
             --border-glass: rgba(255, 255, 255, 0.08);
             --border-hover: rgba(255, 199, 0, 0.4);
             --gold-accent: #FFC700;
-            --gold-glow: rgba(255, 199, 0, 0.15);
             --cyan-accent: #38BDF8;
             --text-main: #F8FAFC;
             --text-muted: #94A3B8;
@@ -191,32 +190,53 @@
 
             const cleanName = name.trim().replace(/'/g, "''");
 
-            // Query ALL 13 Cinematic Department Columns safely
-            const searchFilter = [
-                `hero.ilike.%${cleanName}%`,
-                `heroine.ilike.%${cleanName}%`,
-                `villain.ilike.%${cleanName}%`,
-                `director.ilike.%${cleanName}%`,
-                `music_director.ilike.%${cleanName}%`,
-                `playback_singers.ilike.%${cleanName}%`,
-                `dop.ilike.%${cleanName}%`,
-                `stunt_director.ilike.%${cleanName}%`,
-                `vfx_team.ilike.%${cleanName}%`,
-                `producer.ilike.%${cleanName}%`,
-                `side_characters.ilike.%${cleanName}%`,
-                `choreographer.ilike.%${cleanName}%`,
-                `costume_designer.ilike.%${cleanName}%`
-            ].join(',');
+            // Absolute Safe Schema DB Fetching Method
+            // We hold all potential column variations so it works no matter what you named it in Google Sheets
+            const possibleColumns = [
+                'hero', 'heroine', 'villain', 'director', 'music_director', 
+                'playback_singers', 'dop', 'stunt_director', 'stunts', 'stunt_man', 'action',
+                'vfx_team', 'vfx', 'vfx_studio', 'producer', 'banner', 'production_house',
+                'side_characters', 'supporting_cast', 'cast',
+                'choreographer', 'choreographers', 'dance_director', 'choreography',
+                'costume_designer', 'costume_designers', 'costume_design', 'costumes', 'costume', 'styling'
+            ];
 
-            let { data: movies, error } = await db.from('box_office').select('*').or(searchFilter);
+            let moviesMap = new Map();
 
-            if (error || !movies || movies.length === 0) {
-                const res = await db.from('movies').select('*').or(searchFilter);
-                movies = res.data;
-                error = res.error;
+            // Function to query a table safely by reading its column headers first!
+            async function fetchSafelyFromTable(tableName) {
+                // 1. Get 1 single row to see what columns actually exist
+                const { data: schemaCheck } = await db.from(tableName).select('*').limit(1);
+                if (!schemaCheck || schemaCheck.length === 0) return; // Skip if table is totally empty
+                
+                const validCols = Object.keys(schemaCheck[0]);
+                
+                // 2. Filter out columns that don't exist
+                const colsToSearch = possibleColumns.filter(c => validCols.includes(c));
+                if (colsToSearch.length === 0) return;
+
+                // 3. Build the safe search filter
+                const searchFilter = colsToSearch.map(c => `${c}.ilike.%${cleanName}%`).join(',');
+                
+                // 4. Safely execute search without crashing
+                const { data: results, error } = await db.from(tableName).select('*').or(searchFilter);
+                
+                if (!error && results) {
+                    results.forEach(m => {
+                        const id = m.movie_id || m.id;
+                        if (id && !moviesMap.has(id)) {
+                            moviesMap.set(id, m);
+                        }
+                    });
+                }
             }
 
-            if (error || !movies || movies.length === 0) {
+            await fetchSafelyFromTable('box_office');
+            await fetchSafelyFromTable('movies');
+
+            const movies = Array.from(moviesMap.values());
+
+            if (movies.length === 0) {
                 document.getElementById('profileArea').innerHTML = `
                     <div style="text-align:center; padding: 3rem;">
                         <h2 style="color:var(--gold-accent); margin-bottom:10px;">${name}</h2>
@@ -240,19 +260,19 @@
             movies.forEach(m => {
                 const checkInStr = (str) => str && str.toLowerCase().includes(name.toLowerCase());
 
-                if (checkInStr(m.hero)) roleTally.hero++;
-                if (checkInStr(m.heroine)) roleTally.heroine++;
-                if (checkInStr(m.director)) roleTally.director++;
-                if (checkInStr(m.music_director)) roleTally.music_director++;
-                if (checkInStr(m.producer)) roleTally.producer++;
-                if (checkInStr(m.dop)) roleTally.dop++;
-                if (checkInStr(m.vfx_team)) roleTally.vfx_team++;
-                if (checkInStr(m.villain)) roleTally.villain++;
-                if (checkInStr(m.playback_singers)) roleTally.playback_singers++;
-                if (checkInStr(m.side_characters)) roleTally.side_characters++;
-                if (checkInStr(m.choreographer)) roleTally.choreographer++;
-                if (checkInStr(m.costume_designer)) roleTally.costume_designer++;
-                if (checkInStr(m.stunt_director)) roleTally.stunt_director++;
+                if (checkInStr(m.hero) || checkInStr(m.lead_actor)) roleTally.hero++;
+                if (checkInStr(m.heroine) || checkInStr(m.female_lead)) roleTally.heroine++;
+                if (checkInStr(m.director) || checkInStr(m.directed_by)) roleTally.director++;
+                if (checkInStr(m.music_director) || checkInStr(m.music)) roleTally.music_director++;
+                if (checkInStr(m.producer) || checkInStr(m.banner) || checkInStr(m.production_house)) roleTally.producer++;
+                if (checkInStr(m.dop) || checkInStr(m.cinematography)) roleTally.dop++;
+                if (checkInStr(m.vfx_team) || checkInStr(m.vfx) || checkInStr(m.vfx_studio)) roleTally.vfx_team++;
+                if (checkInStr(m.villain) || checkInStr(m.antagonist) || checkInStr(m.negative_role)) roleTally.villain++;
+                if (checkInStr(m.playback_singers) || checkInStr(m.playback_singer)) roleTally.playback_singers++;
+                if (checkInStr(m.side_characters) || checkInStr(m.supporting_cast) || checkInStr(m.cast)) roleTally.side_characters++;
+                if (checkInStr(m.choreographer) || checkInStr(m.choreographers) || checkInStr(m.dance_director) || checkInStr(m.choreography)) roleTally.choreographer++;
+                if (checkInStr(m.costume_designer) || checkInStr(m.costume_designers) || checkInStr(m.costume_design) || checkInStr(m.costumes) || checkInStr(m.costume) || checkInStr(m.styling)) roleTally.costume_designer++;
+                if (checkInStr(m.stunt_director) || checkInStr(m.stunts) || checkInStr(m.stunt_man) || checkInStr(m.stunt) || checkInStr(m.action)) roleTally.stunt_director++;
 
                 // Financial Sums
                 const gross = extractCrores(m.collection || m.worldwide_gross || m.trade_gross);
@@ -273,7 +293,7 @@
             };
             const primaryRoleName = displayRoles[primaryRoleKey] || "Cinematic Artist";
 
-            // Roles eligible for financial verdicts
+            // Rules exactly as requested:
             const isLeadStar = ['hero', 'heroine', 'villain'].includes(primaryRoleKey);
             const isDirector = primaryRoleKey === 'director';
             const isProducer = primaryRoleKey === 'producer';
