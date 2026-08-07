@@ -202,34 +202,51 @@
 
             let moviesMap = new Map();
 
+            // PHASE 1: Fetch by Name
             async function fetchSafelyFromTable(tableName) {
                 const { data: schemaCheck } = await db.from(tableName).select('*').limit(1);
-                if (!schemaCheck || schemaCheck.length === 0) return; 
+                if (!schemaCheck || schemaCheck.length === 0) return []; 
                 
                 const validCols = Object.keys(schemaCheck[0]);
                 const colsToSearch = possibleColumns.filter(c => validCols.includes(c));
-                if (colsToSearch.length === 0) return;
+                if (colsToSearch.length === 0) return [];
 
                 const searchFilter = colsToSearch.map(c => `${c}.ilike.%${cleanName}%`).join(',');
                 const { data: results, error } = await db.from(tableName).select('*').or(searchFilter);
-                
-                if (!error && results) {
-                    results.forEach(m => {
-                        const id = m.movie_id || m.id;
-                        if (id) {
-                            if (moviesMap.has(id)) {
-                                // DEEP MERGE: Combines verdict and financials instead of deleting one!
-                                moviesMap.set(id, { ...moviesMap.get(id), ...m });
-                            } else {
-                                moviesMap.set(id, m);
-                            }
-                        }
+                return (!error && results) ? results : [];
+            }
+
+            const moviesData = await fetchSafelyFromTable('movies');
+            const boxOfficeData = await fetchSafelyFromTable('box_office');
+
+            [...moviesData, ...boxOfficeData].forEach(m => {
+                const id = m.movie_id || m.id;
+                if (id) {
+                    moviesMap.set(id, { ...(moviesMap.get(id) || {}), ...m });
+                }
+            });
+
+            // PHASE 2: The Relational ID Fetch (THIS FIXES THE 0 HITS ISSUE)
+            // If the box_office table didn't have the director's name, we fetch the verdict using the Movie ID!
+            const allMovieIds = Array.from(moviesMap.keys());
+            if (allMovieIds.length > 0) {
+                // Fetch cross-table data where movie_id matches
+                const { data: missingBo } = await db.from('box_office').select('*').in('movie_id', allMovieIds).catch(() => ({data: null}));
+                if (missingBo) {
+                    missingBo.forEach(b => {
+                        const id = b.movie_id || b.id;
+                        moviesMap.set(id, { ...moviesMap.get(id), ...b });
+                    });
+                }
+                // Fallback: If the column is just 'id' instead of 'movie_id'
+                const { data: missingBo2 } = await db.from('box_office').select('*').in('id', allMovieIds).catch(() => ({data: null}));
+                if (missingBo2) {
+                    missingBo2.forEach(b => {
+                        const id = b.movie_id || b.id;
+                        moviesMap.set(id, { ...moviesMap.get(id), ...b });
                     });
                 }
             }
-
-            await fetchSafelyFromTable('box_office');
-            await fetchSafelyFromTable('movies');
 
             const movies = Array.from(moviesMap.values());
 
@@ -333,19 +350,30 @@
                 m.extracted_award = foundAward;
                 if (foundAward) calculatedAwardsCount++;
 
-                // BULLETPROOF HITS/FLOPS LOGIC (Post-Merge)
+                // THE ULTIMATE AGGRESSIVE VERDICT SCANNER
                 let vStr = '';
-                ['verdict', 'result', 'box_office_verdict', 'status', 'box_office', 'movie_verdict', 'final_verdict'].forEach(key => {
-                    if (m[key]) vStr += m[key] + ' ';
-                });
-                vStr = vStr.toUpperCase();
                 
-                if (isMusicRole && m.album_verdict) {
-                    vStr = m.album_verdict.toString().toUpperCase();
+                // Check all known column names first
+                ['verdict', 'result', 'box_office_verdict', 'status', 'box_office', 'movie_verdict', 'final_verdict', 'album_verdict'].forEach(key => {
+                    if (m[key] && typeof m[key] === 'string') vStr += m[key] + ' ';
+                });
+
+                // Failsafe: If no known columns matched, scan ALL columns for the exact words
+                if (vStr.trim() === '') {
+                    for (const key in m) {
+                        if (typeof m[key] === 'string' && !['title', 'movie_name', 'name'].includes(key.toLowerCase())) {
+                            const valUp = m[key].toUpperCase().trim();
+                            if (valUp === 'HIT' || valUp === 'FLOP' || valUp === 'BLOCKBUSTER' || valUp === 'DISASTER' || valUp === 'AVERAGE' || valUp === 'SUCCESS') {
+                                vStr += m[key] + ' ';
+                            }
+                        }
+                    }
                 }
                 
+                vStr = vStr.toUpperCase();
+                
                 const isFlop = vStr.includes('FLOP') || vStr.includes('DISASTER') || vStr.includes('FAILURE') || vStr.includes('BELOW AVERAGE') || vStr.includes('LOSS');
-                const isHit = vStr.includes('HIT') || vStr.includes('BLOCKBUSTER') || vStr.includes('SUCCESS') || vStr.includes('PROFIT') || vStr.includes('AVERAGE'); 
+                const isHit = vStr.includes('HIT') || vStr.includes('BLOCKBUSTER') || vStr.includes('SUCCESS') || vStr.includes('PROFIT') || vStr.includes('AVERAGE') || vStr.includes('SUPERHIT') || vStr.includes('SUPER HIT'); 
 
                 if (isFlop) {
                     flops++;
@@ -369,14 +397,8 @@
             const isMusicDirector = primaryRoleKey === 'music_director';
             const isPlaybackSinger = primaryRoleKey === 'playback_singers';
 
-            const totalReleased = movies.filter(m => {
-                let vStr = '';
-                ['verdict', 'result', 'box_office_verdict', 'status', 'box_office', 'movie_verdict'].forEach(key => {
-                    if (m[key]) vStr += m[key] + ' ';
-                });
-                vStr = vStr.toUpperCase();
-                return vStr.trim() !== '' && !vStr.includes('UPCOMING') && !vStr.includes('TBA');
-            }).length || movies.length;
+            // Calculate total released based on hits + flops + average movies
+            const totalReleased = hits + flops > 0 ? (hits + flops) : (movies.length);
 
             const successRate = totalReleased > 0 ? ((hits / totalReleased) * 100).toFixed(0) : 0;
             const failRate = totalReleased > 0 ? ((flops / totalReleased) * 100).toFixed(0) : 0;
