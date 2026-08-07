@@ -292,6 +292,7 @@
             
             const searchName = name.toLowerCase().trim();
             const nameParts = searchName.split(' ').filter(n => n.length >= 3); 
+            const isMusicRole = ['music_director', 'playback_singers'].includes(primaryRoleKey);
 
             movies.forEach(m => {
                 // Financial Sums
@@ -338,11 +339,17 @@
                 m.extracted_award = foundAward;
                 if (foundAward) calculatedAwardsCount++;
 
-                // Hits and Flops Calculation
-                const isMusicRole = ['music_director', 'playback_singers'].includes(primaryRoleKey);
-                let v = (isMusicRole && m.album_verdict) ? m.album_verdict.toUpperCase() : (m.verdict || '').toUpperCase();
-                if (v.includes('HIT') || v.includes('BLOCKBUSTER') || v.includes('SUPERHIT')) hits++;
-                if (v.includes('FLOP') || v.includes('DISASTER')) flops++;
+                // FIXED HITS AND FLOPS CALCULATION - WIDER NET
+                let verdictStr = (m.verdict || m.result || m.box_office_verdict || m.status || '').toString().toUpperCase();
+                if (isMusicRole) {
+                    verdictStr = (m.album_verdict || verdictStr).toString().toUpperCase();
+                }
+                
+                if (verdictStr.includes('HIT') || verdictStr.includes('BLOCKBUSTER') || verdictStr.includes('SUCCESS') || verdictStr.includes('PROFIT')) {
+                    hits++;
+                } else if (verdictStr.includes('FLOP') || verdictStr.includes('DISASTER') || verdictStr.includes('FAILURE') || verdictStr.includes('BELOW AVERAGE')) {
+                    flops++;
+                }
             });
 
             const displayRoles = { 
@@ -360,9 +367,16 @@
             const isMusicDirector = primaryRoleKey === 'music_director';
             const isPlaybackSinger = primaryRoleKey === 'playback_singers';
 
-            const totalReleased = movies.filter(m => m.verdict && m.verdict.toUpperCase() !== 'UPCOMING').length || movies.length;
+            const totalReleased = movies.filter(m => {
+                let v = (m.verdict || m.result || m.box_office_verdict || m.status || '').toString().toUpperCase();
+                return v !== '' && !v.includes('UPCOMING') && !v.includes('TBA');
+            }).length || movies.length;
+
             const successRate = totalReleased > 0 ? ((hits / totalReleased) * 100).toFixed(0) : 0;
             const netProfit = totalGross - totalBudget;
+            
+            // CEO METRIC: Average Box Office Pull (Gross per Movie)
+            const avgPull = totalReleased > 0 ? (totalGross / totalReleased).toFixed(0) : 0;
 
             movies.sort((a, b) => {
                 const dateA = a.release_date || a.year || a.release_year || '0000';
@@ -370,7 +384,7 @@
                 return dateB.toString().localeCompare(dateA.toString());
             });
 
-            // Recognized Awards Validation - REMOVED FAKE DEFAULT AWARDS
+            // Recognized Awards Validation
             let totalAwards = calculatedAwardsCount;
             if (calculatedAwardsCount === 0) {
                 const lowerName = name.toLowerCase();
@@ -379,7 +393,7 @@
                 } else if (lowerName.includes('allu arjun') || lowerName.includes('ntr') || lowerName.includes('ram charan') || lowerName.includes('keeravani') || lowerName.includes('dsp')) {
                     totalAwards = 8;
                 } else {
-                    totalAwards = 0; // Truly reflects that 0 awards were found
+                    totalAwards = 0; 
                 }
             }
 
@@ -391,41 +405,45 @@
                 </div>
             `;
 
-            if (isDirector) {
+            if (isDirector || isProducer) {
                 metricsCardsHtml += `
                     <div class="metric-card">
-                        <div class="metric-title">Lifetime Box Office</div>
+                        <div class="metric-title">Lifetime Gross</div>
                         <div class="metric-value gold">₹${totalGross.toLocaleString('en-IN')} Cr</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Avg. Box Office Pull</div>
+                        <div class="metric-value cyan">₹${avgPull} Cr</div>
                     </div>
                     <div class="metric-card">
                         <div class="metric-title">Hits vs Flops</div>
                         <div class="metric-value green">${hits} <span style="font-size:1rem; color:var(--danger)">/ ${flops}</span></div>
                     </div>
-                    <div class="metric-card">
-                        <div class="metric-title">Success Rate</div>
-                        <div class="metric-value cyan">${successRate}%</div>
-                    </div>
                 `;
-            } else if (isProducer) {
-                metricsCardsHtml += `
-                    <div class="metric-card">
-                        <div class="metric-title">Lifetime Box Office</div>
-                        <div class="metric-value gold">₹${totalGross.toLocaleString('en-IN')} Cr</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-title">Successful Films</div>
-                        <div class="metric-value green">${hits}</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-title">Est. Net Profit</div>
-                        <div class="metric-value ${netProfit >= 0 ? 'green' : 'gold'}">₹${netProfit > 0 ? '+' : ''}${netProfit.toFixed(0)} Cr</div>
-                    </div>
-                `;
+                if (isProducer) {
+                    metricsCardsHtml += `
+                        <div class="metric-card">
+                            <div class="metric-title">Est. Net Profit</div>
+                            <div class="metric-value ${netProfit >= 0 ? 'green' : 'gold'}">₹${netProfit > 0 ? '+' : ''}${netProfit.toFixed(0)} Cr</div>
+                        </div>
+                    `;
+                } else {
+                    metricsCardsHtml += `
+                        <div class="metric-card">
+                            <div class="metric-title">Success Rate</div>
+                            <div class="metric-value cyan">${successRate}%</div>
+                        </div>
+                    `;
+                }
             } else if (isLeadStar) {
                 metricsCardsHtml += `
                     <div class="metric-card">
                         <div class="metric-title">Lifetime Gross</div>
                         <div class="metric-value gold">₹${totalGross.toLocaleString('en-IN')} Cr</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Avg. Box Office Pull</div>
+                        <div class="metric-value cyan">₹${avgPull} Cr</div>
                     </div>
                     <div class="metric-card">
                         <div class="metric-title">Blockbusters & Hits</div>
@@ -443,7 +461,7 @@
                         <div class="metric-value gold">${hits}</div>
                     </div>
                     <div class="metric-card">
-                        <div class="metric-title">Audio Strike Rate</div>
+                        <div class="metric-title">Audio Success Ratio</div>
                         <div class="metric-value green">${successRate}%</div>
                     </div>
                     <div class="metric-card">
