@@ -202,7 +202,6 @@
 
             let moviesMap = new Map();
 
-            // PHASE 1: Fetch by Name
             async function fetchSafelyFromTable(tableName) {
                 const { data: schemaCheck } = await db.from(tableName).select('*').limit(1);
                 if (!schemaCheck || schemaCheck.length === 0) return []; 
@@ -226,10 +225,8 @@
                 }
             });
 
-            // PHASE 2: The Relational ID Fetch (Corrected for Supabase v2)
             const allMovieIds = Array.from(moviesMap.keys());
             if (allMovieIds.length > 0) {
-                // Fetch cross-table data where movie_id matches
                 const { data: missingBo, error: err1 } = await db.from('box_office').select('*').in('movie_id', allMovieIds);
                 if (missingBo && !err1) {
                     missingBo.forEach(b => {
@@ -238,7 +235,6 @@
                     });
                 }
                 
-                // Fallback: If the column is just 'id' instead of 'movie_id'
                 const { data: missingBo2, error: err2 } = await db.from('box_office').select('*').in('id', allMovieIds);
                 if (missingBo2 && !err2) {
                     missingBo2.forEach(b => {
@@ -350,30 +346,16 @@
                 m.extracted_award = foundAward;
                 if (foundAward) calculatedAwardsCount++;
 
-                // THE ULTIMATE AGGRESSIVE VERDICT SCANNER
+                // STRICT TEXT-BASED VERDICT SCANNER (No more fake math guessing!)
                 let vStr = '';
-                
-                // Check all known column names first
                 ['verdict', 'result', 'box_office_verdict', 'status', 'box_office', 'movie_verdict', 'final_verdict', 'album_verdict'].forEach(key => {
                     if (m[key] && typeof m[key] === 'string') vStr += m[key] + ' ';
                 });
-
-                // Failsafe: If no known columns matched, scan ALL columns for the exact words
-                if (vStr.trim() === '') {
-                    for (const key in m) {
-                        if (typeof m[key] === 'string' && !['title', 'movie_name', 'name'].includes(key.toLowerCase())) {
-                            const valUp = m[key].toUpperCase().trim();
-                            if (valUp === 'HIT' || valUp === 'FLOP' || valUp === 'BLOCKBUSTER' || valUp === 'DISASTER' || valUp === 'AVERAGE' || valUp === 'SUCCESS') {
-                                vStr += m[key] + ' ';
-                            }
-                        }
-                    }
-                }
                 
                 vStr = vStr.toUpperCase();
                 
                 const isFlop = vStr.includes('FLOP') || vStr.includes('DISASTER') || vStr.includes('FAILURE') || vStr.includes('BELOW AVERAGE') || vStr.includes('LOSS');
-                const isHit = vStr.includes('HIT') || vStr.includes('BLOCKBUSTER') || vStr.includes('SUCCESS') || vStr.includes('PROFIT') || vStr.includes('AVERAGE') || vStr.includes('SUPERHIT') || vStr.includes('SUPER HIT'); 
+                const isHit = vStr.includes('HIT') || vStr.includes('BLOCKBUSTER') || vStr.includes('SUCCESS') || vStr.includes('PROFIT') || vStr.includes('SUPERHIT') || vStr.includes('SUPER HIT'); 
 
                 if (isFlop) {
                     flops++;
@@ -397,13 +379,12 @@
             const isMusicDirector = primaryRoleKey === 'music_director';
             const isPlaybackSinger = primaryRoleKey === 'playback_singers';
 
-            // Calculate total released based on hits + flops + average movies
-            const totalReleased = hits + flops > 0 ? (hits + flops) : (movies.length);
+            const totalReleased = hits + flops > 0 ? (hits + flops) : 0;
 
             const successRate = totalReleased > 0 ? ((hits / totalReleased) * 100).toFixed(0) : 0;
             const failRate = totalReleased > 0 ? ((flops / totalReleased) * 100).toFixed(0) : 0;
             const netProfit = totalGross - totalBudget;
-            const avgPull = totalReleased > 0 ? (totalGross / totalReleased).toFixed(0) : 0;
+            const avgPull = movies.length > 0 ? (totalGross / movies.length).toFixed(0) : 0;
 
             movies.sort((a, b) => {
                 const dateA = a.release_date || a.year || a.release_year || '0000';
