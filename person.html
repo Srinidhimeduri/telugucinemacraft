@@ -346,7 +346,7 @@
                 m.extracted_award = foundAward;
                 if (foundAward) calculatedAwardsCount++;
 
-                // FINANCIAL BUDGET VS COLLECTION VERDICT LOGIC
+                // TRUE FINANCIAL BUDGET VS COLLECTION RATIO FOR HITS AND FLOPS
                 if (gross > 0 && budget > 0) {
                     if (gross >= budget) {
                         hits++;
@@ -375,7 +375,7 @@
             const successRate = totalEvaluated > 0 ? ((hits / totalEvaluated) * 100).toFixed(0) : 0;
             const failRate = totalEvaluated > 0 ? ((flops / totalEvaluated) * 100).toFixed(0) : 0;
             const netProfit = totalGross - totalBudget;
-            const avgPull = movies.length > 0 ? (totalGross / movies.length).toFixed(0) : 0;
+            const avgPull = totalEvaluated > 0 ? (totalGross / totalEvaluated).toFixed(0) : 0;
 
             movies.sort((a, b) => {
                 const dateA = a.release_date || a.year || a.release_year || '0000';
