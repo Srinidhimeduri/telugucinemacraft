@@ -346,28 +346,13 @@
                 m.extracted_award = foundAward;
                 if (foundAward) calculatedAwardsCount++;
 
-                // EXPANDED & COMPREHENSIVE VERDICT SCANNER
-                let vStr = '';
-                ['verdict', 'result', 'box_office_verdict', 'status', 'box_office', 'movie_verdict', 'final_verdict', 'album_verdict'].forEach(key => {
-                    if (m[key] && typeof m[key] === 'string') vStr += m[key] + ' ';
-                });
-                
-                vStr = vStr.toUpperCase();
-                
-                // Comprehensive Flop Keywords
-                const isFlop = vStr.includes('FLOP') || vStr.includes('DISASTER') || vStr.includes('FAILURE') || 
-                               vStr.includes('BELOW AVERAGE') || vStr.includes('LOSS') || vStr.includes('POOR') || 
-                               vStr.includes('UTILITY LOSS') || vStr.includes('DISASTERS') || vStr.includes('UTILITY');
-                
-                // Comprehensive Hit Keywords
-                const isHit = vStr.includes('HIT') || vStr.includes('BLOCKBUSTER') || vStr.includes('SUCCESS') || 
-                              vStr.includes('PROFIT') || vStr.includes('SUPERHIT') || vStr.includes('SUPER HIT') || 
-                              vStr.includes('AVERAGE') || vStr.includes('SEMI HIT'); 
-
-                if (isFlop) {
-                    flops++;
-                } else if (isHit) {
-                    hits++; 
+                // FINANCIAL BUDGET VS COLLECTION VERDICT LOGIC
+                if (gross > 0 && budget > 0) {
+                    if (gross >= budget) {
+                        hits++;
+                    } else {
+                        flops++;
+                    }
                 }
             });
 
@@ -386,12 +371,11 @@
             const isMusicDirector = primaryRoleKey === 'music_director';
             const isPlaybackSinger = primaryRoleKey === 'playback_singers';
 
-            const totalReleased = hits + flops > 0 ? (hits + flops) : (movies.length);
-
-            const successRate = totalReleased > 0 ? ((hits / totalReleased) * 100).toFixed(0) : 0;
-            const failRate = totalReleased > 0 ? ((flops / totalReleased) * 100).toFixed(0) : 0;
+            const totalEvaluated = hits + flops;
+            const successRate = totalEvaluated > 0 ? ((hits / totalEvaluated) * 100).toFixed(0) : 0;
+            const failRate = totalEvaluated > 0 ? ((flops / totalEvaluated) * 100).toFixed(0) : 0;
             const netProfit = totalGross - totalBudget;
-            const avgPull = totalReleased > 0 ? (totalGross / totalReleased).toFixed(0) : 0;
+            const avgPull = movies.length > 0 ? (totalGross / movies.length).toFixed(0) : 0;
 
             movies.sort((a, b) => {
                 const dateA = a.release_date || a.year || a.release_year || '0000';
