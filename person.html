@@ -226,21 +226,21 @@
                 }
             });
 
-            // PHASE 2: The Relational ID Fetch (THIS FIXES THE 0 HITS ISSUE)
-            // If the box_office table didn't have the director's name, we fetch the verdict using the Movie ID!
+            // PHASE 2: The Relational ID Fetch (Corrected for Supabase v2)
             const allMovieIds = Array.from(moviesMap.keys());
             if (allMovieIds.length > 0) {
                 // Fetch cross-table data where movie_id matches
-                const { data: missingBo } = await db.from('box_office').select('*').in('movie_id', allMovieIds).catch(() => ({data: null}));
-                if (missingBo) {
+                const { data: missingBo, error: err1 } = await db.from('box_office').select('*').in('movie_id', allMovieIds);
+                if (missingBo && !err1) {
                     missingBo.forEach(b => {
                         const id = b.movie_id || b.id;
                         moviesMap.set(id, { ...moviesMap.get(id), ...b });
                     });
                 }
+                
                 // Fallback: If the column is just 'id' instead of 'movie_id'
-                const { data: missingBo2 } = await db.from('box_office').select('*').in('id', allMovieIds).catch(() => ({data: null}));
-                if (missingBo2) {
+                const { data: missingBo2, error: err2 } = await db.from('box_office').select('*').in('id', allMovieIds);
+                if (missingBo2 && !err2) {
                     missingBo2.forEach(b => {
                         const id = b.movie_id || b.id;
                         moviesMap.set(id, { ...moviesMap.get(id), ...b });
