@@ -191,7 +191,6 @@
 
             const cleanName = name.trim().replace(/'/g, "''");
 
-            // Absolute Safe Schema DB Fetching Method
             const possibleColumns = [
                 'hero', 'heroine', 'villain', 'director', 'music_director', 
                 'playback_singers', 'dop', 'stunt_director', 'stunts', 'stunt_man', 'action',
@@ -212,14 +211,18 @@
                 if (colsToSearch.length === 0) return;
 
                 const searchFilter = colsToSearch.map(c => `${c}.ilike.%${cleanName}%`).join(',');
-                
                 const { data: results, error } = await db.from(tableName).select('*').or(searchFilter);
                 
                 if (!error && results) {
                     results.forEach(m => {
                         const id = m.movie_id || m.id;
-                        if (id && !moviesMap.has(id)) {
-                            moviesMap.set(id, m);
+                        if (id) {
+                            if (moviesMap.has(id)) {
+                                // DEEP MERGE: Combines verdict and financials instead of deleting one!
+                                moviesMap.set(id, { ...moviesMap.get(id), ...m });
+                            } else {
+                                moviesMap.set(id, m);
+                            }
                         }
                     });
                 }
@@ -239,7 +242,6 @@
                 return;
             }
 
-            // LOOP 1: Determine the Primary Role
             let roleTally = { 
                 hero:0, heroine:0, director:0, music_director:0, producer:0, 
                 dop:0, vfx_team:0, villain:0, playback_singers:0, side_characters:0,
@@ -266,7 +268,6 @@
 
             const primaryRoleKey = Object.keys(roleTally).reduce((a, b) => roleTally[a] >= roleTally[b] ? a : b);
             
-            // Department Keywords Mapping for advanced Award extraction
             const roleKeywords = {
                 hero: ['actor', 'hero', 'male lead', 'best male'],
                 heroine: ['actress', 'heroine', 'female lead', 'best female'],
@@ -284,7 +285,6 @@
             };
             const myKeywords = roleKeywords[primaryRoleKey] || [];
 
-            // LOOP 2: Process Financials, Hits, and Smart Awards
             let totalGross = 0;
             let totalBudget = 0;
             let hits = 0; 
@@ -304,31 +304,24 @@
 
                 // Smart Award Scanner
                 let foundAward = null;
-
                 for (const key in m) {
                     const lKey = key.toLowerCase();
                     if ((lKey.includes('award') || lKey.includes('accolade') || lKey === 'recognition') && !lKey.includes('verdict')) {
                         const val = m[key];
                         if (val && typeof val === 'string' && val.trim() !== 'N/A' && val.trim() !== 'No') {
-                            
                             const segments = val.split(/[;\n|]/).map(s => s.trim()).filter(s => s.length > 0);
-                            
                             const personalSegments = segments.filter(seg => {
                                 const lSeg = seg.toLowerCase();
-                                
                                 if (lSeg.includes(searchName)) return true;
                                 for (let part of nameParts) {
                                     if (lSeg.includes(part)) return true;
                                 }
-
                                 const mentionsOtherPerson = /[\(\)\:\–]/.test(seg) || / - /.test(seg);
                                 if (!mentionsOtherPerson) {
                                     if (myKeywords.some(kw => lSeg.includes(kw))) return true;
                                 }
-
                                 return false;
                             });
-
                             if (personalSegments.length > 0) {
                                 foundAward = personalSegments.join(' • '); 
                                 break;
@@ -340,9 +333,9 @@
                 m.extracted_award = foundAward;
                 if (foundAward) calculatedAwardsCount++;
 
-                // FIXED AGGRESSIVE HITS AND FLOPS CALCULATION
+                // BULLETPROOF HITS/FLOPS LOGIC (Post-Merge)
                 let vStr = '';
-                ['verdict', 'result', 'box_office_verdict', 'status', 'box_office'].forEach(key => {
+                ['verdict', 'result', 'box_office_verdict', 'status', 'box_office', 'movie_verdict', 'final_verdict'].forEach(key => {
                     if (m[key]) vStr += m[key] + ' ';
                 });
                 vStr = vStr.toUpperCase();
@@ -351,10 +344,13 @@
                     vStr = m.album_verdict.toString().toUpperCase();
                 }
                 
-                if (vStr.includes('HIT') || vStr.includes('BLOCKBUSTER') || vStr.includes('SUCCESS') || vStr.includes('PROFIT')) {
-                    hits++;
-                } else if (vStr.includes('FLOP') || vStr.includes('DISASTER') || vStr.includes('FAILURE') || vStr.includes('BELOW AVERAGE') || vStr.includes('LOSS')) {
+                const isFlop = vStr.includes('FLOP') || vStr.includes('DISASTER') || vStr.includes('FAILURE') || vStr.includes('BELOW AVERAGE') || vStr.includes('LOSS');
+                const isHit = vStr.includes('HIT') || vStr.includes('BLOCKBUSTER') || vStr.includes('SUCCESS') || vStr.includes('PROFIT') || vStr.includes('AVERAGE'); 
+
+                if (isFlop) {
                     flops++;
+                } else if (isHit) {
+                    hits++; 
                 }
             });
 
@@ -375,7 +371,7 @@
 
             const totalReleased = movies.filter(m => {
                 let vStr = '';
-                ['verdict', 'result', 'box_office_verdict', 'status', 'box_office'].forEach(key => {
+                ['verdict', 'result', 'box_office_verdict', 'status', 'box_office', 'movie_verdict'].forEach(key => {
                     if (m[key]) vStr += m[key] + ' ';
                 });
                 vStr = vStr.toUpperCase();
@@ -385,8 +381,6 @@
             const successRate = totalReleased > 0 ? ((hits / totalReleased) * 100).toFixed(0) : 0;
             const failRate = totalReleased > 0 ? ((flops / totalReleased) * 100).toFixed(0) : 0;
             const netProfit = totalGross - totalBudget;
-            
-            // CEO METRIC: Average Box Office Pull (Gross per Movie)
             const avgPull = totalReleased > 0 ? (totalGross / totalReleased).toFixed(0) : 0;
 
             movies.sort((a, b) => {
@@ -395,7 +389,6 @@
                 return dateB.toString().localeCompare(dateA.toString());
             });
 
-            // Recognized Awards Validation
             let totalAwards = calculatedAwardsCount;
             if (calculatedAwardsCount === 0) {
                 const lowerName = name.toLowerCase();
@@ -408,7 +401,6 @@
                 }
             }
 
-            // --- BUILD DYNAMIC METRICS CARDS ---
             let metricsCardsHtml = `
                 <div class="metric-card">
                     <div class="metric-title">Total Movies</div>
@@ -519,7 +511,6 @@
                 `;
             }
 
-            // --- BUILD DYNAMIC FILMOGRAPHY TABLE ---
             const showGrossInTable = isLeadStar || isDirector || isProducer;
             const gridTemplate = showGrossInTable ? "80px 2.5fr 1fr 1.5fr" : "80px 2.5fr 1.5fr"; 
 
@@ -541,7 +532,6 @@
                 </div>`;
             }).join('');
 
-            // --- RENDER DYNAMIC UI ---
             const html = `
                 <div class="profile-header">
                     <div class="profile-avatar"><i class="fa-solid fa-user"></i></div>
