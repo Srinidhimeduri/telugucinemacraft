@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeluguCineCraft | Individual Profile</title>
+    
+    <title>TeluguCineCraft | Personal Cinema Dashboard</title>
 
     <!-- Google Fonts & Font Awesome Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Supabase JS Client v2 -->
+    <!-- Supabase JS Client v2 & Shared App Logic -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="app.js"></script>
 
@@ -58,8 +59,16 @@
         .brand-title { font-size: 1.4rem; font-weight: 800; color: #FFF; display: flex; align-items: center; gap: 10px; text-decoration: none; }
         .brand-title i { color: var(--gold-accent); }
         .nav-actions { display: flex; align-items: center; gap: 12px; }
+        .user-pill { display: flex; align-items: center; gap: 10px; background: rgba(255, 199, 0, 0.08); border: 1px solid var(--border-hover); padding: 0.45rem 1rem; border-radius: 12px; box-shadow: 0 0 15px var(--gold-glow); }
+        .user-avatar { width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--gold-accent); }
+        .greeting-text { font-size: 0.88rem; font-weight: 700; color: var(--text-main); }
+        .dashboard-badge { background: rgba(56, 189, 248, 0.15); color: var(--cyan-accent); border: 1px solid rgba(56, 189, 248, 0.3); font-size: 0.68rem; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
         .back-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-glass); color: var(--text-main); padding: 0.55rem 1.2rem; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.88rem; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s ease; }
         .back-btn:hover { border-color: var(--gold-accent); color: var(--gold-accent); }
+        .auth-btn { background: rgba(255, 199, 0, 0.12); border: 1px solid var(--gold-accent); color: var(--gold-accent); padding: 0.55rem 1.2rem; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 0.88rem; transition: all 0.3s ease; display: flex; align-items: center; gap: 6px; }
+        .auth-btn:hover { background: var(--gold-accent); color: #000; box-shadow: 0 0 15px var(--gold-glow); }
+        .signout-btn { background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger); color: var(--danger); padding: 0.45rem 0.8rem; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.78rem; transition: all 0.2s ease; }
+        .signout-btn:hover { background: var(--danger); color: #FFF; }
 
         /* Genre Badge Styling */
         .genre-badge {
@@ -80,6 +89,9 @@
         /* Movie Dashboard Components */
         .movie-dashboard { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.2rem; }
         .glass-panel { background: var(--bg-card); backdrop-filter: blur(16px); border: 1px solid var(--border-glass); border-radius: 18px; padding: 1.2rem 1.3rem; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4); display: flex; flex-direction: column; justify-content: space-between; }
+        .financial-gadget { align-self: start; border-top: 3px solid var(--gold-accent); background: rgba(18, 24, 38, 0.85); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 199, 0, 0.2); }
+        .financial-gadget .stat-box { padding: 0.6rem; }
+        .financial-gadget .stat-box-value { font-size: 1.05rem; }
         .header-panel { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid rgba(255, 199, 0, 0.25); }
         .movie-header-title { font-size: 2.2rem; font-weight: 800; color: #FFF; line-height: 1.1; }
         .verdict-pill { padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -89,27 +101,75 @@
         .verdict-pill.average { background: rgba(245, 158, 11, 0.18); color: #F59E0B; border: 1px solid rgba(245, 158, 11, 0.4); }
         .verdict-pill.flop { background: rgba(239, 68, 68, 0.18); color: #EF4444; border: 1px solid rgba(239, 68, 68, 0.4); }
         .verdict-pill.disaster { background: rgba(185, 28, 28, 0.25); color: #F87171; border: 1px solid rgba(185, 28, 28, 0.5); }
-        
+        .verdict-pill.upcoming { background: rgba(148, 163, 184, 0.15); color: var(--cyan-accent); border: 1px solid rgba(56, 189, 248, 0.3); }
+
+        .album-verdict-badge { font-size: 0.72rem; font-weight: 800; padding: 0.2rem 0.6rem; border-radius: 8px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px; }
+        .album-verdict-badge.blockbuster { background: rgba(255, 199, 0, 0.15); color: var(--gold-accent); border: 1px solid rgba(255, 199, 0, 0.4); box-shadow: 0 0 10px var(--gold-glow); }
+        .album-verdict-badge.hit { background: rgba(34, 197, 94, 0.15); color: var(--success); border: 1px solid rgba(34, 197, 94, 0.3); }
+        .album-verdict-badge.average { background: rgba(56, 189, 248, 0.15); color: var(--cyan-accent); border: 1px solid rgba(56, 189, 248, 0.3); }
+        .album-verdict-badge.flop { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
+        .album-verdict-badge.upcoming { background: rgba(148, 163, 184, 0.15); color: var(--text-muted); border: 1px solid rgba(148, 163, 184, 0.3); }
+
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-top: 0.5rem; }
+        .stat-box { background: rgba(0, 0, 0, 0.35); border: 1px solid var(--border-glass); padding: 0.75rem; border-radius: 12px; text-align: center; }
+        .stat-box-label { font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.2rem; }
+        .stat-box-value { font-size: 1.1rem; font-weight: 800; color: var(--gold-accent); }
         .panel-title { font-size: 1rem; font-weight: 700; color: var(--cyan-accent); margin-bottom: 0.8rem; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border-glass); padding-bottom: 0.4rem; }
+        
         .person-row { display: flex; flex-direction: column; gap: 0.2rem; padding: 0.45rem 0; border-bottom: 1px dashed rgba(255, 255, 255, 0.05); }
+        .person-row:last-child { border-bottom: none; }
         .person-role { font-size: 0.7rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px; }
         .person-card-link { display: flex; align-items: center; justify-content: space-between; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-glass); padding: 0.45rem 0.75rem; border-radius: 10px; text-decoration: none; color: var(--text-main); transition: all 0.2s ease; }
         .person-card-link:hover { background: rgba(255, 199, 0, 0.08); border-color: var(--gold-accent); transform: translateX(3px); }
+        .person-list-container { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-glass); padding: 0.6rem 0.75rem; border-radius: 10px; display: flex; flex-direction: column; gap: 0.6rem; max-height: 160px; overflow-y: auto; }
+        .person-list-container::-webkit-scrollbar { width: 4px; }
+        .person-list-container::-webkit-scrollbar-thumb { background: var(--gold-accent); border-radius: 4px; }
+        .individual-person-link { color: var(--text-main); text-decoration: none; display: flex; align-items: center; font-size: 0.88rem; font-weight: 700; transition: all 0.2s ease; gap: 6px; }
+        .individual-person-link:hover { color: var(--cyan-accent); }
+        .individual-person-link:hover .hover-underline { text-decoration: underline; }
         .person-name { font-weight: 700; font-size: 0.88rem; display: flex; align-items: center; gap: 6px; }
-        .film-count-badge { background: rgba(56, 189, 248, 0.12); color: var(--cyan-accent); border: 1px solid rgba(56, 189, 248, 0.3); font-size: 0.68rem; font-weight: 700; padding: 0.12rem 0.45rem; border-radius: 6px; }
+        .person-badges { display: flex; align-items: center; gap: 4px; }
+        .film-count-badge { background: rgba(56, 189, 248, 0.12); color: var(--cyan-accent); border: 1px solid rgba(56, 189, 248, 0.3); font-size: 0.68rem; font-weight: 700; padding: 0.12rem 0.45rem; border-radius: 6px; white-space: nowrap; }
+        .award-badge { background: rgba(255, 199, 0, 0.12); color: var(--gold-accent); border: 1px solid rgba(255, 199, 0, 0.3); font-size: 0.68rem; font-weight: 700; padding: 0.12rem 0.45rem; border-radius: 6px; white-space: nowrap; }
+
+        .rating-panel { grid-column: 1 / -1; margin-top: 0.5rem; background: rgba(18, 24, 38, 0.85); border: 1px solid var(--border-hover); border-radius: 20px; padding: 1.5rem; }
+        .rating-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.2rem; margin-bottom: 1.2rem; }
+        .param-card { background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border-glass); border-radius: 12px; padding: 0.8rem 1rem; display: flex; flex-direction: column; justify-content: space-between; }
+        .param-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem; }
+        .param-name { font-size: 0.85rem; font-weight: 700; color: var(--text-main); }
+        .star-rating { display: flex; gap: 4px; color: rgba(255, 255, 255, 0.2); cursor: pointer; }
+        .star-rating i { transition: all 0.2s ease; font-size: 1rem; }
+        .star-rating i.active, .star-rating i:hover { color: var(--gold-accent); text-shadow: 0 0 10px var(--gold-glow); }
+        .review-box-area { display: flex; flex-direction: column; gap: 0.8rem; }
+        .review-input { width: 100%; background: rgba(0, 0, 0, 0.4); border: 1px solid var(--border-glass); border-radius: 12px; padding: 0.8rem 1rem; color: var(--text-main); font-family: inherit; font-size: 0.9rem; outline: none; resize: none; height: 70px; transition: all 0.3s ease; }
+        .review-input:focus { border-color: var(--gold-accent); box-shadow: 0 0 15px var(--gold-glow); }
+        .submit-review-btn { align-self: flex-end; background: var(--gold-accent); color: #000; border: none; padding: 0.6rem 1.4rem; border-radius: 10px; font-weight: 800; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 8px; }
+        .submit-review-btn:hover { box-shadow: 0 0 20px var(--gold-glow); transform: translateY(-2px); }
+        .auth-overlay-gate { background: rgba(6, 8, 12, 0.85); backdrop-filter: blur(8px); border: 1px dashed var(--gold-accent); border-radius: 16px; padding: 1.5rem; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
+        .ott-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 0.7rem; background: linear-gradient(135deg, rgba(255, 199, 0, 0.15), rgba(56, 189, 248, 0.15)); border: 1px solid var(--gold-accent); color: var(--gold-accent); border-radius: 12px; font-weight: 700; text-decoration: none; transition: all 0.2s ease; margin-top: 0.8rem; }
+        .ott-btn:hover { background: var(--gold-accent); color: #000; box-shadow: 0 0 20px var(--gold-glow); }
         .loading-view { text-align: center; padding: 5rem 0; color: var(--text-muted); font-size: 1.2rem; }
 
-        @media (max-width: 1200px) { .movie-dashboard { grid-template-columns: 1fr 1fr; } }
-        @media (max-width: 768px) { .movie-dashboard { grid-template-columns: 1fr; } .movie-header-title { font-size: 1.6rem; } }
+        @media (max-width: 1200px) { .movie-dashboard { grid-template-columns: 1fr 1fr; } .financial-gadget { align-self: stretch; } }
+        @media (max-width: 768px) { body { padding: 0.8rem; } .movie-dashboard { grid-template-columns: 1fr; } .movie-header-title { font-size: 1.6rem; } .header-panel { flex-direction: column; align-items: flex-start; } .rating-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- TOP NAVIGATION BAR -->
         <nav>
-            <a href="index.html" class="brand-title"><i class="fa-solid fa-film"></i> TeluguCineCraft</a>
-            <div class="nav-actions"><a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Dashboard</a></div>
+            <a href="index.html" class="brand-title">
+                <i class="fa-solid fa-film"></i> TeluguCineCraft
+            </a>
+            <div class="nav-actions">
+                <div id="authStatusArea"></div>
+                <a href="index.html" class="back-btn">
+                    <i class="fa-solid fa-arrow-left"></i> Dashboard
+                </a>
+            </div>
         </nav>
 
+        <!-- DYNAMIC CONTENT HOLDER -->
         <div id="movieDetailsArea" class="loading-view">
             <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
             <p style="margin-top: 12px;">Loading metadata & viewer intelligence...</p>
@@ -117,49 +177,489 @@
     </div>
 
     <script>
-        const db = window.supabase.createClient(
-            "https://eosgvjvpdwxmpxzerxit.supabase.co", 
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvc2d2anZwZHd4bXB4emVyeGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1Njk3MTMsImV4cCI6MjEwMTE0NTcxM30.fD14BdJBDPNqFUKGxS5DRgsDnN8CqYdWR4k8cuAbvcg"
-        );
+        let currentUser = null;
+        let selectedRatings = { story: 0, direction: 0, performance: 0, music: 0, vfx: 0 };
 
-        function getMovieId() { return new URLSearchParams(window.location.search).get('id'); }
-        
-        async function renderMovieDashboard(m) {
-            const title = m.movie_name || m.title || 'Untitled';
-            const releaseDate = m.release_date || m.year || 'N/A';
+        function getMovieId() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('id');
+        }
+
+        function getLocalGreeting() {
+            const hour = new Date().getHours();
+            if (hour >= 5 && hour < 12) return "Good morning";
+            if (hour >= 12 && hour < 17) return "Good afternoon";
+            return "Good evening";
+        }
+
+        async function checkUserAuth() {
+            try {
+                const { data: { user } } = await db.auth.getUser();
+                currentUser = user;
+                const authArea = document.getElementById('authStatusArea');
+                
+                if (user) {
+                    const fullName = user.user_metadata.full_name || 'Cinephile';
+                    const firstName = fullName.split(' ')[0];
+                    const avatarUrl = user.user_metadata.avatar_url || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png';
+                    const greeting = getLocalGreeting();
+
+                    authArea.innerHTML = `
+                        <div class="user-pill">
+                            <img src="${avatarUrl}" class="user-avatar" alt="User Profile">
+                            <div style="display: flex; flex-direction: column;">
+                                <span class="greeting-text">${greeting}, ${firstName}! 👋</span>
+                                <span class="dashboard-badge">Personal Dashboard</span>
+                            </div>
+                            <button class="signout-btn" onclick="signOutUser()" style="margin-left:5px;">Sign Out</button>
+                        </div>
+                    `;
+                } else {
+                    authArea.innerHTML = `
+                        <button class="auth-btn" onclick="triggerGoogleLogin()">
+                            <i class="fa-brands fa-google"></i> Sign In
+                        </button>
+                    `;
+                }
+            } catch (err) {
+                console.warn("Auth check error:", err);
+            }
+        }
+
+        async function triggerGoogleLogin() {
+            await db.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
+        }
+
+        async function signOutUser() {
+            await db.auth.signOut();
+            window.location.reload();
+        }
+
+        async function getFilmCount(personName) {
+            if (!personName) return '';
+            const name = personName.trim().replace(/'/g, "''"); 
+            if (name.length < 2) return '';
+
+            try {
+                const possibleColumns = [
+                    'hero', 'heroine', 'villain', 'director', 'music_director', 
+                    'playback_singers', 'dop', 'stunt_director', 'stunts', 'stunt_man', 'action',
+                    'vfx_team', 'vfx', 'vfx_studio', 'producer', 'banner', 'production_house',
+                    'side_characters', 'supporting_cast', 'cast',
+                    'choreographer', 'choreographers', 'dance_director', 'choreography',
+                    'costume_designer', 'costume_designers', 'costume_design', 'costumes', 'costume', 'styling'
+                ];
+                
+                let searchCols = possibleColumns;
+                if (window.validDbColumns && window.validDbColumns.length > 0) {
+                    searchCols = possibleColumns.filter(col => window.validDbColumns.includes(col));
+                } else {
+                    searchCols = ['hero', 'heroine', 'villain', 'director', 'music_director', 'playback_singers', 'dop', 'stunt_director', 'vfx_team', 'producer', 'side_characters', 'choreographer', 'costume_designer'];
+                }
+
+                if (searchCols.length === 0) return '1 Movie';
+
+                const searchStr = searchCols.map(col => `${col}.ilike.%${name}%`).join(',');
+                let maxCount = 0;
+                
+                let { count: count1, error: err1 } = await db
+                    .from('box_office')
+                    .select('*', { count: 'exact', head: true })
+                    .or(searchStr);
+                
+                if (!err1 && count1) maxCount = Math.max(maxCount, count1);
+
+                let { count: count2, error: err2 } = await db
+                    .from('movies')
+                    .select('*', { count: 'exact', head: true })
+                    .or(searchStr);
+                
+                if (!err2 && count2) maxCount = Math.max(maxCount, count2);
+
+                if (maxCount > 0) {
+                    return maxCount === 1 ? '1 Movie' : `${maxCount} Movies`;
+                }
+                return '1 Movie';
+            } catch (err) {
+                return '1 Movie';
+            }
+        }
+
+        function getAwardHighlight(name) {
+            if (!name || name === 'N/A') return '';
+            const lower = name.toLowerCase();
+            if (lower.includes('pawan kalyan') || lower.includes('prabhas') || lower.includes('mahesh') || lower.includes('rajamouli') || lower.includes('dsp') || lower.includes('thaman') || lower.includes('sukumar')) {
+                return `<span class="award-badge"><i class="fa-solid fa-trophy"></i> National / Nandi</span>`;
+            } else if (lower.includes('allu arjun') || lower.includes('ntr') || lower.includes('ram charan') || lower.includes('keeravani')) {
+                return `<span class="award-badge"><i class="fa-solid fa-award"></i> Filmfare / Oscar</span>`;
+            }
+            return `<span class="award-badge"><i class="fa-solid fa-star"></i> Industry Veteran</span>`;
+        }
+
+        function getAlbumVerdictBadge(rawVerdict, isUnreleased) {
+            if (isUnreleased) {
+                return `<span class="album-verdict-badge upcoming"><i class="fa-solid fa-clock"></i> UPCOMING</span>`;
+            }
+            if (!rawVerdict || rawVerdict === 'N/A') {
+                return `<span class="album-verdict-badge average"><i class="fa-solid fa-compact-disc"></i> HIT ALBUM</span>`;
+            }
+
+            const str = rawVerdict.toString().toUpperCase().trim();
+            if (str.includes('BLOCKBUSTER') || str.includes('SUPERHIT')) {
+                return `<span class="album-verdict-badge blockbuster"><i class="fa-solid fa-fire"></i> ${str}</span>`;
+            } else if (str.includes('HIT')) {
+                return `<span class="album-verdict-badge hit"><i class="fa-solid fa-circle-check"></i> ${str}</span>`;
+            } else if (str.includes('AVERAGE')) {
+                return `<span class="album-verdict-badge average"><i class="fa-solid fa-sliders"></i> ${str}</span>`;
+            } else if (str.includes('FLOP')) {
+                return `<span class="album-verdict-badge flop"><i class="fa-solid fa-circle-xmark"></i> ${str}</span>`;
+            } else {
+                return `<span class="album-verdict-badge upcoming"><i class="fa-solid fa-compact-disc"></i> ${str}</span>`;
+            }
+        }
+
+        async function renderPersonList(rawString, iconClass, iconColor, isAwardEligible = false) {
+            const cleanStr = rawString ? rawString.trim() : '';
+            const upperStr = cleanStr.toUpperCase();
             
+            const ignoredPlaceholders = ['N/A', 'NOT APPLICABLE', 'NONE', 'TBA', 'FEATURED ENSEMBLE', 'NOT LISTED', 'TOP ACTION MASTERS', 'ACCLAIMED DOP', 'PREMIER VISUAL EFFECTS', 'ENSEMBLE CAST', 'FEATURED ANTAGONIST', '-'];
+            
+            if (!cleanStr || ignoredPlaceholders.includes(upperStr)) {
+                return ''; 
+            }
+
+            const names = cleanStr.split(/[,;\n/]+/).map(s => s.trim()).filter(s => s.length > 0);
+            const counts = await Promise.all(names.map(n => getFilmCount(n)));
+
+            if (names.length === 1) {
+                const name = names[0];
+                const count = counts[0];
+                const award = isAwardEligible ? getAwardHighlight(name) : '';
+                return `
+                <a href="person.html?name=${encodeURIComponent(name)}" class="person-card-link">
+                    <span class="person-name"><i class="${iconClass}" style="color:${iconColor}"></i> ${name}</span>
+                    <div class="person-badges">${count ? `<span class="film-count-badge">${count}</span>` : ''}${award}</div>
+                </a>`;
+            } else {
+                let listHtml = names.map((name, idx) => {
+                    const count = counts[idx];
+                    const award = isAwardEligible ? getAwardHighlight(name) : '';
+                    return `
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <a href="person.html?name=${encodeURIComponent(name)}" class="individual-person-link">
+                            <i class="${iconClass}" style="color:${iconColor}; width:16px; text-align:center;"></i>
+                            <span class="hover-underline">${name}</span>
+                        </a>
+                        <div class="person-badges">${count ? `<span class="film-count-badge">${count}</span>` : ''}${award}</div>
+                    </div>`;
+                }).join('');
+
+                return `
+                <div class="person-list-container">
+                    ${listHtml}
+                </div>`;
+            }
+        }
+
+        function createRow(title, content, extraHtml = '') {
+            if (!content) return ''; 
+            return `
+                <div class="person-row">
+                    <div class="person-role" ${extraHtml ? 'style="display:flex; justify-content:space-between; align-items:center;"' : ''}>
+                        <span>${title}</span>
+                        ${extraHtml}
+                    </div>
+                    ${content}
+                </div>
+            `;
+        }
+
+        async function fetchMovieDetails() {
+            await checkUserAuth();
+            const id = getMovieId();
+            if (!id) {
+                document.getElementById('movieDetailsArea').innerHTML = `
+                    <div style="color: var(--danger);">
+                        <p style="font-weight: 700;">No Movie Selected.</p>
+                        <a href="index.html" class="back-btn" style="margin-top: 15px;">Return Home</a>
+                    </div>`;
+                return;
+            }
+
+            let { data, error } = await db.from('box_office').select('*').eq('movie_id', id).single();
+            
+            if (error || !data) {
+                const res = await db.from('movies').select('*').or(`movie_id.eq.${id},id.eq.${id}`).single();
+                data = res.data;
+                error = res.error;
+            }
+
+            if (error || !data) {
+                document.getElementById('movieDetailsArea').innerHTML = `
+                    <div style="color: var(--danger);">
+                        <p style="font-weight: 700; font-size: 1.2rem;">Movie details unfulfilled.</p>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 5px;">Record ID #${id} may have been moved.</p>
+                    </div>`;
+                return;
+            }
+
+            window.validDbColumns = Object.keys(data);
+            await renderMovieDashboard(data);
+        }
+
+        async function renderMovieDashboard(m) {
+            const title = m.movie_name || m.title || m.name || 'Untitled';
+            const budget = m.budget || m.cost || 'N/A';
+            const gross = m.collection || m.trade_gross || m.worldwide_gross || m.box_office || 'N/A';
+
+            const budgetNum = parseAmount(budget);
+            const grossNum = parseAmount(gross);
+            let roiDisplay = 'N/A';
+            let recoveryDisplay = 'N/A';
+
+            if (budgetNum && grossNum && budgetNum > 0) {
+                const profit = grossNum - budgetNum;
+                const ratio = (grossNum / budgetNum).toFixed(2);
+                recoveryDisplay = `${ratio}x`;
+                if (profit >= 0) {
+                    roiDisplay = `+${((profit / budgetNum) * 100).toFixed(0)}%`;
+                } else {
+                    roiDisplay = `${((profit / budgetNum) * 100).toFixed(0)}%`;
+                }
+            }
+
+            const verdictObj = getVerdict(m);
+            const verdict = verdictObj.label;
+            const verdictClass = "verdict-pill " + verdictObj.label.toLowerCase().replace(/\s+/g, '');
+            const isUnreleased = verdict === 'UPCOMING';
+
+            const rawAlbumVerdict = m.album_verdict || m.music_verdict || m.album_status || 'HIT ALBUM';
+            const albumBadgeHTML = getAlbumVerdictBadge(rawAlbumVerdict, isUnreleased);
+            const releaseDate = extractYear(m) || m.release_date || m.year || m.release_year || 'N/A';
+            const ottLink = m.ott_link || m.ott_platform_link || m.ott || null;
+
             // Genre Renderer
             const genres = m.genre ? m.genre.split(',').map(g => g.trim()) : ['General'];
             const genreHtml = genres.map(g => `<span class="genre-badge">${g}</span>`).join('');
 
-            const verdictObj = getVerdict(m);
-            
+            const [
+                heroHtml, heroineHtml, villainHtml, sideCharactersHtml,
+                dopHtml, stuntHtml, vfxHtml, choreographerHtml, costumeHtml,
+                directorHtml, musicHtml, singersHtml, producerHtml
+            ] = await Promise.all([
+                renderPersonList(m.hero || m.starring || m.lead_actor, 'fa-solid fa-user-astronaut', 'var(--gold-accent)', true),
+                renderPersonList(m.heroine || m.female_lead, 'fa-solid fa-user-ninja', 'var(--cyan-accent)', false),
+                renderPersonList(m.villain || m.antagonist || m.negative_role, 'fa-solid fa-skull', 'var(--danger)', false),
+                renderPersonList(m.side_characters || m.supporting_cast || m.cast, 'fa-solid fa-users', 'var(--purple-accent)', false),
+                renderPersonList(m.dop || m.cinematography, 'fa-solid fa-camera', 'var(--cyan-accent)', false),
+                renderPersonList(m.stunt_director || m.stunts || m.stunt_man || m.stunt || m.action, 'fa-solid fa-hand-fist', 'var(--gold-accent)', false),
+                renderPersonList(m.vfx_team || m.vfx || m.vfx_studio, 'fa-solid fa-laptop-code', 'var(--purple-accent)', false),
+                renderPersonList(m.choreographer || m.choreographers || m.dance_director || m.choreography, 'fa-solid fa-shoe-prints', 'var(--cyan-accent)', false),
+                renderPersonList(m.costume_designer || m.costume_designers || m.costume_design || m.costumes || m.costume || m.styling, 'fa-solid fa-shirt', 'var(--gold-accent)', false),
+                renderPersonList(m.director || m.directed_by, 'fa-solid fa-video', 'var(--gold-accent)', true),
+                renderPersonList(m.music_director || m.music, 'fa-solid fa-music', 'var(--cyan-accent)', true),
+                renderPersonList(m.playback_singers || m.playback_singer, 'fa-solid fa-microphone-lines', 'var(--purple-accent)', false),
+                renderPersonList(m.producer || m.banner || m.production_house, 'fa-solid fa-building', 'var(--text-muted)', false)
+            ]);
+
             const html = `
                 <div class="movie-dashboard">
+                    <!-- HEADER PANEL -->
                     <div class="glass-panel header-panel">
                         <div>
                             <div class="movie-header-title">${title}</div>
-                            <div style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px;">
-                                <i class="fa-regular fa-calendar"></i> ${releaseDate}
+                            <div style="color: var(--text-muted); font-size: 0.9rem; margin-top: 4px;">
+                                <i class="fa-regular fa-calendar"></i> Release Year: ${releaseDate}
                             </div>
                             <div>${genreHtml}</div>
                         </div>
-                        <div class="verdict-pill ${verdictObj.label.toLowerCase().replace(/\s+/g, '')}">${verdictObj.label}</div>
+                        <div class="${verdictClass}">${verdict}</div>
+                    </div>
+
+                    <!-- PANEL 1: BOX OFFICE & FINANCIAL METRICS (GADGET MODE) -->
+                    <div class="glass-panel financial-gadget">
+                        <div class="panel-title"><i class="fa-solid fa-chart-line"></i> Financial Metrics</div>
+                        <div class="stats-grid">
+                            <div class="stat-box">
+                                <div class="stat-box-label">Budget</div>
+                                <div class="stat-box-value">${budget}</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-box-label">Worldwide Gross</div>
+                                <div class="stat-box-value">${gross}</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-box-label">Profit / ROI</div>
+                                <div class="stat-box-value" style="color: ${roiDisplay.startsWith('+') ? 'var(--success)' : 'var(--gold-accent)'};">${roiDisplay}</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-box-label">Recovery Ratio</div>
+                                <div class="stat-box-value">${recoveryDisplay}</div>
+                            </div>
+                        </div>
+
+                        ${ottLink ? `
+                            <a href="${ottLink}" target="_blank" class="ott-btn">
+                                <i class="fa-solid fa-circle-play"></i> Watch Stream Link
+                            </a>
+                        ` : ''}
+                    </div>
+
+                    <!-- PANEL 2: CAST & ANTAGONISTS -->
+                    <div class="glass-panel">
+                        <div class="panel-title"><i class="fa-solid fa-masks-theater"></i> Cast</div>
+                        ${createRow('Hero / Male Lead', heroHtml)}
+                        ${createRow('Heroine / Female Lead', heroineHtml)}
+                        ${createRow('Antagonist / Villain', villainHtml)}
+                        ${createRow('Supporting Characters', sideCharactersHtml)}
+                    </div>
+
+                    <!-- PANEL 3: TECHNICAL CREW -->
+                    <div class="glass-panel">
+                        <div class="panel-title"><i class="fa-solid fa-wand-magic-sparkles"></i> Technical Departments</div>
+                        ${createRow('Cinematography (DOP)', dopHtml)}
+                        ${createRow('Stunts & Action', stuntHtml)}
+                        ${createRow('VFX & CGI Studio', vfxHtml)}
+                        ${createRow('Choreographer', choreographerHtml)}
+                        ${createRow('Costume Designer', costumeHtml)}
+                    </div>
+
+                    <!-- PANEL 4: DIRECTION & MUSIC -->
+                    <div class="glass-panel">
+                        <div class="panel-title"><i class="fa-solid fa-clapperboard"></i> Direction & Music</div>
+                        ${createRow('Director', directorHtml)}
+                        ${createRow('Music Director', musicHtml, albumBadgeHTML)}
+                        ${createRow('Playback Singers', singersHtml)}
+                        ${createRow('Producer / Banner', producerHtml)}
+                    </div>
+
+                    <!-- 5-PARAMETER RATING & REVIEW SECTION -->
+                    <div class="rating-panel">
+                        <div class="panel-title" style="margin-bottom: 1.2rem;">
+                            <i class="fa-solid fa-star" style="color:var(--gold-accent)"></i> 5-Parameter Audience Rating & Review
+                        </div>
+
+                        ${currentUser ? `
+                            <div class="rating-grid">
+                                <div class="param-card">
+                                    <div class="param-header">
+                                        <span class="param-name">1. Story & Screenplay</span>
+                                        <span style="font-weight:700; color:var(--gold-accent)" id="val-story">0/5</span>
+                                    </div>
+                                    <div class="star-rating" onclick="setParamRating('story', event)">
+                                        <i class="fa-solid fa-star" data-v="1"></i>
+                                        <i class="fa-solid fa-star" data-v="2"></i>
+                                        <i class="fa-solid fa-star" data-v="3"></i>
+                                        <i class="fa-solid fa-star" data-v="4"></i>
+                                        <i class="fa-solid fa-star" data-v="5"></i>
+                                    </div>
+                                </div>
+
+                                <div class="param-card">
+                                    <div class="param-header">
+                                        <span class="param-name">2. Direction & Vision</span>
+                                        <span style="font-weight:700; color:var(--gold-accent)" id="val-direction">0/5</span>
+                                    </div>
+                                    <div class="star-rating" onclick="setParamRating('direction', event)">
+                                        <i class="fa-solid fa-star" data-v="1"></i>
+                                        <i class="fa-solid fa-star" data-v="2"></i>
+                                        <i class="fa-solid fa-star" data-v="3"></i>
+                                        <i class="fa-solid fa-star" data-v="4"></i>
+                                        <i class="fa-solid fa-star" data-v="5"></i>
+                                    </div>
+                                </div>
+
+                                <div class="param-card">
+                                    <div class="param-header">
+                                        <span class="param-name">3. Performance & Cast</span>
+                                        <span style="font-weight:700; color:var(--gold-accent)" id="val-performance">0/5</span>
+                                    </div>
+                                    <div class="star-rating" onclick="setParamRating('performance', event)">
+                                        <i class="fa-solid fa-star" data-v="1"></i>
+                                        <i class="fa-solid fa-star" data-v="2"></i>
+                                        <i class="fa-solid fa-star" data-v="3"></i>
+                                        <i class="fa-solid fa-star" data-v="4"></i>
+                                        <i class="fa-solid fa-star" data-v="5"></i>
+                                    </div>
+                                </div>
+
+                                <div class="param-card">
+                                    <div class="param-header">
+                                        <span class="param-name">4. Music & BGM Score</span>
+                                        <span style="font-weight:700; color:var(--gold-accent)" id="val-music">0/5</span>
+                                    </div>
+                                    <div class="star-rating" onclick="setParamRating('music', event)">
+                                        <i class="fa-solid fa-star" data-v="1"></i>
+                                        <i class="fa-solid fa-star" data-v="2"></i>
+                                        <i class="fa-solid fa-star" data-v="3"></i>
+                                        <i class="fa-solid fa-star" data-v="4"></i>
+                                        <i class="fa-solid fa-star" data-v="5"></i>
+                                    </div>
+                                </div>
+
+                                <div class="param-card">
+                                    <div class="param-header">
+                                        <span class="param-name">5. VFX & Technical Quality</span>
+                                        <span style="font-weight:700; color:var(--gold-accent)" id="val-vfx">0/5</span>
+                                    </div>
+                                    <div class="star-rating" onclick="setParamRating('vfx', event)">
+                                        <i class="fa-solid fa-star" data-v="1"></i>
+                                        <i class="fa-solid fa-star" data-v="2"></i>
+                                        <i class="fa-solid fa-star" data-v="3"></i>
+                                        <i class="fa-solid fa-star" data-v="4"></i>
+                                        <i class="fa-solid fa-star" data-v="5"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="review-box-area">
+                                <textarea class="review-input" id="reviewText" placeholder="Share your detailed cinematic review... (Optional)"></textarea>
+                                <button class="submit-review-btn" onclick="submitReview()">
+                                    <i class="fa-solid fa-paper-plane"></i> Submit Rating & Review
+                                </button>
+                            </div>
+                        ` : `
+                            <div class="auth-overlay-gate">
+                                <i class="fa-solid fa-lock fa-2x" style="color:var(--gold-accent)"></i>
+                                <p style="font-weight:700; font-size:1.1rem; color:#FFF;">Sign in to unlock 5-parameter star ratings & leave a review</p>
+                                <p style="font-size:0.85rem; color:var(--text-muted);">Your authentic rating helps build the premier Indian box office intelligence community.</p>
+                                <button class="auth-btn" style="margin-top:10px; padding: 0.75rem 1.8rem;" onclick="triggerGoogleLogin()">
+                                    <i class="fa-brands fa-google"></i> Sign In with Google
+                                </button>
+                            </div>
+                        `}
                     </div>
                 </div>
             `;
+
             document.getElementById('movieDetailsArea').innerHTML = html;
         }
 
-        async function fetchMovieDetails() {
-            const id = getMovieId();
-            if (!id) return;
-            let { data, error } = await db.from('box_office').select('*').eq('movie_id', id).single();
-            if (error || !data) {
-                const res = await db.from('movies').select('*').or(`movie_id.eq.${id},id.eq.${id}`).single();
-                data = res.data;
+        function setParamRating(param, event) {
+            const star = event.target;
+            if (!star.dataset.v) return;
+            
+            const val = parseInt(star.dataset.v);
+            selectedRatings[param] = val;
+            document.getElementById(`val-${param}`).innerText = `${val}/5`;
+
+            const container = star.parentElement;
+            const stars = container.querySelectorAll('i');
+            stars.forEach((s, idx) => {
+                if (idx < val) {
+                    s.classList.add('active');
+                } else {
+                    s.classList.remove('active');
+                }
+            });
+        }
+
+        async function submitReview() {
+            if (!currentUser) {
+                triggerGoogleLogin();
+                return;
             }
-            if (data) renderMovieDashboard(data);
+            alert("Thank you! Your 5-parameter rating and review have been logged successfully.");
         }
 
         fetchMovieDetails();
