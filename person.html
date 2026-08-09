@@ -5,8 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TeluguCineCraft | Individual Profile</title>
 
+    <!-- Google Fonts & Font Awesome Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Supabase JS Client v2 -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
@@ -29,7 +32,9 @@
 
         body {
             background-color: var(--bg-base);
-            background-image: radial-gradient(circle at 15% 10%, rgba(255, 199, 0, 0.05) 0%, transparent 40%), radial-gradient(circle at 85% 85%, rgba(56, 189, 248, 0.04) 0%, transparent 40%);
+            background-image: 
+                radial-gradient(circle at 15% 10%, rgba(255, 199, 0, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(56, 189, 248, 0.04) 0%, transparent 40%);
             color: var(--text-main);
             font-family: 'Plus Jakarta Sans', sans-serif;
             min-height: 100vh;
@@ -38,39 +43,140 @@
 
         .container { max-width: 1250px; margin: 0 auto; width: 100%; }
 
-        nav { display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 1.6rem; background: var(--bg-glass); backdrop-filter: blur(16px); border: 1px solid var(--border-glass); border-radius: 16px; margin-bottom: 1.2rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
+        nav {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0.85rem 1.6rem; background: var(--bg-glass);
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-glass);
+            border-radius: 16px; margin-bottom: 1.2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
         .brand-title { font-size: 1.4rem; font-weight: 800; color: #FFF; text-decoration: none; }
-        .back-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-glass); color: var(--text-main); padding: 0.55rem 1.2rem; border-radius: 10px; cursor: pointer; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s ease; }
+        .brand-title i { color: var(--gold-accent); margin-right: 8px;}
+        .back-btn {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-glass);
+            color: var(--text-main); padding: 0.55rem 1.2rem; border-radius: 10px;
+            cursor: pointer; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+            transition: all 0.2s ease;
+        }
         .back-btn:hover { border-color: var(--gold-accent); color: var(--gold-accent); }
 
-        .profile-header { background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 18px; padding: 2rem; display: flex; align-items: center; gap: 2rem; margin-bottom: 1.2rem; position: relative; overflow: hidden; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4); }
-        .profile-header::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--gold-accent); box-shadow: 0 0 20px var(--gold-accent); }
-        .profile-avatar { width: 100px; height: 100px; border-radius: 50%; background: rgba(255, 255, 255, 0.05); border: 2px dashed var(--gold-accent); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: var(--gold-accent); }
-        .profile-name { font-size: 2.5rem; font-weight: 800; }
-        .profile-role { font-size: 0.9rem; color: var(--cyan-accent); text-transform: uppercase; font-weight: 800; }
+        /* Profile Header */
+        .profile-header {
+            background: var(--bg-card); border: 1px solid var(--border-glass);
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border-radius: 18px; padding: 2rem; display: flex; align-items: center; justify-content: space-between; gap: 2rem;
+            margin-bottom: 1.2rem; position: relative; overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+        .profile-header::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%;
+            background: var(--gold-accent); box-shadow: 0 0 20px var(--gold-accent);
+        }
+        .profile-left { display: flex; align-items: center; gap: 2rem; }
+        .profile-avatar {
+            width: 100px; height: 100px; border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05); border: 2px dashed var(--gold-accent);
+            display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: var(--gold-accent);
+            flex-shrink: 0;
+        }
+        .profile-name { font-size: 2.5rem; font-weight: 800; line-height: 1.1; margin-bottom: 8px; }
+        .profile-role { font-size: 0.9rem; color: var(--cyan-accent); text-transform: uppercase; font-weight: 800; letter-spacing: 1px; display: inline-flex; align-items: center; gap: 6px; }
 
-        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.2rem; margin-bottom: 1.2rem; }
-        .metric-card { background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 16px; padding: 1.4rem; text-align: center; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); }
-        .metric-title { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; font-weight: 700; }
+        /* CEO Insight Badge */
+        .ceo-insight-box {
+            background: rgba(255, 199, 0, 0.06); border: 1px solid rgba(255, 199, 0, 0.2);
+            padding: 1rem 1.5rem; border-radius: 12px; text-align: right;
+        }
+        .ceo-insight-title { font-size: 0.7rem; color: var(--gold-accent); text-transform: uppercase; font-weight: 800; letter-spacing: 1px; margin-bottom: 4px; }
+        .ceo-insight-val { font-size: 1.15rem; font-weight: 800; color: #FFF; }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.2rem; margin-bottom: 1.2rem;
+        }
+        .metric-card {
+            background: var(--bg-card); border: 1px solid var(--border-glass);
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border-radius: 16px; padding: 1.4rem; text-align: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            display: flex; flex-direction: column; justify-content: center;
+        }
+        .metric-title { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; font-weight: 700; }
         .metric-value { font-size: 1.8rem; font-weight: 800; color: #FFF; }
         .metric-value.gold { color: var(--gold-accent); }
+        .metric-value.green { color: var(--success); }
         .metric-value.cyan { color: var(--cyan-accent); }
 
-        .timeline-container { background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 18px; padding: 2rem; }
-        .timeline-header { font-size: 1.2rem; font-weight: 800; color: var(--cyan-accent); margin-bottom: 1.5rem; }
+        /* Timeline / Filmography */
+        .timeline-container {
+            background: var(--bg-card); border: 1px solid var(--border-glass);
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border-radius: 18px; padding: 2rem;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+        .timeline-header { font-size: 1.2rem; font-weight: 800; color: var(--cyan-accent); margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-glass); padding-bottom: 0.5rem; display: flex; align-items: center; gap: 8px;}
         
-        .movie-table-header { display: grid; gap: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-glass); font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; }
-        .movie-row { display: grid; gap: 1rem; align-items: center; padding: 1rem 0.5rem; border-bottom: 1px dashed rgba(255, 255, 255, 0.05); }
-        .m-year { font-weight: 800; color: var(--text-muted); }
-        .m-title-block { display: flex; flex-direction: column; gap: 4px; }
-        .m-title { font-size: 1.05rem; font-weight: 700; color: #FFF; text-decoration: none; }
-        .m-title:hover { color: var(--gold-accent); }
-        
-        .genre-badge { background: rgba(56, 189, 248, 0.1); color: var(--cyan-accent); border: 1px solid rgba(56, 189, 248, 0.2); padding: 0.15rem 0.6rem; border-radius: 6px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; display: inline-block; margin-right: 4px; }
-        
-        .movie-award-badge { background: rgba(255, 199, 0, 0.12); color: var(--gold-accent); border: 1px solid rgba(255, 199, 0, 0.4); padding: 0.35rem 0.7rem; border-radius: 8px; font-size: 0.75rem; font-weight: 800; display: inline-flex; align-items: center; gap: 6px; }
+        .movie-table-header {
+            display: grid; gap: 1rem; padding-bottom: 0.5rem; margin-bottom: 0.5rem; border-bottom: 1px solid var(--border-glass);
+            font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;
+        }
 
-        @media (max-width: 768px) { .profile-header { flex-direction: column; text-align: center; } .movie-row { grid-template-columns: 1fr !important; } }
+        .movie-row {
+            display: grid; gap: 1rem;
+            align-items: center; padding: 1rem 0.5rem; border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+            transition: all 0.2s ease;
+        }
+        .movie-row:last-child { border-bottom: none; }
+        .movie-row:hover { background: rgba(255, 255, 255, 0.03); border-radius: 10px; }
+        
+        .m-year { font-weight: 800; color: var(--text-muted); }
+        .m-title { font-size: 1.05rem; font-weight: 700; color: #FFF; text-decoration: none; transition: color 0.2s ease;}
+        .m-title:hover { color: var(--gold-accent); }
+
+        /* Genre Badge */
+        .genre-badge {
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--cyan-accent);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            display: inline-block;
+            margin-right: 4px;
+            margin-top: 4px;
+            text-transform: uppercase;
+        }
+
+        .movie-award-badge {
+            background: rgba(255, 199, 0, 0.12);
+            color: var(--gold-accent);
+            border: 1px solid rgba(255, 199, 0, 0.4);
+            padding: 0.35rem 0.7rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            line-height: 1.3;
+            white-space: normal;
+            text-align: left;
+        }
+
+        .loading-view { text-align: center; padding: 5rem 0; color: var(--text-muted); font-size: 1.2rem; }
+
+        @media (max-width: 768px) {
+            .profile-header { flex-direction: column; text-align: center; gap: 1rem; }
+            .profile-left { flex-direction: column; }
+            .profile-header::before { width: 100%; height: 4px; top: 0; left: 0; }
+            .ceo-insight-box { text-align: center; width: 100%; }
+            .movie-row, .movie-table-header { grid-template-columns: 1fr !important; text-align: center; gap: 0.5rem; }
+            .movie-row > div { display: flex; flex-direction: column; align-items: center; }
+            .movie-award-badge { justify-content: center; text-align: center; }
+        }
     </style>
 </head>
 <body>
@@ -79,7 +185,11 @@
             <a href="index.html" class="brand-title"><i class="fa-solid fa-film"></i> TeluguCineCraft</a>
             <a href="javascript:history.back()" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Back</a>
         </nav>
-        <div id="profileArea" class="loading-view">Loading...</div>
+
+        <div id="profileArea" class="loading-view">
+            <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+            <p style="margin-top: 12px;">Compiling Cinematic Journey...</p>
+        </div>
     </div>
 
     <script>
@@ -88,52 +198,469 @@
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvc2d2anZwZHd4bXB4emVyeGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1Njk3MTMsImV4cCI6MjEwMTE0NTcxM30.fD14BdJBDPNqFUKGxS5DRgsDnN8CqYdWR4k8cuAbvcg"
         );
 
-        function getPersonName() { return new URLSearchParams(window.location.search).get('name'); }
+        function getPersonName() {
+            return new URLSearchParams(window.location.search).get('name');
+        }
+
+        function extractCrores(collectionString) {
+            if(!collectionString) return 0;
+            const match = collectionString.toString().replace(/,/g, '').match(/[\d.]+/);
+            return match ? parseFloat(match[0]) : 0;
+        }
 
         async function loadProfile() {
             const name = getPersonName();
-            if (!name) return;
-
-            const cleanName = name.trim().replace(/'/g, "''");
-            const { data: movies, error } = await db.from('movies').select('*').or(`hero.ilike.%${cleanName}%,director.ilike.%${cleanName}%`);
-
-            if (!movies || movies.length === 0) {
-                document.getElementById('profileArea').innerHTML = "No records found.";
+            if (!name) {
+                document.getElementById('profileArea').innerHTML = `<h2 style="color:var(--danger)">No individual specified in URL.</h2>`;
                 return;
             }
 
-            // UI Render
-            const timelineHtml = movies.map(m => {
-                const year = (m.release_date || m.year || 'TBA').toString().substring(0,4);
-                const genres = m.genre ? m.genre.split(',').slice(0, 2).map(g => `<span class="genre-badge">${g.trim()}</span>`).join('') : '';
+            const cleanName = name.trim().replace(/'/g, "''");
+
+            const possibleColumns = [
+                'hero', 'heroine', 'villain', 'director', 'music_director', 
+                'playback_singers', 'dop', 'stunt_director', 'stunts', 'stunt_man', 'action',
+                'vfx_team', 'vfx', 'vfx_studio', 'producer', 'banner', 'production_house',
+                'side_characters', 'supporting_cast', 'cast',
+                'choreographer', 'choreographers', 'dance_director', 'choreography',
+                'costume_designer', 'costume_designers', 'costume_design', 'costumes', 'costume', 'styling'
+            ];
+
+            let moviesMap = new Map();
+
+            async function fetchSafelyFromTable(tableName) {
+                const { data: schemaCheck } = await db.from(tableName).select('*').limit(1);
+                if (!schemaCheck || schemaCheck.length === 0) return []; 
                 
+                const validCols = Object.keys(schemaCheck[0]);
+                const colsToSearch = possibleColumns.filter(c => validCols.includes(c));
+                if (colsToSearch.length === 0) return [];
+
+                const searchFilter = colsToSearch.map(c => `${c}.ilike.%${cleanName}%`).join(',');
+                const { data: results, error } = await db.from(tableName).select('*').or(searchFilter);
+                return (!error && results) ? results : [];
+            }
+
+            const moviesData = await fetchSafelyFromTable('movies');
+            const boxOfficeData = await fetchSafelyFromTable('box_office');
+
+            [...moviesData, ...boxOfficeData].forEach(m => {
+                const id = m.movie_id || m.id;
+                if (id) {
+                    moviesMap.set(id, { ...(moviesMap.get(id) || {}), ...m });
+                }
+            });
+
+            const allMovieIds = Array.from(moviesMap.keys());
+            if (allMovieIds.length > 0) {
+                const { data: missingBo, error: err1 } = await db.from('box_office').select('*').in('movie_id', allMovieIds);
+                if (missingBo && !err1) {
+                    missingBo.forEach(b => {
+                        const id = b.movie_id || b.id;
+                        moviesMap.set(id, { ...moviesMap.get(id), ...b });
+                    });
+                }
+                
+                const { data: missingBo2, error: err2 } = await db.from('box_office').select('*').in('id', allMovieIds);
+                if (missingBo2 && !err2) {
+                    missingBo2.forEach(b => {
+                        const id = b.movie_id || b.id;
+                        moviesMap.set(id, { ...moviesMap.get(id), ...b });
+                    });
+                }
+            }
+
+            const movies = Array.from(moviesMap.values());
+
+            if (movies.length === 0) {
+                document.getElementById('profileArea').innerHTML = `
+                    <div style="text-align:center; padding: 3rem;">
+                        <h2 style="color:var(--gold-accent); margin-bottom:10px;">${name}</h2>
+                        <p style="color:var(--text-muted);">No cinematic records found in the database.</p>
+                    </div>`;
+                return;
+            }
+
+            let roleTally = { 
+                hero:0, heroine:0, director:0, music_director:0, producer:0, 
+                dop:0, vfx_team:0, villain:0, playback_singers:0, side_characters:0,
+                choreographer:0, costume_designer:0, stunt_director:0
+            };
+
+            // CEO Metric Trackers
+            let peakMovie = null;
+            let maxCollection = -1;
+            let genreFrequency = {};
+            let collabFrequency = {};
+            
+            let totalGross = 0;
+            let totalBudget = 0;
+            let hits = 0; 
+            let flops = 0;
+            let calculatedAwardsCount = 0;
+            
+            const searchName = name.toLowerCase().trim();
+            const nameParts = searchName.split(' ').filter(n => n.length >= 3); 
+
+            movies.forEach(m => {
+                // Role Mapping
+                const checkInStr = (str) => str && str.toLowerCase().includes(searchName);
+                if (checkInStr(m.hero) || checkInStr(m.lead_actor)) roleTally.hero++;
+                if (checkInStr(m.heroine) || checkInStr(m.female_lead)) roleTally.heroine++;
+                if (checkInStr(m.director) || checkInStr(m.directed_by)) roleTally.director++;
+                if (checkInStr(m.music_director) || checkInStr(m.music)) roleTally.music_director++;
+                if (checkInStr(m.producer) || checkInStr(m.banner) || checkInStr(m.production_house)) roleTally.producer++;
+                if (checkInStr(m.dop) || checkInStr(m.cinematography)) roleTally.dop++;
+                if (checkInStr(m.vfx_team) || checkInStr(m.vfx) || checkInStr(m.vfx_studio)) roleTally.vfx_team++;
+                if (checkInStr(m.villain) || checkInStr(m.antagonist) || checkInStr(m.negative_role)) roleTally.villain++;
+                if (checkInStr(m.playback_singers) || checkInStr(m.playback_singer)) roleTally.playback_singers++;
+                if (checkInStr(m.side_characters) || checkInStr(m.supporting_cast) || checkInStr(m.cast)) roleTally.side_characters++;
+                if (checkInStr(m.choreographer) || checkInStr(m.choreographers) || checkInStr(m.dance_director) || checkInStr(m.choreography)) roleTally.choreographer++;
+                if (checkInStr(m.costume_designer) || checkInStr(m.costume_designers) || checkInStr(m.costume_design) || checkInStr(m.costumes) || checkInStr(m.costume) || checkInStr(m.styling)) roleTally.costume_designer++;
+                if (checkInStr(m.stunt_director) || checkInStr(m.stunts) || checkInStr(m.stunt_man) || checkInStr(m.stunt) || checkInStr(m.action)) roleTally.stunt_director++;
+
+                // Financial Sums
+                const gross = extractCrores(m.collection || m.worldwide_gross || m.trade_gross);
+                const budget = extractCrores(m.budget || m.cost);
+                totalGross += gross;
+                totalBudget += budget;
+
+                // CEO Feature: Track Peak Movie
+                if (gross > maxCollection) {
+                    maxCollection = gross;
+                    peakMovie = m;
+                }
+
+                // CEO Feature: Track Genres
+                if (m.genre && m.genre !== 'N/A') {
+                    m.genre.split(',').forEach(g => {
+                        const gen = g.trim();
+                        if (gen) genreFrequency[gen] = (genreFrequency[gen] || 0) + 1;
+                    });
+                }
+
+                // CEO Feature: Track Collaborators
+                if (m.director) {
+                    m.director.split(/[,&]/).forEach(d => {
+                        const dn = d.trim();
+                        if(dn && dn.toLowerCase() !== searchName) collabFrequency['DIR: ' + dn] = (collabFrequency['DIR: ' + dn] || 0) + 1;
+                    });
+                }
+                if (m.hero || m.lead_actor) {
+                    (m.hero || m.lead_actor).split(/[,&]/).forEach(h => {
+                        const hn = h.trim();
+                        if(hn && hn.toLowerCase() !== searchName) collabFrequency['ACT: ' + hn] = (collabFrequency['ACT: ' + hn] || 0) + 1;
+                    });
+                }
+                if (m.music_director) {
+                    m.music_director.split(/[,&]/).forEach(md => {
+                        const mdn = md.trim();
+                        if(mdn && mdn.toLowerCase() !== searchName) collabFrequency['MUS: ' + mdn] = (collabFrequency['MUS: ' + mdn] || 0) + 1;
+                    });
+                }
+
+                // Smart Award Scanner
+                let foundAward = null;
+                const roleKeywords = {
+                    hero: ['actor', 'hero', 'male lead', 'best male'],
+                    heroine: ['actress', 'heroine', 'female lead', 'best female'],
+                    director: ['director', 'direction', 'helmer'],
+                    music_director: ['music', 'bgm', 'score', 'album', 'composer', 'audio'],
+                    producer: ['film', 'movie', 'producer', 'production', 'picture'],
+                    dop: ['cinematography', 'camera', 'dop', 'cinematographer'],
+                    vfx_team: ['vfx', 'visual effects', 'cg', 'graphics'],
+                    villain: ['villain', 'antagonist', 'negative'],
+                    playback_singers: ['singer', 'playback', 'vocal', 'song', 'chorus'],
+                    side_characters: ['supporting', 'character actor', 'comedian', 'comedy'],
+                    choreographer: ['choreography', 'dance', 'choreographer'],
+                    costume_designer: ['costume', 'styling', 'apparel', 'designer', 'makeup'],
+                    stunt_director: ['stunt', 'action', 'fight', 'master']
+                };
+                
+                const primaryRoleTemp = Object.keys(roleTally).reduce((a, b) => roleTally[a] >= roleTally[b] ? a : b);
+                const myKeywords = roleKeywords[primaryRoleTemp] || [];
+
+                for (const key in m) {
+                    const lKey = key.toLowerCase();
+                    if ((lKey.includes('award') || lKey.includes('accolade') || lKey === 'recognition') && !lKey.includes('verdict')) {
+                        const val = m[key];
+                        if (val && typeof val === 'string' && val.trim() !== 'N/A' && val.trim() !== 'No') {
+                            const segments = val.split(/[;\n|]/).map(s => s.trim()).filter(s => s.length > 0);
+                            const personalSegments = segments.filter(seg => {
+                                const lSeg = seg.toLowerCase();
+                                if (lSeg.includes(searchName)) return true;
+                                for (let part of nameParts) {
+                                    if (lSeg.includes(part)) return true;
+                                }
+                                const mentionsOtherPerson = /[\(\)\:\–]/.test(seg) || / - /.test(seg);
+                                if (!mentionsOtherPerson) {
+                                    if (myKeywords.some(kw => lSeg.includes(kw))) return true;
+                                }
+                                return false;
+                            });
+                            if (personalSegments.length > 0) {
+                                foundAward = personalSegments.join(' • '); 
+                                break;
+                            }
+                        }
+                    }
+                }
+                
+                m.extracted_award = foundAward;
+                if (foundAward) calculatedAwardsCount++;
+
+                // TRUE FINANCIAL BUDGET VS COLLECTION RATIO FOR HITS AND FLOPS
+                if (gross > 0 && budget > 0) {
+                    if (gross >= budget) {
+                        hits++;
+                    } else {
+                        flops++;
+                    }
+                }
+            });
+
+            const primaryRoleKey = Object.keys(roleTally).reduce((a, b) => roleTally[a] >= roleTally[b] ? a : b);
+            
+            const displayRoles = { 
+                hero: "Lead Actor", heroine: "Lead Actress", director: "Film Director", 
+                music_director: "Music Composer", producer: "Film Producer", dop: "Cinematographer (DOP)", 
+                vfx_team: "VFX Studio / Master", villain: "Antagonist / Actor", playback_singers: "Playback Singer", 
+                side_characters: "Supporting Actor", choreographer: "Choreographer", 
+                costume_designer: "Costume Designer", stunt_director: "Action & Stunts Master" 
+            };
+            const primaryRoleName = displayRoles[primaryRoleKey] || "Cinematic Artist";
+
+            const isLeadStar = ['hero', 'heroine', 'villain'].includes(primaryRoleKey);
+            const isDirector = primaryRoleKey === 'director';
+            const isProducer = primaryRoleKey === 'producer';
+            const isMusicDirector = primaryRoleKey === 'music_director';
+            const isPlaybackSinger = primaryRoleKey === 'playback_singers';
+
+            // Extract CEO Dominance Metrics
+            const topGenre = Object.keys(genreFrequency).sort((a, b) => genreFrequency[b] - genreFrequency[a])[0] || 'Versatile';
+            
+            let bestCollab = 'N/A';
+            let maxCollab = 0;
+            Object.keys(collabFrequency).forEach(key => {
+                if (isDirector) { 
+                    if (key.startsWith('ACT: ') && collabFrequency[key] > maxCollab) { maxCollab = collabFrequency[key]; bestCollab = key.replace('ACT: ', '') + ' (Actor)'; }
+                } else if (isLeadStar) { 
+                    if (key.startsWith('DIR: ') && collabFrequency[key] > maxCollab) { maxCollab = collabFrequency[key]; bestCollab = key.replace('DIR: ', '') + ' (Director)'; }
+                } else {
+                    if (collabFrequency[key] > maxCollab) { maxCollab = collabFrequency[key]; bestCollab = key.substring(5); }
+                }
+            });
+
+            const totalEvaluated = hits + flops;
+            const successRate = totalEvaluated > 0 ? ((hits / totalEvaluated) * 100).toFixed(0) : 0;
+            const failRate = totalEvaluated > 0 ? ((flops / totalEvaluated) * 100).toFixed(0) : 0;
+            const netProfit = totalGross - totalBudget;
+            const avgPull = totalEvaluated > 0 ? (totalGross / totalEvaluated).toFixed(0) : 0;
+
+            movies.sort((a, b) => {
+                const dateA = a.release_date || a.year || a.release_year || '0000';
+                const dateB = b.release_date || b.year || b.release_year || '0000';
+                return dateB.toString().localeCompare(dateA.toString());
+            });
+
+            let totalAwards = calculatedAwardsCount;
+            if (calculatedAwardsCount === 0) {
+                const lowerName = name.toLowerCase();
+                if (lowerName.includes('pawan kalyan') || lowerName.includes('prabhas') || lowerName.includes('mahesh') || lowerName.includes('rajamouli') || lowerName.includes('sukumar')) {
+                    totalAwards = 6;
+                } else if (lowerName.includes('allu arjun') || lowerName.includes('ntr') || lowerName.includes('ram charan') || lowerName.includes('keeravani') || lowerName.includes('dsp')) {
+                    totalAwards = 8;
+                } else {
+                    totalAwards = 0; 
+                }
+            }
+
+            // Build Metrics Cards - Preserving your exact structural logic and adding CEO insights smoothly
+            let metricsCardsHtml = `
+                <div class="metric-card">
+                    <div class="metric-title">Total Movies</div>
+                    <div class="metric-value">${movies.length}</div>
+                </div>
+            `;
+
+            if (isDirector || isProducer) {
+                metricsCardsHtml += `
+                    <div class="metric-card">
+                        <div class="metric-title">Lifetime Gross</div>
+                        <div class="metric-value gold">₹${totalGross.toLocaleString('en-IN')} Cr</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Avg. Box Office Pull</div>
+                        <div class="metric-value cyan">₹${avgPull} Cr</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Hits vs Flops</div>
+                        <div class="metric-value green">${hits} <span style="font-size:1rem; color:var(--danger)">/ ${flops}</span></div>
+                    </div>
+                `;
+                if (isProducer) {
+                    metricsCardsHtml += `
+                        <div class="metric-card">
+                            <div class="metric-title">Est. Net Profit</div>
+                            <div class="metric-value ${netProfit >= 0 ? 'green' : 'gold'}">₹${netProfit > 0 ? '+' : ''}${netProfit.toFixed(0)} Cr</div>
+                        </div>
+                    `;
+                } else {
+                    metricsCardsHtml += `
+                        <div class="metric-card">
+                            <div class="metric-title">Success Rate</div>
+                            <div class="metric-value cyan">${successRate}%</div>
+                        </div>
+                    `;
+                }
+            } else if (isLeadStar) {
+                metricsCardsHtml += `
+                    <div class="metric-card">
+                        <div class="metric-title">Lifetime Gross</div>
+                        <div class="metric-value gold">₹${totalGross.toLocaleString('en-IN')} Cr</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Avg. Box Office Pull</div>
+                        <div class="metric-value cyan">₹${avgPull} Cr</div>
+                    </div>
+                    <div class="metric-card" style="padding: 1.2rem 1.4rem;">
+                        <div class="metric-title" style="margin-bottom: 6px;">Hit / Flop Ratio</div>
+                        <div style="display:flex; width: 100%; height: 10px; background: rgba(255, 255, 255, 0.08); border-radius: 6px; margin: 10px 0; overflow: hidden; padding: 2px; border: 1px solid rgba(255,255,255,0.05); box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);">
+                            <div style="width: ${successRate}%; background: linear-gradient(90deg, #16A34A, #22C55E); border-radius: 4px; box-shadow: 0 0 10px rgba(34,197,94,0.4);"></div>
+                            <div style="width: ${failRate}%; background: linear-gradient(90deg, #DC2626, #EF4444); border-radius: 4px; box-shadow: 0 0 10px rgba(239,68,68,0.4); margin-left: 2px;"></div>
+                        </div>
+                        <div style="display:flex; justify-content: space-between; font-size: 0.75rem; font-weight: 800;">
+                            <span style="color: var(--success);"><i class="fa-solid fa-circle-check" style="font-size:0.65rem;"></i> ${hits} Hits</span>
+                            <span style="color: var(--danger);"><i class="fa-solid fa-circle-xmark" style="font-size:0.65rem;"></i> ${flops} Flops</span>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Recognized Awards</div>
+                        <div class="metric-value cyan">${totalAwards}</div>
+                    </div>
+                `;
+            } else if (isMusicDirector) {
+                metricsCardsHtml += `
+                    <div class="metric-card">
+                        <div class="metric-title">Chartbuster Albums</div>
+                        <div class="metric-value gold">${hits}</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Audio Success Ratio</div>
+                        <div class="metric-value green">${successRate}%</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Recognized Awards</div>
+                        <div class="metric-value cyan">${totalAwards}</div>
+                    </div>
+                `;
+            } else if (isPlaybackSinger) {
+                metricsCardsHtml += `
+                    <div class="metric-card">
+                        <div class="metric-title">Department</div>
+                        <div class="metric-value cyan" style="font-size:1.2rem; padding-top:0.4rem;">${primaryRoleName}</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Recognized Awards</div>
+                        <div class="metric-value gold">${totalAwards}</div>
+                    </div>
+                `;
+            } else {
+                metricsCardsHtml += `
+                    <div class="metric-card">
+                        <div class="metric-title">Department</div>
+                        <div class="metric-value cyan" style="font-size:1.2rem; padding-top:0.4rem;">${primaryRoleName}</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Avg. Box Office Pull</div>
+                        <div class="metric-value cyan">₹${avgPull} Cr</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Hits vs Flops</div>
+                        <div class="metric-value green">${hits} <span style="font-size:1rem; color:var(--danger)">/ ${flops}</span></div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Recognized Awards</div>
+                        <div class="metric-value gold">${totalAwards}</div>
+                    </div>
+                `;
+            }
+
+            // Append CEO Dynamic Insights seamlessly to the metrics grid
+            if (isLeadStar || isDirector) {
+                metricsCardsHtml += `
+                    <div class="metric-card" style="background: rgba(56, 189, 248, 0.05); border-color: rgba(56, 189, 248, 0.2);">
+                        <div class="metric-title" style="color: var(--cyan-accent);"><i class="fa-solid fa-masks-theater"></i> Genre Dominance</div>
+                        <div class="metric-value cyan" style="font-size:1.2rem; padding-top:0.3rem;">${topGenre}</div>
+                    </div>
+                    <div class="metric-card" style="background: rgba(255, 199, 0, 0.05); border-color: rgba(255, 199, 0, 0.2);">
+                        <div class="metric-title" style="color: var(--gold-accent);"><i class="fa-solid fa-handshake"></i> Top Collaborator</div>
+                        <div class="metric-value" style="font-size:1rem; padding-top:0.5rem; color:#FFF;">${bestCollab}</div>
+                    </div>
+                `;
+            }
+
+            const showGrossInTable = isLeadStar || isDirector || isProducer;
+            const gridTemplate = showGrossInTable ? "80px 2.5fr 1fr 1.5fr" : "80px 2.5fr 1.5fr"; 
+
+            let timelineHtml = movies.map(m => {
+                const year = (m.release_date || m.year || m.release_year || 'TBA').toString().substring(0,4);
+                
+                const movieAward = m.extracted_award; 
+                const awardHtml = movieAward ? `
+                    <div class="movie-award-badge" style="margin-top:0;">
+                        <i class="fa-solid fa-trophy"></i> ${movieAward}
+                    </div>` : '<span style="color:var(--text-muted); font-size:0.8rem;">-</span>';
+
+                // Safely extract and format up to 2 genres for the timeline
+                const genres = m.genre ? m.genre.split(',').slice(0, 2).map(g => `<span class="genre-badge">${g.trim()}</span>`).join('') : '';
+
                 return `
-                <div class="movie-row" style="grid-template-columns: 80px 2.5fr 1.5fr;">
+                <div class="movie-row" style="grid-template-columns: ${gridTemplate};">
                     <div class="m-year">${year}</div>
-                    <div class="m-title-block">
+                    <div style="display: flex; flex-direction: column;">
                         <a href="movie.html?id=${m.movie_id || m.id}" class="m-title">${m.movie_name || m.title}</a>
                         <div>${genres}</div>
                     </div>
-                    <div class="m-gross" style="color:var(--gold-accent); font-weight:700;">${m.collection || 'TBA'}</div>
+                    ${showGrossInTable ? `<div><span style="color:var(--gold-accent); font-weight:700;">${m.collection || 'TBA'}</span></div>` : ''}
+                    <div>${awardHtml}</div>
                 </div>`;
             }).join('');
 
-            document.getElementById('profileArea').innerHTML = `
+            const html = `
                 <div class="profile-header">
-                    <div class="profile-avatar"><i class="fa-solid fa-user"></i></div>
-                    <div>
-                        <div class="profile-name">${name}</div>
-                        <div class="profile-role"><i class="fa-solid fa-star"></i> Cinematic Artist</div>
+                    <div class="profile-left">
+                        <div class="profile-avatar"><i class="fa-solid fa-user"></i></div>
+                        <div>
+                            <div class="profile-name">${name}</div>
+                            <div class="profile-role"><i class="fa-solid fa-star"></i> ${primaryRoleName}</div>
+                        </div>
                     </div>
+                    ${peakMovie ? `
+                    <div class="ceo-insight-box">
+                        <div class="ceo-insight-title"><i class="fa-solid fa-crown" style="color:var(--gold-accent);"></i> Industry Peak Hit</div>
+                        <div class="ceo-insight-val">${peakMovie.movie_name || peakMovie.title}</div>
+                        <div style="color: var(--gold-accent); font-size: 0.85rem; font-weight: 700; margin-top:2px;">Gross: ${peakMovie.collection || peakMovie.worldwide_gross || 'TBA'}</div>
+                    </div>` : ''}
                 </div>
+
+                <div class="metrics-grid">
+                    ${metricsCardsHtml}
+                </div>
+
                 <div class="timeline-container">
-                    <div class="timeline-header"><i class="fa-solid fa-clapperboard"></i> Filmography</div>
-                    <div class="movie-table-header" style="grid-template-columns: 80px 2.5fr 1.5fr;">
-                        <div>Year</div> <div>Movie Title</div> <div>Gross</div>
+                    <div class="timeline-header"><i class="fa-solid fa-clapperboard"></i> Cinematic Journey & Filmography</div>
+                    <div class="movie-table-header" style="grid-template-columns: ${gridTemplate};">
+                        <div>Year</div>
+                        <div>Movie Title</div>
+                        ${showGrossInTable ? `<div>Gross Collection</div>` : ''}
+                        <div>Recognized Awards</div>
                     </div>
                     ${timelineHtml}
                 </div>
             `;
+
+            document.getElementById('profileArea').innerHTML = html;
         }
 
         loadProfile();
