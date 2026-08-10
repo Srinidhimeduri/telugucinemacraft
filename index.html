@@ -31,10 +31,14 @@
             --text-muted: #94A3B8;
             --danger: #EF4444;
             --success: #22C55E;
+            
+            /* Faction Colors */
             --mega-red: #DC2626;
             --rebel-dark: #38BDF8; 
             --nandamuri-yellow: #F59E0B;
             --superstar-blue: #C084FC;
+            --icon-green: #10B981; /* Allu Arjun Color */
+            
             --whatsapp-green: #25D366;
         }
 
@@ -205,6 +209,7 @@
                 <i class="fa-solid fa-film"></i> TeluguCineCraft
             </div>
             
+            <!-- CEO DUO LOGIN UI -->
             <div id="userMenuArea" class="auth-container">
                 <!-- Dynamically populated via JS -->
             </div>
@@ -231,32 +236,55 @@
                     <div class="gamified-title"><i class="fa-solid fa-shield-halved" style="color:var(--cyan-accent);"></i> Faction Power Standings</div>
                     <span style="font-size:0.7rem; color:var(--gold-accent); font-weight:700;">LIVE BATTLE</span>
                 </div>
+                
+                <!-- THE TOP 5 FACTIONS -->
                 <div class="factions-list">
                     <div class="faction-card" onclick="triggerFOMOLogin('Rebel Star Force')">
                         <div class="faction-info-row">
                             <span class="faction-name">Rebel Star Force (Prabhas)</span>
-                            <span class="faction-stats">42%</span>
+                            <span class="faction-stats">28% • 142k Pts</span>
                         </div>
-                        <div class="faction-progress-bg"><div class="faction-progress-fill" style="width: 42%; background: var(--rebel-dark);"></div></div>
+                        <div class="faction-progress-bg"><div class="faction-progress-fill" style="width: 28%; background: var(--rebel-dark);"></div></div>
                     </div>
+                    
                     <div class="faction-card" onclick="triggerFOMOLogin('Mega Camp')">
                         <div class="faction-info-row">
-                            <span class="faction-name">Mega Camp (Charan/AA/PK)</span>
-                            <span class="faction-stats">35%</span>
+                            <span class="faction-name">Mega Camp (Charan / PK)</span>
+                            <span class="faction-stats">26% • 135k Pts</span>
                         </div>
-                        <div class="faction-progress-bg"><div class="faction-progress-fill" style="width: 35%; background: var(--mega-red);"></div></div>
+                        <div class="faction-progress-bg"><div class="faction-progress-fill" style="width: 26%; background: var(--mega-red);"></div></div>
                     </div>
-                    <div class="faction-card" onclick="triggerFOMOLogin('Nandamuri Tigers')">
+                    
+                    <!-- CEO CORRECTION: LIONS -->
+                    <div class="faction-card" onclick="triggerFOMOLogin('Nandamuri Lions')">
                         <div class="faction-info-row">
-                            <span class="faction-name">Nandamuri Tigers (NTR/NBK)</span>
-                            <span class="faction-stats">13%</span>
+                            <span class="faction-name">Nandamuri Lions (NTR / NBK)</span>
+                            <span class="faction-stats">21% • 108k Pts</span>
                         </div>
-                        <div class="faction-progress-bg"><div class="faction-progress-fill" style="width: 13%; background: var(--nandamuri-yellow);"></div></div>
+                        <div class="faction-progress-bg"><div class="faction-progress-fill" style="width: 21%; background: var(--nandamuri-yellow);"></div></div>
+                    </div>
+                    
+                    <!-- CEO ADDITION: ICON STAR SEPARATION -->
+                    <div class="faction-card" onclick="triggerFOMOLogin('Icon Star Battalion')">
+                        <div class="faction-info-row">
+                            <span class="faction-name">Icon Star Battalion (Allu Arjun)</span>
+                            <span class="faction-stats">14% • 72k Pts</span>
+                        </div>
+                        <div class="faction-progress-bg"><div class="faction-progress-fill" style="width: 14%; background: var(--icon-green);"></div></div>
+                    </div>
+
+                    <div class="faction-card" onclick="triggerFOMOLogin('Superstar Cult')">
+                        <div class="faction-info-row">
+                            <span class="faction-name">Superstar Cult (Mahesh Babu)</span>
+                            <span class="faction-stats">11% • 58k Pts</span>
+                        </div>
+                        <div class="faction-progress-bg"><div class="faction-progress-fill" style="width: 11%; background: var(--superstar-blue);"></div></div>
                     </div>
                 </div>
+                
                 <!-- WHATSAPP VIRAL LOOP -->
                 <button class="whatsapp-btn" onclick="shareToWhatsApp()">
-                    <i class="fa-brands fa-whatsapp" style="font-size:1.1rem;"></i> Challenge Friends on WhatsApp
+                    <i class="fa-brands fa-whatsapp" style="font-size:1.1rem;"></i> Share Battle on WhatsApp
                 </button>
             </div>
 
@@ -289,7 +317,7 @@
         let globalUser = null;
 
         function shareToWhatsApp() {
-            const msg = "🔥 Faction Wars are live! Mega Camp is losing to Rebel Star Force on TeluguCineCraft. Tap here to vote and save our rank: " + window.location.href;
+            const msg = "🔥 Massive Fan War on TeluguCineCraft! Rebel Star Force and Mega Camp are clashing. Tap here to vote for your Faction and secure your Rank: " + window.location.href;
             window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
         }
 
@@ -501,6 +529,7 @@
                                 <div class="stat-item"><div class="stat-label">Budget</div><div class="stat-value">${budget}</div></div>
                                 <div class="stat-item"><div class="stat-label">Gross</div><div class="stat-value">${gross}</div></div>
                             </div>
+                            <div class="view-btn">View Full Details <i class="fa-solid fa-arrow-right"></i></div>
                         </div>
                     </a>
                 `;
