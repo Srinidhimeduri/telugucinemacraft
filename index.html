@@ -3,89 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- Admitad Verification Code -->
     <meta name="verify-admitad" content="3b27ad383c" />
+    
     <title>TeluguCineCraft | Box Office & Cinema Database</title>
+
+    <!-- Google Fonts & Font Awesome Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Supabase JS Client v2 & Shared App Logic -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="app.js"></script>
 
     <style>
         :root {
-            --bg-base: #06080C; --bg-glass: rgba(18, 24, 38, 0.7); --bg-card: rgba(26, 34, 52, 0.6);
-            --border-glass: rgba(255, 255, 255, 0.08); --border-hover: rgba(255, 199, 0, 0.4);
-            --gold-accent: #FFC700; --gold-glow: rgba(255, 199, 0, 0.15); --cyan-accent: #38BDF8;
-            --text-main: #F8FAFC; --text-muted: #94A3B8; --danger: #EF4444; --success: #22C55E;
-            --mega-red: #DC2626; --rebel-dark: #38BDF8; --nandamuri-yellow: #F59E0B;
-            --icon-green: #10B981; --superstar-blue: #8B5CF6; --akkineni-teal: #0D9488;
+            --bg-base: #06080C;
+            --bg-glass: rgba(18, 24, 38, 0.7);
+            --bg-card: rgba(26, 34, 52, 0.6);
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(255, 199, 0, 0.4);
+            --gold-accent: #FFC700;
+            --gold-glow: rgba(255, 199, 0, 0.15);
+            --cyan-accent: #38BDF8;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --danger: #EF4444;
+            --success: #22C55E;
+            
+            /* Fan Army Colors */
+            --mega-red: #DC2626;
+            --rebel-dark: #38BDF8; 
+            --nandamuri-yellow: #F59E0B;
+            --icon-green: #10B981;
+            --superstar-blue: #8B5CF6;
+            --akkineni-teal: #0D9488; 
+            
+            --whatsapp-green: #25D366;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--bg-base); background-image: radial-gradient(circle at 20% 10%, rgba(255, 199, 0, 0.05) 0%, transparent 40%), radial-gradient(circle at 80% 80%, rgba(56, 189, 248, 0.04) 0%, transparent 40%); color: var(--text-main); font-family: 'Plus Jakarta Sans', sans-serif; min-height: 100vh; padding: 1.5rem 1rem 2rem 1rem; overflow-x: hidden; }
+
+        body {
+            background-color: var(--bg-base);
+            background-image: 
+                radial-gradient(circle at 20% 10%, rgba(255, 199, 0, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(56, 189, 248, 0.04) 0%, transparent 40%);
+            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh;
+            padding: 1.5rem 1rem 2rem 1rem;
+            overflow-x: hidden;
+        }
+
         .container { max-width: 1280px; margin: 0 auto; }
 
-        nav { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; background: var(--bg-glass); backdrop-filter: blur(16px); border: 1px solid var(--border-glass); border-radius: 20px; margin-bottom: 2rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
-        .brand-title { font-size: 1.5rem; font-weight: 800; color: #FFF; display: flex; align-items: center; gap: 8px; letter-spacing: -0.5px; }
+        /* --- NAV BAR --- */
+        nav {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1rem 1.5rem; background: var(--bg-glass);
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-glass); border-radius: 20px;
+            margin-bottom: 2rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        .brand-title { font-size: 1.5rem; font-weight: 800; color: #FFF; display: flex; align-items: center; gap: 8px; letter-spacing: -0.5px; text-decoration: none;}
         .brand-title i { color: var(--gold-accent); }
-        .auth-container { display: flex; align-items: center; gap: 15px; }
-        .trade-login-link { color: var(--text-muted); font-size: 0.8rem; font-weight: 700; text-decoration: none; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 6px; }
-        .trade-login-link:hover { color: #FFF; }
-        .auth-btn { background: rgba(255, 199, 0, 0.12); border: 1px solid var(--gold-accent); color: var(--gold-accent); padding: 0.6rem 1.2rem; border-radius: 12px; cursor: pointer; font-weight: 800; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; text-transform: uppercase; transition: all 0.3s ease;}
-        .auth-btn:hover { background: var(--gold-accent); color: #000; box-shadow: 0 0 20px var(--gold-glow); }
-        .signout-btn { background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger); color: var(--danger); padding: 0.5rem 1rem; border-radius: 10px; cursor: pointer; font-weight: 600; }
-        .streak-badge { background: linear-gradient(135deg, #FF6B00, #FF0000); color: #FFF; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 800; display: inline-flex; align-items: center; gap: 4px; box-shadow: 0 0 10px rgba(255, 107, 0, 0.4); border: 1px solid rgba(255,255,255,0.2); }
 
+        .auth-container { display: flex; align-items: center; gap: 15px; }
+        
+        /* Login Gates */
+        .trade-login-link { color: var(--text-muted); font-size: 0.8rem; font-weight: 700; text-decoration: none; text-transform: uppercase; letter-spacing: 1px; transition: color 0.2s ease; display: flex; align-items: center; gap: 6px; cursor: pointer;}
+        .trade-login-link:hover { color: #FFF; }
+        .auth-btn { background: rgba(255, 199, 0, 0.12); border: 1px solid var(--gold-accent); color: var(--gold-accent); padding: 0.6rem 1.2rem; border-radius: 12px; cursor: pointer; font-weight: 800; font-size: 0.85rem; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px; text-transform: uppercase; text-decoration: none;}
+        .auth-btn:hover { background: var(--gold-accent); color: #000; box-shadow: 0 0 20px var(--gold-glow); }
+        .auth-btn:active { transform: scale(0.95); }
+        
+        /* Logged In Nav Elements */
+        .user-identity { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 0.9rem; color: #FFF; background: rgba(255,255,255,0.05); padding: 0.5rem 1rem; border-radius: 12px; border: 1px solid var(--border-glass);}
+        .streak-fire { color: #FF6B00; font-weight: 800; display: flex; align-items: center; gap: 4px; margin-left: 5px; background: rgba(255, 107, 0, 0.1); padding: 2px 6px; border-radius: 6px;}
+        .signout-btn { background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 0.5rem 0.8rem; border-radius: 10px; cursor: pointer; font-weight: 600; transition: all 0.2s ease; }
+        .signout-btn:hover { background: rgba(239, 68, 68, 0.1); color: #FFF; }
+
+        /* --- HERO & SEARCH SECTION --- */
         .hero-banner { text-align: center; margin-bottom: 2rem; position: relative; z-index: 50; }
         .hero-title { font-size: 2.2rem; font-weight: 800; margin-bottom: 0.5rem; background: linear-gradient(135deg, #FFF 60%, var(--text-muted)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.2; }
-        .hero-subtitle { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem; }
+        .hero-subtitle { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem; padding: 0 10px; }
+
         .search-box { position: relative; max-width: 550px; margin: 0 auto; z-index: 100; }
         .search-box i.fa-magnifying-glass { position: absolute; left: 1.2rem; top: 22px; transform: translateY(-50%); color: var(--text-muted); z-index: 10; }
         .search-input { width: 100%; padding: 0.9rem 1rem 0.9rem 3rem; background: var(--bg-glass); border: 1px solid var(--border-glass); border-radius: 14px; color: var(--text-main); font-size: 0.95rem; outline: none; transition: all 0.3s ease; position: relative; z-index: 5; }
         .search-input:focus { border-color: var(--gold-accent); box-shadow: 0 0 15px var(--gold-glow); background: var(--bg-base); }
+
+        /* --- OMNI-SEARCH DROPDOWN --- */
         .suggestions-box { position: absolute; top: 100%; left: 0; width: 100%; background: rgba(18, 24, 38, 0.95); backdrop-filter: blur(20px); border: 1px solid var(--gold-accent); border-radius: 12px; margin-top: 8px; max-height: 350px; overflow-y: auto; display: none; flex-direction: column; box-shadow: 0 15px 40px rgba(0,0,0,0.8); z-index: 1000; text-align: left; }
         .suggestions-box.active { display: flex; }
-        .suggestion-item { padding: 12px 18px; border-bottom: 1px solid var(--border-glass); cursor: pointer; display: flex; align-items: center; gap: 14px; text-decoration: none; color: #FFF; }
+        .suggestion-item { padding: 12px 18px; border-bottom: 1px solid var(--border-glass); cursor: pointer; display: flex; align-items: center; gap: 14px; transition: all 0.2s ease; color: #FFF; text-decoration: none; }
         .suggestion-item:hover { background: rgba(255, 199, 0, 0.15); padding-left: 24px; }
+        .suggestion-item:last-child { border-bottom: none; }
         .sugg-icon { color: var(--gold-accent); font-size: 1.2rem; }
         .sugg-title { font-weight: 800; font-size: 1rem; margin-bottom: 2px; }
         .sugg-meta { font-size: 0.75rem; color: var(--cyan-accent); font-weight: 600; }
 
-        .gamified-layer { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 3rem; position: relative; z-index: 1; }
+        /* --- GAMIFIED LAYER (STADIUM) --- */
+        .gamified-layer { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; position: relative; z-index: 1; }
         .faction-box, .hype-board { background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 20px; padding: 1.5rem; backdrop-filter: blur(12px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .gamified-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--border-glass); padding-bottom: 0.5rem; }
         .gamified-title { font-size: 1.2rem; font-weight: 800; color: #FFF; display: flex; align-items: center; gap: 8px; }
         
         .factions-list { display: flex; flex-direction: column; gap: 10px; }
-        .faction-card { background: rgba(0,0,0,0.3); border: 1px solid var(--border-glass); border-radius: 12px; padding: 0.8rem 1rem; cursor: pointer; transition: all 0.3s ease; overflow: hidden; position: relative; }
+        .faction-card { background: rgba(0,0,0,0.3); border: 1px solid var(--border-glass); border-radius: 12px; padding: 0.8rem 1rem; cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden; }
         .faction-card:hover { border-color: var(--gold-accent); }
+        .faction-card:active { transform: scale(0.97); }
+        
         .faction-info-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; position: relative; z-index: 2; }
         .faction-name { font-weight: 800; font-size: 0.9rem; color: #FFF; }
         .faction-stats { font-size: 0.75rem; font-weight: 800; color: var(--gold-accent); }
-        .faction-progress-bg { width: 100%; height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; position: relative; z-index: 2; }
+        .faction-progress-bg { width: 100%; height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; position: relative; z-index: 2; }
         .faction-progress-fill { height: 100%; border-radius: 4px; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
 
-        /* CEO UNIVERSAL SHARE BUTTON */
-        .universal-share-btn { background: linear-gradient(135deg, var(--cyan-accent), var(--superstar-blue)); border: none; color: #FFF; width: 100%; padding: 0.8rem; border-radius: 12px; font-weight: 800; font-size: 0.9rem; margin-top: 15px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: all 0.2s ease; box-shadow: 0 5px 15px rgba(56, 189, 248, 0.3); }
-        .universal-share-btn:active { transform: scale(0.96); }
+        .whatsapp-btn { background: linear-gradient(135deg, var(--cyan-accent), var(--superstar-blue)); border: none; color: #FFF; width: 100%; padding: 0.8rem; border-radius: 12px; font-weight: 800; font-size: 0.9rem; margin-top: 15px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: all 0.2s ease; box-shadow: 0 5px 15px rgba(56, 189, 248, 0.3); }
+        .whatsapp-btn:active { transform: scale(0.96); }
 
+        /* Hype Leaderboard */
         .hype-list-container { display: flex; flex-direction: column; gap: 5px; } 
-        .hype-row { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px dashed rgba(255,255,255,0.08); }
+        .hype-row { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px dashed rgba(255,255,255,0.08); transition: all 0.2s ease; }
         .hype-row:last-child { border-bottom: none; }
+        .hype-row:hover { background: rgba(255,255,255,0.02); border-radius: 8px; padding-left: 10px; padding-right: 10px; }
         .hype-rank { font-size: 1.2rem; font-weight: 800; color: var(--text-muted); width: 25px; }
         .hype-info { flex-grow: 1; margin-left: 10px; }
         .hype-movie { font-weight: 800; font-size: 1.05rem; color: #FFF; text-decoration: none; display: block; margin-bottom: 3px; }
+        .hype-movie:hover { color: var(--gold-accent); }
         .hype-points { font-size: 0.75rem; color: var(--cyan-accent); font-weight: 700; }
-        .boost-btn { background: rgba(255, 199, 0, 0.1); border: 1px solid var(--gold-accent); color: var(--gold-accent); border-radius: 8px; padding: 0.5rem 1rem; font-size: 0.8rem; font-weight: 800; cursor: pointer; }
+        .boost-btn { background: rgba(255, 199, 0, 0.1); border: 1px solid var(--gold-accent); color: var(--gold-accent); border-radius: 8px; padding: 0.5rem 1rem; font-size: 0.8rem; font-weight: 800; cursor: pointer; transition: all 0.2s ease; white-space: nowrap; }
+        .boost-btn:hover { background: var(--gold-accent); color: #000; box-shadow: 0 0 15px var(--gold-glow); }
+        .boost-btn:active { transform: scale(0.9); }
 
+        /* --- CEO: STORY PITCH CTA BANNER --- */
+        .pitch-banner { background: linear-gradient(90deg, rgba(255,199,0,0.1) 0%, rgba(0,0,0,0.6) 50%, rgba(255,199,0,0.05) 100%); border: 1px solid var(--gold-accent); border-radius: 16px; padding: 1.5rem 2rem; margin-bottom: 3rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 10px 30px var(--gold-glow); position: relative; overflow: hidden;}
+        .pitch-banner::before { content:''; position:absolute; left:0; top:0; width:4px; height:100%; background:var(--gold-accent);}
+        .pitch-text h3 { font-size: 1.4rem; font-weight: 800; color: #FFF; margin-bottom: 5px; display: flex; align-items: center; gap: 10px;}
+        .pitch-text p { font-size: 0.9rem; color: var(--text-muted); }
+        .pitch-action-btn { background: var(--gold-accent); color: #000; font-weight: 800; padding: 0.8rem 1.5rem; border-radius: 12px; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: transform 0.2s; font-size: 0.95rem; white-space: nowrap;}
+        .pitch-action-btn:active { transform: scale(0.95); }
+
+        /* --- MOVIE CARDS GRID --- */
         .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; position: relative; z-index: 1; }
         .section-title { font-size: 1.3rem; font-weight: 800; color: var(--gold-accent); display: flex; align-items: center; gap: 8px; }
         .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; position: relative; z-index: 1; }
-        .movie-card { background: var(--bg-card); backdrop-filter: blur(12px); border: 1px solid var(--border-glass); border-radius: 18px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between; text-decoration: none; color: inherit; transition: all 0.2s ease; }
-        .movie-card:hover { transform: translateY(-5px); border-color: var(--border-hover); box-shadow: 0 12px 30px rgba(0,0,0,0.6), 0 0 20px var(--gold-glow); }
-        .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
+
+        .movie-card { background: var(--bg-card); backdrop-filter: blur(12px); border: 1px solid var(--border-glass); border-radius: 18px; padding: 1.5rem; position: relative; display: flex; flex-direction: column; justify-content: space-between; text-decoration: none; color: inherit; transition: all 0.2s ease; }
+        .movie-card:hover { transform: translateY(-5px); border-color: var(--border-hover); box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6), 0 0 20px var(--gold-glow); }
+
+        .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; gap: 10px; }
         .movie-name { font-size: 1.25rem; font-weight: 800; color: #FFF; line-height: 1.2; }
-        .movie-year { font-size: 0.9rem; color: var(--text-muted); font-weight: 600; }
-        .verdict-badge { padding: 0.25rem 0.6rem; border-radius: 8px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; }
+        .movie-year { font-size: 0.9rem; color: var(--text-muted); font-weight: 600; margin-left: 4px; }
+
+        .verdict-badge { padding: 0.25rem 0.6rem; border-radius: 8px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; white-space: nowrap; }
         .verdict-badge.blockbuster { background: rgba(34, 197, 94, 0.2); color: #22C55E; border: 1px solid rgba(34, 197, 94, 0.4); }
         .verdict-badge.superhit { background: rgba(255, 199, 0, 0.18); color: #FFC700; border: 1px solid rgba(255, 199, 0, 0.4); }
         .verdict-badge.hit { background: rgba(56, 189, 248, 0.18); color: #38BDF8; border: 1px solid rgba(56, 189, 248, 0.4); }
@@ -97,90 +171,164 @@
         .card-details { display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem; margin-bottom: 1.2rem; }
         .detail-row { display: flex; justify-content: space-between; color: var(--text-muted); }
         .detail-row span { color: var(--text-main); font-weight: 600; }
+
         .card-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; background: rgba(0, 0, 0, 0.3); padding: 0.8rem; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.04); }
-        .stat-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; }
+        .stat-item { display: flex; flex-direction: column; }
+        .stat-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
         .stat-value { font-size: 0.95rem; font-weight: 700; color: var(--gold-accent); }
+
         .view-btn { margin-top: 1rem; width: 100%; padding: 0.7rem; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-glass); border-radius: 10px; color: #FFF; font-weight: 800; text-align: center; }
 
-        @media (max-width: 992px) { .gamified-layer { grid-template-columns: 1fr; } }
-        @media (max-width: 768px) { .hero-title { font-size: 1.8rem; } .grid-container { grid-template-columns: 1fr; } .auth-container { flex-direction: column; gap: 8px; align-items: flex-end; } nav { padding: 1rem; border-radius: 15px; } }
+        .skel-card { background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 18px; padding: 1.5rem; position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 15px; height: 260px; }
+        .skel-card::after { content: ""; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.08), transparent); animation: shimmer 1.5s infinite; }
+        @keyframes shimmer { 100% { left: 200%; } }
+        .skel-line { height: 16px; background: rgba(255,255,255,0.05); border-radius: 8px; }
+        .skel-title { width: 60%; height: 24px; }
+        .skel-badge { width: 80px; height: 24px; position: absolute; right: 1.5rem; top: 1.5rem; }
+        .skel-icon-wrap { display: flex; justify-content: center; align-items: center; flex-grow: 1; opacity: 0.3; }
+        .skel-icon { font-size: 3.5rem; color: var(--cyan-accent); animation: pulse 2s infinite ease-in-out; }
+        @keyframes pulse { 0% { transform: scale(0.9); opacity: 0.5; } 50% { transform: scale(1.1); opacity: 1; filter: drop-shadow(0 0 10px var(--cyan-accent)); } 100% { transform: scale(0.9); opacity: 0.5; } }
+
+        @media (max-width: 992px) { .gamified-layer { grid-template-columns: 1fr; } .pitch-banner { flex-direction: column; text-align: center; gap: 15px;} .pitch-text h3 { justify-content: center; } }
+        @media (max-width: 768px) { 
+            .hero-title { font-size: 1.8rem; } .grid-container { grid-template-columns: 1fr; } 
+            .auth-container { flex-direction: column-reverse; gap: 10px; width: 100%; align-items: stretch; margin-top: 15px;} 
+            nav { flex-direction: column; padding: 1.5rem; border-radius: 15px; align-items: stretch; text-align: center;} 
+            .brand-title { justify-content: center; }
+            .auth-btn, .trade-login-link { justify-content: center; width: 100%; padding: 0.8rem;}
+            .user-identity { justify-content: center; }
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- NAV BAR WITH SEGREGATED LOGINS -->
         <nav>
-            <div class="brand-title"><i class="fa-solid fa-film"></i> TeluguCineCraft</div>
-            <div id="userMenuArea" class="auth-container"></div>
+            <a href="index.html" class="brand-title"><i class="fa-solid fa-film"></i> TeluguCineCraft</a>
+            <div id="userMenuArea" class="auth-container">
+                <!-- Dynamically populated via JS -->
+            </div>
         </nav>
 
+        <!-- HERO & SEARCH SECTION -->
         <div class="hero-banner">
             <h1 class="hero-title">Top Indian Box Office Tracker</h1>
             <p class="hero-subtitle">Discover trending blockbusters, worldwide collections, & full production details.</p>
+
             <div class="search-box">
                 <i class="fa-solid fa-magnifying-glass"></i>
                 <input type="text" id="searchInput" class="search-input" placeholder="Search by Movie, Star, or Director..." onkeyup="handleOmniSearch()">
+                <!-- OMNI-SEARCH DROPDOWN -->
                 <div id="searchSuggestions" class="suggestions-box"></div>
             </div>
         </div>
 
+        <!-- CEO: THE STADIUM (GAMIFIED LAYER) -->
         <div class="gamified-layer">
+            
+            <!-- 1. FAN ARMY LEADERBOARD -->
             <div class="faction-box">
                 <div class="gamified-header">
                     <div class="gamified-title"><i class="fa-solid fa-shield-halved" style="color:var(--cyan-accent);"></i> ⚔️ Fan Army Leaderboard</div>
                     <span style="font-size:0.75rem; color:var(--gold-accent); font-weight:800; background: rgba(255,199,0,0.1); padding: 4px 8px; border-radius: 6px;">LIVE BATTLE</span>
                 </div>
+                
                 <div class="factions-list">
                     <div class="faction-card" onclick="castFactionVote(this, 'Rebel Star Force')">
-                        <div class="faction-info-row"><span class="faction-name">Rebel Star Force (Prabhas)</span><span class="faction-stats"><span class="pct">27.0</span>% • <span class="pts">142,500</span> Pts</span></div>
+                        <div class="faction-info-row">
+                            <span class="faction-name">Rebel Star Force (Prabhas)</span>
+                            <span class="faction-stats"><span class="pct">27.0</span>% • <span class="pts">142,500</span> Pts</span>
+                        </div>
                         <div class="faction-progress-bg"><div class="faction-progress-fill" style="width: 27%; background: var(--rebel-dark);"></div></div>
                     </div>
+                    
                     <div class="faction-card" onclick="castFactionVote(this, 'Mega Camp')">
-                        <div class="faction-info-row"><span class="faction-name">Mega Camp (Megastar / Charan / PK)</span><span class="faction-stats"><span class="pct">25.0</span>% • <span class="pts">135,100</span> Pts</span></div>
+                        <div class="faction-info-row">
+                            <span class="faction-name">Mega Camp (Megastar / Charan / PK)</span>
+                            <span class="faction-stats"><span class="pct">25.0</span>% • <span class="pts">135,100</span> Pts</span>
+                        </div>
                         <div class="faction-progress-bg"><div class="faction-progress-fill" style="width: 25%; background: var(--mega-red);"></div></div>
                     </div>
+                    
                     <div class="faction-card" onclick="castFactionVote(this, 'Nandamuri Lions')">
-                        <div class="faction-info-row"><span class="faction-name">Nandamuri Lions (NTR / NBK)</span><span class="faction-stats"><span class="pct">20.0</span>% • <span class="pts">108,200</span> Pts</span></div>
+                        <div class="faction-info-row">
+                            <span class="faction-name">Nandamuri Lions (NTR / NBK)</span>
+                            <span class="faction-stats"><span class="pct">20.0</span>% • <span class="pts">108,200</span> Pts</span>
+                        </div>
                         <div class="faction-progress-bg"><div class="faction-progress-fill" style="width: 20%; background: var(--nandamuri-yellow);"></div></div>
                     </div>
+                    
                     <div class="faction-card" onclick="castFactionVote(this, 'Icon Star Battalion')">
-                        <div class="faction-info-row"><span class="faction-name">Icon Star Battalion (Allu Arjun)</span><span class="faction-stats"><span class="pct">15.0</span>% • <span class="pts">72,400</span> Pts</span></div>
+                        <div class="faction-info-row">
+                            <span class="faction-name">Icon Star Battalion (Allu Arjun)</span>
+                            <span class="faction-stats"><span class="pct">15.0</span>% • <span class="pts">72,400</span> Pts</span>
+                        </div>
                         <div class="faction-progress-bg"><div class="faction-progress-fill" style="width: 15%; background: var(--icon-green);"></div></div>
                     </div>
+
                     <div class="faction-card" onclick="castFactionVote(this, 'Superstar Cult')">
-                        <div class="faction-info-row"><span class="faction-name">Superstar Cult (Mahesh Babu)</span><span class="faction-stats"><span class="pct">9.0</span>% • <span class="pts">58,000</span> Pts</span></div>
+                        <div class="faction-info-row">
+                            <span class="faction-name">Superstar Cult (Mahesh Babu)</span>
+                            <span class="faction-stats"><span class="pct">9.0</span>% • <span class="pts">58,000</span> Pts</span>
+                        </div>
                         <div class="faction-progress-bg"><div class="faction-progress-fill" style="width: 9%; background: var(--superstar-blue);"></div></div>
                     </div>
+
                     <div class="faction-card" onclick="castFactionVote(this, 'Akkineni Kings')">
-                        <div class="faction-info-row"><span class="faction-name">Akkineni Kings (NAG / NC / AY)</span><span class="faction-stats"><span class="pct">4.0</span>% • <span class="pts">34,100</span> Pts</span></div>
+                        <div class="faction-info-row">
+                            <span class="faction-name">Akkineni Kings (NAG / NC / AY)</span>
+                            <span class="faction-stats"><span class="pct">4.0</span>% • <span class="pts">34,100</span> Pts</span>
+                        </div>
                         <div class="faction-progress-bg"><div class="faction-progress-fill" style="width: 4%; background: var(--akkineni-teal);"></div></div>
                     </div>
                 </div>
-                <!-- CEO UNIVERSAL SHARE BUTTON -->
+                
                 <button class="universal-share-btn" onclick="shareBattle()">
                     <i class="fa-solid fa-share-nodes"></i> Rally Your Army Everywhere
                 </button>
             </div>
 
+            <!-- 2. MOST ANTICIPATED MOVIES -->
             <div class="hype-board">
                 <div class="gamified-header">
                     <div class="gamified-title"><i class="fa-solid fa-fire" style="color:var(--danger);"></i> 🔥 Most Anticipated New Movies</div>
                 </div>
                 <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px; border-bottom: 1px solid var(--border-glass); padding-bottom: 10px;">Which upcoming blockbuster has the highest hype? Vote to push it to #1.</p>
+                
                 <div id="hypeLeaderboardArea" class="hype-list-container">
-                    <p style="text-align:center; padding:2rem;">Scanning upcoming theatrical slate...</p>
+                    <p style="color:var(--text-muted); font-size:0.85rem; text-align:center; padding:2rem;">Scanning upcoming theatrical slate...</p>
                 </div>
             </div>
         </div>
 
-        <div class="section-header"><div class="section-title"><i class="fa-solid fa-chart-column"></i> Verified Trade Database</div></div>
-        <div id="content" class="grid-container"></div>
+        <!-- CEO: THE PITCH BANNER (B2B2C BRIDGE) -->
+        <div class="pitch-banner">
+            <div class="pitch-text">
+                <h3><i class="fa-solid fa-pen-nib"></i> Have a Blockbuster Story?</h3>
+                <p>Pitch your logline securely to Top-Tier Producers. Protect your IP and get discovered.</p>
+            </div>
+            <button class="pitch-action-btn" onclick="triggerPitchGate()">
+                Pitch to Producers <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
+
+        <!-- MOVIES FEED SECTION (THE BOARDROOM) -->
+        <div class="section-header">
+            <div class="section-title"><i class="fa-solid fa-chart-column"></i> Verified Trade Database</div>
+        </div>
+
+        <div id="content" class="grid-container">
+            <div class="skel-card"><div class="skel-line skel-title"></div><div class="skel-line skel-badge"></div><div class="skel-icon-wrap"><i class="fa-solid fa-masks-theater skel-icon"></i></div></div>
+            <div class="skel-card"><div class="skel-line skel-title"></div><div class="skel-line skel-badge"></div><div class="skel-icon-wrap"><i class="fa-solid fa-masks-theater skel-icon"></i></div></div>
+            <div class="skel-card"><div class="skel-line skel-title"></div><div class="skel-line skel-badge"></div><div class="skel-icon-wrap"><i class="fa-solid fa-masks-theater skel-icon"></i></div></div>
+            <div class="skel-card"><div class="skel-line skel-title"></div><div class="skel-line skel-badge"></div><div class="skel-icon-wrap"><i class="fa-solid fa-masks-theater skel-icon"></i></div></div>
+        </div>
     </div>
 
     <script>
         let allMovies = [];
         let globalUser = null;
 
-        // --- CEO UNIVERSAL SHARE API ---
         function shareBattle() {
             const shareData = {
                 title: 'TeluguCineCraft Fan Wars',
@@ -190,7 +338,6 @@
             if (navigator.share) {
                 navigator.share(shareData).catch(console.error);
             } else {
-                // Fallback to Twitter/X if Native Share isn't supported on desktop
                 const msg = encodeURIComponent(shareData.text + " " + shareData.url);
                 window.open(`https://twitter.com/intent/tweet?text=${msg}`, '_blank');
             }
@@ -203,7 +350,6 @@
         }
         function lockVote(userId, voteKey) { localStorage.setItem(`vote_${userId}_${voteKey}`, Date.now()); }
 
-        // --- CEO INSTANT TELEPORT FOR FACTIONS ---
         function castFactionVote(element, targetName) {
             if (!globalUser) {
                 if (confirm(`To boost ${targetName}, you must be logged in as a Verified Fan. Proceed to Sign In?`)) handleGoogleLogin();
@@ -228,11 +374,9 @@
             element.style.boxShadow = "0 0 20px var(--gold-accent)";
             element.style.borderColor = "var(--gold-accent)";
             
-            // INSTANT REDIRECT TO ARENA
             setTimeout(() => { window.location.href = "arena.html"; }, 800);
         }
 
-        // --- CEO INSTANT TELEPORT FOR HYPE BOARD ---
         function castHypeVote(btnElement, targetName) {
             if (!globalUser) {
                 if (confirm(`To push ${targetName} to #1, you must be logged in. Proceed to Sign In?`)) handleGoogleLogin();
@@ -249,7 +393,18 @@
             setTimeout(() => { window.location.href = "arena.html"; }, 800);
         }
 
-        function triggerTradeLogin() { alert("Trade Portal Verification System is currently being rolled out in Phase 3. Please use standard Audience Sign In for now."); }
+        // --- CEO: PITCH GATE LOGIC ---
+        function triggerPitchGate() {
+            if (globalUser) {
+                window.location.href = "arena.html"; // Takes them to launchpad
+            } else {
+                if(confirm("You must Sign In to securely pitch your story and protect your IP. Proceed to Login?")) {
+                    handleGoogleLogin();
+                }
+            }
+        }
+
+        function triggerTradeLogin() { alert("💼 Industry Portal Verification System is rolling out in Phase 3. Filmmakers and Producers must apply for verified access. Please use Fan Sign In for now."); }
 
         function calculateAndGetStreak(userId) {
             const today = new Date().toDateString();
@@ -262,6 +417,7 @@
             return newStreak;
         }
 
+        // --- CEO: DUAL LOGIN NAV UI ---
         async function updateAuthUI() {
             try {
                 const { data: { user } } = await db.auth.getUser();
@@ -270,18 +426,25 @@
                 
                 if (user) {
                     const streakCount = calculateAndGetStreak(user.id);
+                    let baseName = user.user_metadata.full_name || user.email.split('@')[0];
+                    let shortName = baseName.split(' ')[0].substring(0, 10); // Keep it clean
+
                     area.innerHTML = `
-                        <div style="display:flex; align-items:center; gap:15px;">
-                            <div style="display:none; flex-direction:column; align-items:flex-end; gap:4px; @media(min-width: 768px){display:flex;}">
-                                <span style="color:var(--text-muted); font-size: 0.75rem; font-weight:700;"><i class="fa-solid fa-circle-check" style="color:var(--success)"></i> ${user.user_metadata.full_name || 'Fan'}</span>
-                                <div class="streak-badge" style="font-size:0.65rem;"><i class="fa-solid fa-fire"></i> ${streakCount} Day Streak</div>
-                            </div>
-                            <a href="arena.html" class="auth-btn" style="background: rgba(239, 68, 68, 0.15); border-color: var(--danger); color: #FFF;"><i class="fa-solid fa-khanda" style="color: var(--danger);"></i> Enter Arena</a>
-                            <button class="signout-btn" style="padding: 0.5rem; font-size: 0.8rem; background: transparent; border: 1px solid var(--text-muted); color: var(--text-muted);" onclick="signOutUser()"><i class="fa-solid fa-right-from-bracket"></i></button>
+                        <div class="user-identity">
+                            <i class="fa-solid fa-user-astronaut" style="color:var(--cyan-accent)"></i> ${shortName}
+                            <span class="streak-fire"><i class="fa-solid fa-fire"></i> ${streakCount}</span>
                         </div>
+                        <a href="arena.html" class="auth-btn" style="background: rgba(239, 68, 68, 0.15); border-color: var(--danger); color: #FFF;">
+                            <i class="fa-solid fa-khanda" style="color: var(--danger);"></i> Enter Fan Arena
+                        </a>
+                        <button class="signout-btn" title="Sign Out" onclick="signOutUser()"><i class="fa-solid fa-right-from-bracket"></i></button>
                     `;
                 } else {
-                    area.innerHTML = `<a href="#" class="trade-login-link" onclick="triggerTradeLogin()"><i class="fa-solid fa-briefcase"></i> Trade Login</a><button class="auth-btn" onclick="handleGoogleLogin()"><i class="fa-brands fa-google"></i> Sign In</button>`;
+                    // Logged out: Clear separation of Audience vs Industry
+                    area.innerHTML = `
+                        <a href="#" class="trade-login-link" onclick="triggerTradeLogin()"><i class="fa-solid fa-briefcase"></i> Industry / Creator Portal</a>
+                        <button class="auth-btn" onclick="handleGoogleLogin()"><i class="fa-solid fa-ticket"></i> Fan Sign In</button>
+                    `;
                 }
             } catch (err) {}
         }
