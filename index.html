@@ -48,23 +48,11 @@
             color: var(--text-main);
             font-family: 'Plus Jakarta Sans', sans-serif;
             min-height: 100vh;
-            padding: 0 1rem 2rem 1rem;
+            padding: 1.5rem 1rem 2rem 1rem;
             overflow-x: hidden;
         }
 
         .container { max-width: 1280px; margin: 0 auto; }
-
-        /* --- LIVE TICKER --- */
-        .live-ticker-wrap {
-            background: rgba(255, 199, 0, 0.1); border-bottom: 1px solid rgba(255, 199, 0, 0.2);
-            width: 100vw; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw;
-            overflow: hidden; height: 32px; display: flex; align-items: center; margin-bottom: 1.5rem;
-        }
-        .ticker-move {
-            display: inline-block; white-space: nowrap; padding-right: 100%;
-            animation: ticker 25s linear infinite; font-size: 0.75rem; font-weight: 700; color: var(--gold-accent); text-transform: uppercase; letter-spacing: 1px;
-        }
-        @keyframes ticker { 0% { transform: translateX(100vw); } 100% { transform: translateX(-100%); } }
 
         /* --- NAV BAR --- */
         nav {
@@ -96,20 +84,6 @@
         .search-box i.fa-magnifying-glass { position: absolute; left: 1.2rem; top: 22px; transform: translateY(-50%); color: var(--text-muted); z-index: 10; }
         .search-input { width: 100%; padding: 0.9rem 1rem 0.9rem 3rem; background: var(--bg-glass); border: 1px solid var(--border-glass); border-radius: 14px; color: var(--text-main); font-size: 0.95rem; outline: none; transition: all 0.3s ease; position: relative; z-index: 5; }
         .search-input:focus { border-color: var(--gold-accent); box-shadow: 0 0 15px var(--gold-glow); background: var(--bg-base); }
-
-        /* --- APP-LEVEL MOOD CHIPS --- */
-        .filter-chips-wrap {
-            display: flex; gap: 10px; overflow-x: auto; margin-top: 15px; padding-bottom: 5px;
-            -webkit-overflow-scrolling: touch; scrollbar-width: none; justify-content: center;
-        }
-        .filter-chips-wrap::-webkit-scrollbar { display: none; }
-        @media (max-width: 768px) { .filter-chips-wrap { justify-content: flex-start; padding: 0 10px; } }
-        .mood-chip {
-            background: rgba(255,255,255,0.05); border: 1px solid var(--border-glass); border-radius: 20px;
-            padding: 0.5rem 1rem; color: var(--text-muted); font-size: 0.8rem; font-weight: 700;
-            white-space: nowrap; cursor: pointer; transition: all 0.2s ease;
-        }
-        .mood-chip:hover, .mood-chip:active { background: rgba(56, 189, 248, 0.1); border-color: var(--cyan-accent); color: var(--cyan-accent); transform: scale(0.95); }
 
         /* --- OMNI-SEARCH DROPDOWN --- */
         .suggestions-box {
@@ -194,7 +168,7 @@
 
         .view-btn { margin-top: 1rem; width: 100%; padding: 0.7rem; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-glass); border-radius: 10px; color: #FFF; font-weight: 800; text-align: center; }
 
-        /* --- CEO CINESTAR SKELETON LOADERS --- */
+        /* --- CINESTAR SKELETON LOADERS --- */
         .skel-card {
             background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 18px; padding: 1.5rem;
             position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 15px; height: 260px;
@@ -210,7 +184,6 @@
         .skel-title { width: 60%; height: 24px; }
         .skel-badge { width: 80px; height: 24px; position: absolute; right: 1.5rem; top: 1.5rem; }
         
-        /* The Cinestar Pulse */
         .skel-icon-wrap { display: flex; justify-content: center; align-items: center; flex-grow: 1; opacity: 0.3; }
         .skel-icon { font-size: 3.5rem; color: var(--cyan-accent); animation: pulse 2s infinite ease-in-out; }
         @keyframes pulse { 0% { transform: scale(0.9); opacity: 0.5; } 50% { transform: scale(1.1); opacity: 1; filter: drop-shadow(0 0 10px var(--cyan-accent)); } 100% { transform: scale(0.9); opacity: 0.5; } }
@@ -225,13 +198,6 @@
     </style>
 </head>
 <body>
-    <!-- CEO: LIVE TICKER -->
-    <div class="live-ticker-wrap">
-        <div class="ticker-move">
-            ⚡ LIVE: 1,420 fans boosted 'The Raja Saab' • Mega Camp leads Power Standings by 3% • Industry reports record pre-release business for 'Peddi' • 'Ustaad Bhagat Singh' trending #1 in Telangana ⚡
-        </div>
-    </div>
-
     <div class="container">
         <!-- NAV BAR -->
         <nav>
@@ -255,14 +221,6 @@
                 
                 <!-- OMNI-SEARCH DROPDOWN -->
                 <div id="searchSuggestions" class="suggestions-box"></div>
-            </div>
-
-            <!-- CEO: APP-STYLE MOOD CHIPS -->
-            <div class="filter-chips-wrap">
-                <button class="mood-chip" onclick="quickFilter('Blockbuster')">🏆 Blockbusters</button>
-                <button class="mood-chip" onclick="quickFilter('2026')">🔥 2026 Slate</button>
-                <button class="mood-chip" onclick="quickFilter('Hit')">💥 Super Hits</button>
-                <button class="mood-chip" onclick="quickFilter('Rajamouli')">👑 SS Rajamouli</button>
             </div>
         </div>
 
@@ -296,7 +254,7 @@
                         <div class="faction-progress-bg"><div class="faction-progress-fill" style="width: 13%; background: var(--nandamuri-yellow);"></div></div>
                     </div>
                 </div>
-                <!-- CEO: WHATSAPP VIRAL LOOP -->
+                <!-- WHATSAPP VIRAL LOOP -->
                 <button class="whatsapp-btn" onclick="shareToWhatsApp()">
                     <i class="fa-brands fa-whatsapp" style="font-size:1.1rem;"></i> Challenge Friends on WhatsApp
                 </button>
@@ -317,7 +275,7 @@
             <div class="section-title"><i class="fa-solid fa-chart-column"></i> Verified Trade Database</div>
         </div>
 
-        <!-- CEO: CINESTAR SKELETON LOADERS (Appears before JS injects data) -->
+        <!-- CINESTAR SKELETON LOADERS (Appears before JS injects data) -->
         <div id="content" class="grid-container">
             <div class="skel-card"><div class="skel-line skel-title"></div><div class="skel-line skel-badge"></div><div class="skel-icon-wrap"><i class="fa-solid fa-masks-theater skel-icon"></i></div></div>
             <div class="skel-card"><div class="skel-line skel-title"></div><div class="skel-line skel-badge"></div><div class="skel-icon-wrap"><i class="fa-solid fa-masks-theater skel-icon"></i></div></div>
@@ -330,19 +288,9 @@
         let allMovies = [];
         let globalUser = null;
 
-        // --- CEO UX EXPERT FUNCTIONS ---
         function shareToWhatsApp() {
             const msg = "🔥 Faction Wars are live! Mega Camp is losing to Rebel Star Force on TeluguCineCraft. Tap here to vote and save our rank: " + window.location.href;
             window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
-        }
-
-        function quickFilter(keyword) {
-            const input = document.getElementById('searchInput');
-            input.value = keyword;
-            handleOmniSearch(); // Trigger the search logic instantly
-            
-            // Scroll down to the results slightly for better mobile UX
-            document.querySelector('.section-header').scrollIntoView({ behavior: 'smooth' });
         }
 
         function triggerFOMOLogin(targetName) {
@@ -502,7 +450,6 @@
                 return yearB - yearA; 
             });
 
-            // Small delay so users can actually see the beautiful skeleton loaders
             setTimeout(() => {
                 renderHypeLeaderboard(allMovies);
                 renderMovies(allMovies.slice(0, 10)); 
