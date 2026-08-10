@@ -507,7 +507,18 @@
                 const yearDisplay = yearStr ? `<span class="movie-year">(${yearStr})</span>` : '';
                 
                 // Uses dynamic verdict calculator from app.js
-                const verdictObj = getVerdict(m);
+                let verdictObj = (typeof getVerdict === 'function') ? getVerdict(m) : { label: 'TBA', badgeClass: 'verdict-badge upcoming' };
+
+                // --- CEO OVERRIDE: Ironclad "Upcoming" Detection ---
+                const yRaw = (yearStr || 'TBA').toString().toUpperCase();
+                const cRaw = gross.toString().toUpperCase();
+                const vRaw = (m.verdict || m.status || '').toString().toUpperCase();
+                const yNum = parseInt(yRaw, 10);
+
+                if (yRaw === 'TBA' || cRaw === 'TBA' || vRaw.includes('UPCOMING') || (!isNaN(yNum) && yNum > 2026)) {
+                    verdictObj = { label: 'UPCOMING', badgeClass: 'verdict-badge upcoming' };
+                }
+                // ----------------------------------------------------
 
                 html += `
                     <a href="movie.html?id=${movieId}" class="movie-card">
