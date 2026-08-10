@@ -31,13 +31,13 @@
             --text-muted: #94A3B8;
             --danger: #EF4444;
             --success: #22C55E;
+            --mega-red: #DC2626;
+            --rebel-dark: #1E293B;
+            --nandamuri-yellow: #F59E0B;
+            --superstar-blue: #2563EB;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             background-color: var(--bg-base);
@@ -50,206 +50,89 @@
             padding: 1.5rem;
         }
 
-        .container {
-            max-width: 1280px;
-            margin: 0 auto;
-        }
+        .container { max-width: 1280px; margin: 0 auto; }
 
         /* --- NAV BAR --- */
         nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 1.8rem;
-            background: var(--bg-glass);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--border-glass);
-            border-radius: 20px;
-            margin-bottom: 2.5rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1rem 1.8rem; background: var(--bg-glass);
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-glass); border-radius: 20px;
+            margin-bottom: 2.5rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
-        .brand-title {
-            font-size: 1.6rem;
-            font-weight: 800;
-            color: #FFF;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            letter-spacing: -0.5px;
-        }
-
-        .brand-title i {
-            color: var(--gold-accent);
-        }
+        .brand-title { font-size: 1.6rem; font-weight: 800; color: #FFF; display: flex; align-items: center; gap: 10px; letter-spacing: -0.5px; }
+        .brand-title i { color: var(--gold-accent); }
 
         .auth-btn {
-            background: rgba(255, 199, 0, 0.12);
-            border: 1px solid var(--gold-accent);
-            color: var(--gold-accent);
-            padding: 0.65rem 1.4rem;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: 700;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            background: rgba(255, 199, 0, 0.12); border: 1px solid var(--gold-accent);
+            color: var(--gold-accent); padding: 0.65rem 1.4rem; border-radius: 12px;
+            cursor: pointer; font-weight: 700; font-size: 0.9rem; transition: all 0.3s ease;
+            display: flex; align-items: center; gap: 8px;
         }
-
-        .auth-btn:hover {
-            background: var(--gold-accent);
-            color: #000;
-            box-shadow: 0 0 20px var(--gold-glow);
-        }
+        .auth-btn:hover { background: var(--gold-accent); color: #000; box-shadow: 0 0 20px var(--gold-glow); }
 
         .signout-btn {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid var(--danger);
-            color: var(--danger);
-            padding: 0.6rem 1.2rem;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.2s ease;
+            background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger);
+            color: var(--danger); padding: 0.6rem 1.2rem; border-radius: 10px;
+            cursor: pointer; font-weight: 600; transition: all 0.2s ease;
         }
-
-        .signout-btn:hover {
-            background: var(--danger);
-            color: #FFF;
-        }
+        .signout-btn:hover { background: var(--danger); color: #FFF; }
 
         /* --- HERO & SEARCH SECTION --- */
-        .hero-banner {
-            text-align: center;
-            margin-bottom: 2.5rem;
-        }
+        .hero-banner { text-align: center; margin-bottom: 2rem; }
+        .hero-title { font-size: 2.5rem; font-weight: 800; margin-bottom: 0.5rem; background: linear-gradient(135deg, #FFF 60%, var(--text-muted)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero-subtitle { color: var(--text-muted); font-size: 1rem; margin-bottom: 1.5rem; }
 
-        .hero-title {
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, #FFF 60%, var(--text-muted));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+        .search-box { position: relative; max-width: 550px; margin: 0 auto; z-index: 10; }
+        .search-box i { position: absolute; left: 1.2rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+        .search-input { width: 100%; padding: 0.9rem 1rem 0.9rem 3rem; background: var(--bg-glass); border: 1px solid var(--border-glass); border-radius: 14px; color: var(--text-main); font-size: 0.95rem; outline: none; transition: all 0.3s ease; }
+        .search-input:focus { border-color: var(--gold-accent); box-shadow: 0 0 15px var(--gold-glow); }
 
-        .hero-subtitle {
-            color: var(--text-muted);
-            font-size: 1rem;
-            margin-bottom: 1.5rem;
-        }
+        /* --- CEO ADDITION: FAN FACTIONS & HYPE BOARD --- */
+        .gamified-layer { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 3rem; margin-top: 2rem; }
+        
+        .faction-box, .hype-board { background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 20px; padding: 1.5rem; backdrop-filter: blur(12px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .gamified-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--border-glass); padding-bottom: 0.5rem; }
+        .gamified-title { font-size: 1.1rem; font-weight: 800; color: #FFF; display: flex; align-items: center; gap: 8px; }
+        
+        /* Faction Grid */
+        .factions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .faction-btn { background: rgba(0,0,0,0.4); border: 1px solid var(--border-glass); border-radius: 12px; padding: 1rem 0.5rem; text-align: center; cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden; }
+        .faction-btn::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; }
+        .f-rebel::before { background: var(--text-muted); }
+        .f-mega::before { background: var(--mega-red); }
+        .f-nandamuri::before { background: var(--nandamuri-yellow); }
+        .f-super::before { background: var(--superstar-blue); }
+        
+        .faction-btn:hover { transform: translateY(-3px); border-color: var(--gold-accent); box-shadow: 0 5px 15px rgba(255, 199, 0, 0.1); }
+        .faction-name { font-size: 0.9rem; font-weight: 800; color: #FFF; margin-bottom: 2px; }
+        .faction-sub { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
 
-        .search-box {
-            position: relative;
-            max-width: 550px;
-            margin: 0 auto;
-        }
-
-        .search-box i {
-            position: absolute;
-            left: 1.2rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 0.9rem 1rem 0.9rem 3rem;
-            background: var(--bg-glass);
-            border: 1px solid var(--border-glass);
-            border-radius: 14px;
-            color: var(--text-main);
-            font-size: 0.95rem;
-            outline: none;
-            transition: all 0.3s ease;
-        }
-
-        .search-input:focus {
-            border-color: var(--gold-accent);
-            box-shadow: 0 0 15px var(--gold-glow);
-        }
+        /* Hype Leaderboard */
+        .hype-row { display: flex; justify-content: space-between; align-items: center; padding: 0.8rem 0; border-bottom: 1px dashed rgba(255,255,255,0.05); }
+        .hype-row:last-child { border-bottom: none; }
+        .hype-rank { font-size: 1.2rem; font-weight: 800; color: var(--text-muted); width: 25px; }
+        .hype-info { flex-grow: 1; margin-left: 10px; }
+        .hype-movie { font-weight: 700; font-size: 0.95rem; color: #FFF; }
+        .hype-points { font-size: 0.75rem; color: var(--gold-accent); font-weight: 600; }
+        .boost-btn { background: rgba(255, 199, 0, 0.1); border: 1px solid var(--gold-accent); color: var(--gold-accent); border-radius: 8px; padding: 0.4rem 0.8rem; font-size: 0.75rem; font-weight: 800; cursor: pointer; transition: all 0.2s ease; }
+        .boost-btn:hover { background: var(--gold-accent); color: #000; box-shadow: 0 0 10px var(--gold-glow); }
 
         /* --- MOVIE CARDS GRID --- */
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .section-title { font-size: 1.3rem; font-weight: 700; color: var(--gold-accent); display: flex; align-items: center; gap: 8px; }
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
 
-        .section-title {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--gold-accent);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+        .movie-card { background: var(--bg-card); backdrop-filter: blur(12px); border: 1px solid var(--border-glass); border-radius: 18px; padding: 1.5rem; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; text-decoration: none; color: inherit; }
+        .movie-card:hover { transform: translateY(-5px); border-color: var(--border-hover); box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6), 0 0 20px var(--gold-glow); }
 
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 1.5rem;
-        }
+        .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; gap: 10px; }
+        .movie-name { font-size: 1.35rem; font-weight: 800; color: #FFF; line-height: 1.25; }
+        .movie-year { font-size: 0.95rem; color: var(--text-muted); font-weight: 600; margin-left: 4px; }
 
-        .movie-card {
-            background: var(--bg-card);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--border-glass);
-            border-radius: 18px;
-            padding: 1.5rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            cursor: pointer;
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .movie-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--border-hover);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6), 0 0 20px var(--gold-glow);
-        }
-
-        .card-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 1rem;
-            gap: 10px;
-        }
-
-        .movie-name {
-            font-size: 1.35rem;
-            font-weight: 800;
-            color: #FFF;
-            line-height: 1.25;
-        }
-
-        .movie-year {
-            font-size: 0.95rem;
-            color: var(--text-muted);
-            font-weight: 600;
-            margin-left: 4px;
-        }
-
-        /* VERDICT BADGES WITH COLOR STYLES */
-        .verdict-badge {
-            padding: 0.25rem 0.6rem;
-            border-radius: 8px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            white-space: nowrap;
-        }
-
+        /* VERDICT BADGES */
+        .verdict-badge { padding: 0.25rem 0.6rem; border-radius: 8px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; white-space: nowrap; }
         .verdict-badge.blockbuster { background: rgba(34, 197, 94, 0.2); color: #22C55E; border: 1px solid rgba(34, 197, 94, 0.4); }
         .verdict-badge.superhit { background: rgba(255, 199, 0, 0.18); color: #FFC700; border: 1px solid rgba(255, 199, 0, 0.4); }
         .verdict-badge.hit { background: rgba(56, 189, 248, 0.18); color: #38BDF8; border: 1px solid rgba(56, 189, 248, 0.4); }
@@ -258,87 +141,23 @@
         .verdict-badge.disaster { background: rgba(185, 28, 28, 0.25); color: #F87171; border: 1px solid rgba(185, 28, 28, 0.5); }
         .verdict-badge.upcoming { background: rgba(148, 163, 184, 0.15); color: var(--cyan-accent); border: 1px solid rgba(56, 189, 248, 0.3); }
 
-        .card-details {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            font-size: 0.88rem;
-            margin-bottom: 1.2rem;
-        }
+        .card-details { display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.88rem; margin-bottom: 1.2rem; }
+        .detail-row { display: flex; justify-content: space-between; color: var(--text-muted); }
+        .detail-row span { color: var(--text-main); font-weight: 600; }
 
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            color: var(--text-muted);
-        }
+        .card-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; background: rgba(0, 0, 0, 0.3); padding: 0.8rem; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.04); }
+        .stat-item { display: flex; flex-direction: column; }
+        .stat-label { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-value { font-size: 1rem; font-weight: 700; color: var(--gold-accent); }
 
-        .detail-row span {
-            color: var(--text-main);
-            font-weight: 600;
-        }
+        .view-btn { margin-top: 1rem; width: 100%; padding: 0.7rem; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-glass); border-radius: 10px; color: #FFF; font-weight: 700; text-align: center; transition: all 0.2s ease; }
+        .movie-card:hover .view-btn { background: var(--gold-accent); color: #000; border-color: var(--gold-accent); }
 
-        .card-stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0.8rem;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 0.8rem;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-        }
+        .loading-spinner { text-align: center; padding: 4rem 0; color: var(--text-muted); font-size: 1.1rem; }
 
-        .stat-item {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .stat-label {
-            font-size: 0.72rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .stat-value {
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--gold-accent);
-        }
-
-        .view-btn {
-            margin-top: 1rem;
-            width: 100%;
-            padding: 0.7rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-glass);
-            border-radius: 10px;
-            color: #FFF;
-            font-weight: 700;
-            text-align: center;
-            transition: all 0.2s ease;
-        }
-
-        .movie-card:hover .view-btn {
-            background: var(--gold-accent);
-            color: #000;
-            border-color: var(--gold-accent);
-        }
-
-        .loading-spinner {
-            text-align: center;
-            padding: 4rem 0;
-            color: var(--text-muted);
-            font-size: 1.1rem;
-        }
-
-        @media (max-width: 768px) {
-            .hero-title { font-size: 1.8rem; }
-            .grid-container { grid-template-columns: 1fr; }
-        }
-
-        @media (max-width: 480px) {
-            .auth-btn { padding: 0.5rem 0.8rem; font-size: 0.8rem; }
-        }
+        @media (max-width: 992px) { .gamified-layer { grid-template-columns: 1fr; } }
+        @media (max-width: 768px) { .hero-title { font-size: 1.8rem; } .grid-container { grid-template-columns: 1fr; } }
+        @media (max-width: 480px) { .auth-btn { padding: 0.5rem 0.8rem; font-size: 0.8rem; } }
     </style>
 </head>
 <body>
@@ -366,10 +185,70 @@
             </div>
         </div>
 
-        <!-- MOVIES FEED SECTION -->
+        <!-- CEO GAMIFICATION TRAP (THE STADIUM) -->
+        <div class="gamified-layer">
+            <!-- Faction Selection -->
+            <div class="faction-box">
+                <div class="gamified-header">
+                    <div class="gamified-title"><i class="fa-solid fa-shield-halved" style="color:var(--cyan-accent);"></i> Which Army Rules 2026?</div>
+                </div>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Log in to pledge allegiance and add +100 Global Power Points to your Faction.</p>
+                <div class="factions-grid">
+                    <div class="faction-btn f-rebel" onclick="triggerFOMOLogin('Rebel Star Force')">
+                        <div class="faction-name">Rebel Star</div>
+                        <div class="faction-sub">Prabhas Army</div>
+                    </div>
+                    <div class="faction-btn f-mega" onclick="triggerFOMOLogin('Mega Camp')">
+                        <div class="faction-name">Mega Camp</div>
+                        <div class="faction-sub">Charan • AA • PK</div>
+                    </div>
+                    <div class="faction-btn f-nandamuri" onclick="triggerFOMOLogin('Nandamuri Tigers')">
+                        <div class="faction-name">Nandamuri</div>
+                        <div class="faction-sub">NTR • Balayya</div>
+                    </div>
+                    <div class="faction-btn f-super" onclick="triggerFOMOLogin('Superstar Cult')">
+                        <div class="faction-name">Superstar</div>
+                        <div class="faction-sub">Mahesh Babu Fans</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hype Leaderboard -->
+            <div class="hype-board">
+                <div class="gamified-header">
+                    <div class="gamified-title"><i class="fa-solid fa-fire-flame-curved" style="color:var(--danger);"></i> 2026 Live Hype Meter</div>
+                </div>
+                <div class="hype-row">
+                    <div class="hype-rank">1</div>
+                    <div class="hype-info">
+                        <div class="hype-movie">The Raja Saab</div>
+                        <div class="hype-points">85,240 Anticipation Points</div>
+                    </div>
+                    <button class="boost-btn" onclick="triggerFOMOLogin('The Raja Saab')"><i class="fa-solid fa-bolt"></i> Boost</button>
+                </div>
+                <div class="hype-row">
+                    <div class="hype-rank">2</div>
+                    <div class="hype-info">
+                        <div class="hype-movie">Peddi</div>
+                        <div class="hype-points">78,900 Anticipation Points</div>
+                    </div>
+                    <button class="boost-btn" onclick="triggerFOMOLogin('Peddi')"><i class="fa-solid fa-bolt"></i> Boost</button>
+                </div>
+                <div class="hype-row">
+                    <div class="hype-rank">3</div>
+                    <div class="hype-info">
+                        <div class="hype-movie">Ustaad Bhagat Singh</div>
+                        <div class="hype-points">72,150 Anticipation Points</div>
+                    </div>
+                    <button class="boost-btn" onclick="triggerFOMOLogin('Ustaad Bhagat Singh')"><i class="fa-solid fa-bolt"></i> Boost</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MOVIES FEED SECTION (THE BOARDROOM) -->
         <div class="section-header">
             <div class="section-title">
-                <i class="fa-solid fa-fire"></i> Top 10 Highest Grossing Blockbusters
+                <i class="fa-solid fa-chart-column"></i> Verified Trade Database
             </div>
         </div>
 
@@ -381,16 +260,30 @@
 
     <script>
         let allMovies = [];
+        let globalUser = null;
+
+        // --- CEO FOMO TRIGGER ---
+        function triggerFOMOLogin(targetName) {
+            if (globalUser) {
+                alert(`Your vote for ${targetName} has been recorded! Trade Analyst points added.`);
+            } else {
+                const confirmed = confirm(`To boost ${targetName} and claim your vote, you must be logged in. Proceed to Sign In?`);
+                if (confirmed) {
+                    handleGoogleLogin();
+                }
+            }
+        }
 
         async function updateAuthUI() {
             try {
                 const { data: { user } } = await db.auth.getUser();
+                globalUser = user;
                 const area = document.getElementById('userMenuArea');
                 
                 if (user) {
                     area.innerHTML = `
-                        <span style="color:var(--text-muted); margin-right:15px; font-size: 0.9rem;">
-                            Hi, ${user.user_metadata.full_name || 'User'}
+                        <span style="color:var(--text-muted); margin-right:15px; font-size: 0.9rem; font-weight:700;">
+                            <i class="fa-solid fa-user-shield" style="color:var(--cyan-accent)"></i> ${user.user_metadata.full_name || 'Trade Analyst'}
                         </span>
                         <button class="signout-btn" onclick="signOutUser()">Sign Out</button>
                     `;
@@ -506,7 +399,6 @@
                 const yearStr = extractYear(m);
                 const yearDisplay = yearStr ? `<span class="movie-year">(${yearStr})</span>` : '';
                 
-                // Uses dynamic verdict calculator from app.js
                 let verdictObj = (typeof getVerdict === 'function') ? getVerdict(m) : { label: 'TBA', badgeClass: 'verdict-badge upcoming' };
 
                 // --- CEO OVERRIDE: Ironclad "Upcoming" Detection ---
