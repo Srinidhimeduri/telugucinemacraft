@@ -603,16 +603,31 @@
             const showGrossInTable = isLeadStar || isDirector || isProducer;
             const gridTemplate = showGrossInTable ? "80px 2.5fr 1fr 1.5fr" : "80px 2.5fr 1.5fr"; 
 
-            let timelineHtml = movies.map(m => {
-                const year = (m.release_date || m.year || m.release_year || 'TBA').toString().substring(0,4);
+            // CEO Feature: Pipeline Split (Upcoming vs Past)
+            const upcomingMovies = [];
+            const pastMovies = [];
+
+            movies.forEach(m => {
+                const y = (m.release_date || m.year || m.release_year || 'TBA').toString().toUpperCase();
+                const c = (m.collection || '').toString().toUpperCase();
+                const v = (m.verdict || '').toString().toUpperCase();
                 
+                // If it explicitly says TBA, Upcoming, or the year is in the future (> 2026)
+                if (y === 'TBA' || c === 'TBA' || v === 'UPCOMING' || parseInt(y) > 2026) {
+                    upcomingMovies.push(m);
+                } else {
+                    pastMovies.push(m);
+                }
+            });
+
+            const renderMovieRow = (m) => {
+                const year = (m.release_date || m.year || m.release_year || 'TBA').toString().substring(0,4);
                 const movieAward = m.extracted_award; 
                 const awardHtml = movieAward ? `
                     <div class="movie-award-badge" style="margin-top:0;">
                         <i class="fa-solid fa-trophy"></i> ${movieAward}
                     </div>` : '<span style="color:var(--text-muted); font-size:0.8rem;">-</span>';
 
-                // Safely extract and format up to 2 genres for the timeline
                 const genres = m.genre ? m.genre.split(',').slice(0, 2).map(g => `<span class="genre-badge">${g.trim()}</span>`).join('') : '';
 
                 return `
@@ -625,7 +640,40 @@
                     ${showGrossInTable ? `<div><span style="color:var(--gold-accent); font-weight:700;">${m.collection || 'TBA'}</span></div>` : ''}
                     <div>${awardHtml}</div>
                 </div>`;
-            }).join('');
+            };
+
+            let timelineSectionsHtml = '';
+
+            if (upcomingMovies.length > 0) {
+                timelineSectionsHtml += `
+                    <div class="timeline-header" style="color: var(--gold-accent); margin-bottom: 1rem;">
+                        <i class="fa-solid fa-forward-step"></i> Current Theatrical Slate (Upcoming)
+                    </div>
+                    <div class="movie-table-header" style="grid-template-columns: ${gridTemplate};">
+                        <div>Year</div>
+                        <div>Movie Title</div>
+                        ${showGrossInTable ? `<div>Expected Gross</div>` : ''}
+                        <div>Recognized Awards</div>
+                    </div>
+                    ${upcomingMovies.map(renderMovieRow).join('')}
+                    <div style="margin-bottom: 3rem;"></div>
+                `;
+            }
+
+            if (pastMovies.length > 0) {
+                timelineSectionsHtml += `
+                    <div class="timeline-header">
+                        <i class="fa-solid fa-clapperboard"></i> Cinematic Journey & Past Filmography
+                    </div>
+                    <div class="movie-table-header" style="grid-template-columns: ${gridTemplate};">
+                        <div>Year</div>
+                        <div>Movie Title</div>
+                        ${showGrossInTable ? `<div>Gross Collection</div>` : ''}
+                        <div>Recognized Awards</div>
+                    </div>
+                    ${pastMovies.map(renderMovieRow).join('')}
+                `;
+            }
 
             const html = `
                 <div class="profile-header">
@@ -649,14 +697,7 @@
                 </div>
 
                 <div class="timeline-container">
-                    <div class="timeline-header"><i class="fa-solid fa-clapperboard"></i> Cinematic Journey & Filmography</div>
-                    <div class="movie-table-header" style="grid-template-columns: ${gridTemplate};">
-                        <div>Year</div>
-                        <div>Movie Title</div>
-                        ${showGrossInTable ? `<div>Gross Collection</div>` : ''}
-                        <div>Recognized Awards</div>
-                    </div>
-                    ${timelineHtml}
+                    ${timelineSectionsHtml}
                 </div>
             `;
 
