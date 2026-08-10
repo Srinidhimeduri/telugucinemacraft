@@ -250,47 +250,13 @@
             white-space: nowrap;
         }
 
-        .verdict-badge.blockbuster {
-            background: rgba(34, 197, 94, 0.2);
-            color: #22C55E;
-            border: 1px solid rgba(34, 197, 94, 0.4);
-        }
-
-        .verdict-badge.superhit {
-            background: rgba(255, 199, 0, 0.18);
-            color: #FFC700;
-            border: 1px solid rgba(255, 199, 0, 0.4);
-        }
-
-        .verdict-badge.hit {
-            background: rgba(56, 189, 248, 0.18);
-            color: #38BDF8;
-            border: 1px solid rgba(56, 189, 248, 0.4);
-        }
-
-        .verdict-badge.average {
-            background: rgba(245, 158, 11, 0.18);
-            color: #F59E0B;
-            border: 1px solid rgba(245, 158, 11, 0.4);
-        }
-
-        .verdict-badge.flop {
-            background: rgba(239, 68, 68, 0.18);
-            color: #EF4444;
-            border: 1px solid rgba(239, 68, 68, 0.4);
-        }
-
-        .verdict-badge.disaster {
-            background: rgba(185, 28, 28, 0.25);
-            color: #F87171;
-            border: 1px solid rgba(185, 28, 28, 0.5);
-        }
-
-        .verdict-badge.upcoming {
-            background: rgba(148, 163, 184, 0.15);
-            color: var(--cyan-accent);
-            border: 1px solid rgba(56, 189, 248, 0.3);
-        }
+        .verdict-badge.blockbuster { background: rgba(34, 197, 94, 0.2); color: #22C55E; border: 1px solid rgba(34, 197, 94, 0.4); }
+        .verdict-badge.superhit { background: rgba(255, 199, 0, 0.18); color: #FFC700; border: 1px solid rgba(255, 199, 0, 0.4); }
+        .verdict-badge.hit { background: rgba(56, 189, 248, 0.18); color: #38BDF8; border: 1px solid rgba(56, 189, 248, 0.4); }
+        .verdict-badge.average { background: rgba(245, 158, 11, 0.18); color: #F59E0B; border: 1px solid rgba(245, 158, 11, 0.4); }
+        .verdict-badge.flop { background: rgba(239, 68, 68, 0.18); color: #EF4444; border: 1px solid rgba(239, 68, 68, 0.4); }
+        .verdict-badge.disaster { background: rgba(185, 28, 28, 0.25); color: #F87171; border: 1px solid rgba(185, 28, 28, 0.5); }
+        .verdict-badge.upcoming { background: rgba(148, 163, 184, 0.15); color: var(--cyan-accent); border: 1px solid rgba(56, 189, 248, 0.3); }
 
         .card-details {
             display: flex;
@@ -370,7 +336,6 @@
             .grid-container { grid-template-columns: 1fr; }
         }
 
-        /* Added for button mobile convenience */
         @media (max-width: 480px) {
             .auth-btn { padding: 0.5rem 0.8rem; font-size: 0.8rem; }
         }
@@ -450,6 +415,24 @@
             window.location.reload();
         }
 
+        // --- CEO INTELLIGENCE: Completeness Scoring Function ---
+        function getCompletenessScore(movie) {
+            let score = 0;
+            const ignoreValues = ['N/A', 'TBA', '-', ''];
+            for (let key in movie) {
+                let val = movie[key];
+                if (val !== null && val !== undefined) {
+                    if (typeof val === 'string') {
+                        val = val.trim().toUpperCase();
+                        if (!ignoreValues.includes(val)) score++;
+                    } else {
+                        score++;
+                    }
+                }
+            }
+            return score;
+        }
+
         async function init() {
             updateAuthUI();
             
@@ -468,6 +451,30 @@
                     </div>`;
                 return;
             }
+
+            // --- CEO INTELLIGENCE: Deduplication Engine ---
+            const uniqueMoviesMap = new Map();
+            
+            data.forEach(movie => {
+                const nameKey = (movie.movie_name || movie.title || '').toLowerCase().trim();
+                if (!nameKey) return;
+
+                if (uniqueMoviesMap.has(nameKey)) {
+                    const existingMovie = uniqueMoviesMap.get(nameKey);
+                    const currentScore = getCompletenessScore(movie);
+                    const existingScore = getCompletenessScore(existingMovie);
+
+                    // Overwrite only if the current duplicate has MORE filled columns
+                    if (currentScore > existingScore) {
+                        uniqueMoviesMap.set(nameKey, movie);
+                    }
+                } else {
+                    uniqueMoviesMap.set(nameKey, movie);
+                }
+            });
+
+            data = Array.from(uniqueMoviesMap.values());
+            // ----------------------------------------------
 
             // Sort logic: Latest movies first
             allMovies = data.sort((a, b) => {
