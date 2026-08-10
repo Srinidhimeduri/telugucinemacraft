@@ -32,7 +32,7 @@
             --danger: #EF4444;
             --success: #22C55E;
             --mega-red: #DC2626;
-            --rebel-dark: #38BDF8; /* Adjusted for better visibility */
+            --rebel-dark: #38BDF8; 
             --nandamuri-yellow: #F59E0B;
             --superstar-blue: #C084FC;
         }
@@ -64,7 +64,7 @@
         .brand-title { font-size: 1.6rem; font-weight: 800; color: #FFF; display: flex; align-items: center; gap: 10px; letter-spacing: -0.5px; }
         .brand-title i { color: var(--gold-accent); }
 
-        /* CEO ADDITION: Dual Login Styles */
+        /* Dual Login Styles */
         .auth-container { display: flex; align-items: center; gap: 20px; }
         
         .trade-login-link {
@@ -90,17 +90,41 @@
         .signout-btn:hover { background: var(--danger); color: #FFF; }
 
         /* --- HERO & SEARCH SECTION --- */
-        .hero-banner { text-align: center; margin-bottom: 2rem; }
+        .hero-banner { text-align: center; margin-bottom: 2rem; position: relative; z-index: 50; }
         .hero-title { font-size: 2.5rem; font-weight: 800; margin-bottom: 0.5rem; background: linear-gradient(135deg, #FFF 60%, var(--text-muted)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .hero-subtitle { color: var(--text-muted); font-size: 1rem; margin-bottom: 1.5rem; }
 
-        .search-box { position: relative; max-width: 550px; margin: 0 auto; z-index: 10; }
-        .search-box i { position: absolute; left: 1.2rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
-        .search-input { width: 100%; padding: 0.9rem 1rem 0.9rem 3rem; background: var(--bg-glass); border: 1px solid var(--border-glass); border-radius: 14px; color: var(--text-main); font-size: 0.95rem; outline: none; transition: all 0.3s ease; }
-        .search-input:focus { border-color: var(--gold-accent); box-shadow: 0 0 15px var(--gold-glow); }
+        .search-box { position: relative; max-width: 550px; margin: 0 auto; z-index: 100; }
+        .search-box i { position: absolute; left: 1.2rem; top: 22px; transform: translateY(-50%); color: var(--text-muted); z-index: 10; }
+        .search-input { width: 100%; padding: 0.9rem 1rem 0.9rem 3rem; background: var(--bg-glass); border: 1px solid var(--border-glass); border-radius: 14px; color: var(--text-main); font-size: 0.95rem; outline: none; transition: all 0.3s ease; position: relative; z-index: 5; }
+        .search-input:focus { border-color: var(--gold-accent); box-shadow: 0 0 15px var(--gold-glow); background: var(--bg-base); }
+
+        /* --- CEO ADDITION: OMNI-SEARCH DROPDOWN --- */
+        .suggestions-box {
+            position: absolute; top: 100%; left: 0; width: 100%;
+            background: rgba(18, 24, 38, 0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--gold-accent); border-radius: 12px; margin-top: 8px;
+            max-height: 350px; overflow-y: auto; display: none; flex-direction: column;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.8); z-index: 1000; text-align: left;
+        }
+        .suggestions-box.active { display: flex; }
+        .suggestions-box::-webkit-scrollbar { width: 6px; }
+        .suggestions-box::-webkit-scrollbar-thumb { background: var(--gold-accent); border-radius: 6px; }
+        
+        .suggestion-item {
+            padding: 12px 18px; border-bottom: 1px solid var(--border-glass);
+            cursor: pointer; display: flex; align-items: center; gap: 14px;
+            transition: all 0.2s ease; color: #FFF; text-decoration: none;
+        }
+        .suggestion-item:hover { background: rgba(255, 199, 0, 0.15); padding-left: 24px; }
+        .suggestion-item:last-child { border-bottom: none; }
+        
+        .sugg-icon { color: var(--gold-accent); font-size: 1.2rem; }
+        .sugg-title { font-weight: 800; font-size: 1rem; color: #FFF; margin-bottom: 2px; }
+        .sugg-meta { font-size: 0.75rem; color: var(--cyan-accent); font-weight: 600; }
 
         /* --- GAMIFIED LAYER (FACTIONS + DYNAMIC HYPE BOARD) --- */
-        .gamified-layer { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 3rem; margin-top: 2rem; }
+        .gamified-layer { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 3rem; margin-top: 2rem; position: relative; z-index: 1; }
         
         .faction-box, .hype-board { background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 20px; padding: 1.5rem; backdrop-filter: blur(12px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .gamified-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--border-glass); padding-bottom: 0.5rem; }
@@ -132,9 +156,9 @@
         .boost-btn:hover { background: var(--gold-accent); color: #000; box-shadow: 0 0 10px var(--gold-glow); }
 
         /* --- MOVIE CARDS GRID --- */
-        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; position: relative; z-index: 1; }
         .section-title { font-size: 1.3rem; font-weight: 700; color: var(--gold-accent); display: flex; align-items: center; gap: 8px; }
-        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; position: relative; z-index: 1; }
 
         .movie-card { background: var(--bg-card); backdrop-filter: blur(12px); border: 1px solid var(--border-glass); border-radius: 18px; padding: 1.5rem; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; text-decoration: none; color: inherit; }
         .movie-card:hover { transform: translateY(-5px); border-color: var(--border-hover); box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6), 0 0 20px var(--gold-glow); }
@@ -193,7 +217,12 @@
 
             <div class="search-box">
                 <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" id="searchInput" class="search-input" placeholder="Search by Movie, Star, or Director..." onkeyup="filterMovies()">
+                <input type="text" id="searchInput" class="search-input" placeholder="Search by Movie, Star, or Director..." onkeyup="handleOmniSearch()">
+                
+                <!-- CEO OMNI-SEARCH DROPDOWN -->
+                <div id="searchSuggestions" class="suggestions-box">
+                    <!-- Suggestions inject here -->
+                </div>
             </div>
         </div>
 
@@ -346,6 +375,64 @@
             }
             return score;
         }
+
+        // --- CEO: OMNI-SEARCH ENGINE ---
+        function handleOmniSearch() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            const suggBox = document.getElementById('searchSuggestions');
+            
+            // Hide if empty
+            if (!query) {
+                suggBox.classList.remove('active');
+                renderMovies(allMovies.slice(0, 10)); // reset main grid
+                return;
+            }
+
+            // Find top matches
+            const filtered = allMovies.filter(m => {
+                const name = (m.movie_name || m.title || '').toLowerCase();
+                const hero = (m.hero || m.starring || '').toLowerCase();
+                const director = (m.director || '').toLowerCase();
+                return name.includes(query) || hero.includes(query) || director.includes(query);
+            });
+
+            // Populate Dropdown
+            if (filtered.length > 0) {
+                // Show top 8 in the dropdown so it doesn't get too massive
+                suggBox.innerHTML = filtered.slice(0, 8).map(m => {
+                    const movieId = m.movie_id || m.id || '';
+                    const name = m.movie_name || m.title || 'Untitled';
+                    const yearStr = extractYear(m);
+                    const hero = m.hero || 'N/A';
+                    
+                    return `
+                        <a href="movie.html?id=${movieId}" class="suggestion-item">
+                            <i class="fa-solid fa-film sugg-icon"></i>
+                            <div>
+                                <div class="sugg-title">${name} ${yearStr ? `(${yearStr})` : ''}</div>
+                                <div class="sugg-meta">Starring: ${hero}</div>
+                            </div>
+                        </a>
+                    `;
+                }).join('');
+                suggBox.classList.add('active');
+            } else {
+                suggBox.innerHTML = `<div style="padding:14px 18px; color:var(--text-muted); font-size:0.85rem;"><i class="fa-solid fa-magnifying-glass"></i> No cinema records found for "${query}"</div>`;
+                suggBox.classList.add('active');
+            }
+
+            // Also update the main grid behind the scenes
+            renderMovies(filtered);
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const suggBox = document.getElementById('searchSuggestions');
+            const searchInput = document.getElementById('searchInput');
+            if (!searchInput.contains(event.target) && !suggBox.contains(event.target)) {
+                suggBox.classList.remove('active');
+            }
+        });
 
         // --- DYNAMIC HYPE BOARD RENDERER ---
         function renderHypeLeaderboard(moviesList) {
@@ -503,24 +590,6 @@
             html += `</div>`;
 
             document.getElementById('content').innerHTML = html;
-        }
-
-        function filterMovies() {
-            const query = document.getElementById('searchInput').value.toLowerCase().trim();
-            if (!query) {
-                renderMovies(allMovies.slice(0, 10));
-                return;
-            }
-
-            const filtered = allMovies.filter(m => {
-                const name = (m.movie_name || m.title || '').toLowerCase();
-                const hero = (m.hero || m.starring || '').toLowerCase();
-                const director = (m.director || '').toLowerCase();
-                const year = extractYear(m).toLowerCase();
-                return name.includes(query) || hero.includes(query) || director.includes(query) || year.includes(query);
-            });
-
-            renderMovies(filtered);
         }
 
         init();
