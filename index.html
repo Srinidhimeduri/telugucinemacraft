@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
     <!-- Admitad Verification Code -->
     <meta name="verify-admitad" content="3b27ad383c" />
@@ -35,9 +35,10 @@
             --rebel-dark: #38BDF8; 
             --nandamuri-yellow: #F59E0B;
             --superstar-blue: #C084FC;
+            --whatsapp-green: #25D366;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
         body {
             background-color: var(--bg-base);
@@ -47,59 +48,70 @@
             color: var(--text-main);
             font-family: 'Plus Jakarta Sans', sans-serif;
             min-height: 100vh;
-            padding: 1.5rem;
+            padding: 0 1rem 2rem 1rem;
+            overflow-x: hidden;
         }
 
         .container { max-width: 1280px; margin: 0 auto; }
 
+        /* --- LIVE TICKER --- */
+        .live-ticker-wrap {
+            background: rgba(255, 199, 0, 0.1); border-bottom: 1px solid rgba(255, 199, 0, 0.2);
+            width: 100vw; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw;
+            overflow: hidden; height: 32px; display: flex; align-items: center; margin-bottom: 1.5rem;
+        }
+        .ticker-move {
+            display: inline-block; white-space: nowrap; padding-right: 100%;
+            animation: ticker 25s linear infinite; font-size: 0.75rem; font-weight: 700; color: var(--gold-accent); text-transform: uppercase; letter-spacing: 1px;
+        }
+        @keyframes ticker { 0% { transform: translateX(100vw); } 100% { transform: translateX(-100%); } }
+
         /* --- NAV BAR --- */
         nav {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 1rem 1.8rem; background: var(--bg-glass);
+            padding: 1rem 1.5rem; background: var(--bg-glass);
             backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--border-glass); border-radius: 20px;
-            margin-bottom: 2.5rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            margin-bottom: 2rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
-
-        .brand-title { font-size: 1.6rem; font-weight: 800; color: #FFF; display: flex; align-items: center; gap: 10px; letter-spacing: -0.5px; }
+        .brand-title { font-size: 1.5rem; font-weight: 800; color: #FFF; display: flex; align-items: center; gap: 8px; letter-spacing: -0.5px; }
         .brand-title i { color: var(--gold-accent); }
 
         /* Dual Login Styles */
-        .auth-container { display: flex; align-items: center; gap: 20px; }
-        
-        .trade-login-link {
-            color: var(--text-muted); font-size: 0.85rem; font-weight: 700;
-            text-decoration: none; text-transform: uppercase; letter-spacing: 1px;
-            transition: color 0.2s ease; display: flex; align-items: center; gap: 6px;
-        }
+        .auth-container { display: flex; align-items: center; gap: 15px; }
+        .trade-login-link { color: var(--text-muted); font-size: 0.8rem; font-weight: 700; text-decoration: none; text-transform: uppercase; letter-spacing: 1px; transition: color 0.2s ease; display: flex; align-items: center; gap: 6px; }
         .trade-login-link:hover { color: #FFF; }
-
-        .auth-btn {
-            background: rgba(255, 199, 0, 0.12); border: 1px solid var(--gold-accent);
-            color: var(--gold-accent); padding: 0.65rem 1.4rem; border-radius: 12px;
-            cursor: pointer; font-weight: 800; font-size: 0.9rem; transition: all 0.3s ease;
-            display: flex; align-items: center; gap: 8px; text-transform: uppercase;
-        }
+        .auth-btn { background: rgba(255, 199, 0, 0.12); border: 1px solid var(--gold-accent); color: var(--gold-accent); padding: 0.6rem 1.2rem; border-radius: 12px; cursor: pointer; font-weight: 800; font-size: 0.85rem; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px; text-transform: uppercase; }
         .auth-btn:hover { background: var(--gold-accent); color: #000; box-shadow: 0 0 20px var(--gold-glow); }
-
-        .signout-btn {
-            background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger);
-            color: var(--danger); padding: 0.6rem 1.2rem; border-radius: 10px;
-            cursor: pointer; font-weight: 600; transition: all 0.2s ease;
-        }
+        .auth-btn:active { transform: scale(0.95); }
+        .signout-btn { background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger); color: var(--danger); padding: 0.5rem 1rem; border-radius: 10px; cursor: pointer; font-weight: 600; transition: all 0.2s ease; }
         .signout-btn:hover { background: var(--danger); color: #FFF; }
 
         /* --- HERO & SEARCH SECTION --- */
         .hero-banner { text-align: center; margin-bottom: 2rem; position: relative; z-index: 50; }
-        .hero-title { font-size: 2.5rem; font-weight: 800; margin-bottom: 0.5rem; background: linear-gradient(135deg, #FFF 60%, var(--text-muted)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .hero-subtitle { color: var(--text-muted); font-size: 1rem; margin-bottom: 1.5rem; }
+        .hero-title { font-size: 2.2rem; font-weight: 800; margin-bottom: 0.5rem; background: linear-gradient(135deg, #FFF 60%, var(--text-muted)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.2; }
+        .hero-subtitle { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem; padding: 0 10px; }
 
         .search-box { position: relative; max-width: 550px; margin: 0 auto; z-index: 100; }
-        .search-box i { position: absolute; left: 1.2rem; top: 22px; transform: translateY(-50%); color: var(--text-muted); z-index: 10; }
+        .search-box i.fa-magnifying-glass { position: absolute; left: 1.2rem; top: 22px; transform: translateY(-50%); color: var(--text-muted); z-index: 10; }
         .search-input { width: 100%; padding: 0.9rem 1rem 0.9rem 3rem; background: var(--bg-glass); border: 1px solid var(--border-glass); border-radius: 14px; color: var(--text-main); font-size: 0.95rem; outline: none; transition: all 0.3s ease; position: relative; z-index: 5; }
         .search-input:focus { border-color: var(--gold-accent); box-shadow: 0 0 15px var(--gold-glow); background: var(--bg-base); }
 
-        /* --- CEO ADDITION: OMNI-SEARCH DROPDOWN --- */
+        /* --- APP-LEVEL MOOD CHIPS --- */
+        .filter-chips-wrap {
+            display: flex; gap: 10px; overflow-x: auto; margin-top: 15px; padding-bottom: 5px;
+            -webkit-overflow-scrolling: touch; scrollbar-width: none; justify-content: center;
+        }
+        .filter-chips-wrap::-webkit-scrollbar { display: none; }
+        @media (max-width: 768px) { .filter-chips-wrap { justify-content: flex-start; padding: 0 10px; } }
+        .mood-chip {
+            background: rgba(255,255,255,0.05); border: 1px solid var(--border-glass); border-radius: 20px;
+            padding: 0.5rem 1rem; color: var(--text-muted); font-size: 0.8rem; font-weight: 700;
+            white-space: nowrap; cursor: pointer; transition: all 0.2s ease;
+        }
+        .mood-chip:hover, .mood-chip:active { background: rgba(56, 189, 248, 0.1); border-color: var(--cyan-accent); color: var(--cyan-accent); transform: scale(0.95); }
+
+        /* --- OMNI-SEARCH DROPDOWN --- */
         .suggestions-box {
             position: absolute; top: 100%; left: 0; width: 100%;
             background: rgba(18, 24, 38, 0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
@@ -108,67 +120,61 @@
             box-shadow: 0 15px 40px rgba(0,0,0,0.8); z-index: 1000; text-align: left;
         }
         .suggestions-box.active { display: flex; }
-        .suggestions-box::-webkit-scrollbar { width: 6px; }
-        .suggestions-box::-webkit-scrollbar-thumb { background: var(--gold-accent); border-radius: 6px; }
-        
-        .suggestion-item {
-            padding: 12px 18px; border-bottom: 1px solid var(--border-glass);
-            cursor: pointer; display: flex; align-items: center; gap: 14px;
-            transition: all 0.2s ease; color: #FFF; text-decoration: none;
-        }
+        .suggestion-item { padding: 12px 18px; border-bottom: 1px solid var(--border-glass); cursor: pointer; display: flex; align-items: center; gap: 14px; transition: all 0.2s ease; color: #FFF; text-decoration: none; }
         .suggestion-item:hover { background: rgba(255, 199, 0, 0.15); padding-left: 24px; }
         .suggestion-item:last-child { border-bottom: none; }
-        
         .sugg-icon { color: var(--gold-accent); font-size: 1.2rem; }
         .sugg-title { font-weight: 800; font-size: 1rem; color: #FFF; margin-bottom: 2px; }
         .sugg-meta { font-size: 0.75rem; color: var(--cyan-accent); font-weight: 600; }
 
-        /* --- GAMIFIED LAYER (FACTIONS + DYNAMIC HYPE BOARD) --- */
-        .gamified-layer { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 3rem; margin-top: 2rem; position: relative; z-index: 1; }
-        
+        /* --- GAMIFIED LAYER --- */
+        .gamified-layer { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 3rem; position: relative; z-index: 1; }
         .faction-box, .hype-board { background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 20px; padding: 1.5rem; backdrop-filter: blur(12px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .gamified-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--border-glass); padding-bottom: 0.5rem; }
         .gamified-title { font-size: 1.1rem; font-weight: 800; color: #FFF; display: flex; align-items: center; gap: 8px; }
         
-        /* Faction Progress Bars */
-        .factions-list { display: flex; flex-direction: column; gap: 12px; }
-        .faction-card { background: rgba(0,0,0,0.3); border: 1px solid var(--border-glass); border-radius: 12px; padding: 0.8rem 1rem; cursor: pointer; transition: all 0.2s ease; position: relative; }
-        .faction-card:hover { border-color: var(--gold-accent); transform: translateX(3px); }
+        .factions-list { display: flex; flex-direction: column; gap: 10px; }
+        .faction-card { background: rgba(0,0,0,0.3); border: 1px solid var(--border-glass); border-radius: 12px; padding: 0.8rem 1rem; cursor: pointer; transition: all 0.2s ease; }
+        .faction-card:active { transform: scale(0.98); border-color: var(--gold-accent); }
         .faction-info-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-        .faction-name { font-weight: 800; font-size: 0.9rem; color: #FFF; }
-        .faction-stats { font-size: 0.75rem; font-weight: 700; color: var(--gold-accent); }
+        .faction-name { font-weight: 800; font-size: 0.85rem; color: #FFF; }
+        .faction-stats { font-size: 0.7rem; font-weight: 700; color: var(--gold-accent); }
         .faction-progress-bg { width: 100%; height: 6px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; }
         .faction-progress-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
 
-        /* Hype Leaderboard Container */
-        .hype-list-container { max-height: 250px; overflow-y: auto; padding-right: 5px; }
-        .hype-list-container::-webkit-scrollbar { width: 4px; }
-        .hype-list-container::-webkit-scrollbar-thumb { background: var(--gold-accent); border-radius: 4px; }
+        /* WhatsApp Button */
+        .whatsapp-btn {
+            background: rgba(37, 211, 102, 0.1); border: 1px solid var(--whatsapp-green);
+            color: var(--whatsapp-green); width: 100%; padding: 0.8rem; border-radius: 12px;
+            font-weight: 800; font-size: 0.85rem; margin-top: 15px; cursor: pointer;
+            display: flex; justify-content: center; align-items: center; gap: 8px; transition: all 0.2s ease;
+        }
+        .whatsapp-btn:active { transform: scale(0.96); background: var(--whatsapp-green); color: #000; }
 
+        /* Hype Leaderboard */
+        .hype-list-container { max-height: 250px; overflow-y: auto; padding-right: 5px; }
         .hype-row { display: flex; justify-content: space-between; align-items: center; padding: 0.8rem 0; border-bottom: 1px dashed rgba(255,255,255,0.05); }
         .hype-row:last-child { border-bottom: none; }
         .hype-rank { font-size: 1.1rem; font-weight: 800; color: var(--text-muted); width: 25px; }
         .hype-info { flex-grow: 1; margin-left: 10px; }
         .hype-movie { font-weight: 700; font-size: 0.95rem; color: #FFF; text-decoration: none; }
-        .hype-movie:hover { color: var(--gold-accent); }
-        .hype-points { font-size: 0.75rem; color: var(--gold-accent); font-weight: 600; }
-        .boost-btn { background: rgba(255, 199, 0, 0.1); border: 1px solid var(--gold-accent); color: var(--gold-accent); border-radius: 8px; padding: 0.4rem 0.8rem; font-size: 0.75rem; font-weight: 800; cursor: pointer; transition: all 0.2s ease; white-space: nowrap; }
-        .boost-btn:hover { background: var(--gold-accent); color: #000; box-shadow: 0 0 10px var(--gold-glow); }
+        .hype-points { font-size: 0.7rem; color: var(--gold-accent); font-weight: 600; }
+        .boost-btn { background: rgba(255, 199, 0, 0.1); border: 1px solid var(--gold-accent); color: var(--gold-accent); border-radius: 8px; padding: 0.4rem 0.8rem; font-size: 0.75rem; font-weight: 800; cursor: pointer; transition: all 0.2s ease; }
+        .boost-btn:active { transform: scale(0.9); background: var(--gold-accent); color: #000; }
 
         /* --- MOVIE CARDS GRID --- */
         .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; position: relative; z-index: 1; }
-        .section-title { font-size: 1.3rem; font-weight: 700; color: var(--gold-accent); display: flex; align-items: center; gap: 8px; }
+        .section-title { font-size: 1.2rem; font-weight: 700; color: var(--gold-accent); display: flex; align-items: center; gap: 8px; }
         .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; position: relative; z-index: 1; }
 
-        .movie-card { background: var(--bg-card); backdrop-filter: blur(12px); border: 1px solid var(--border-glass); border-radius: 18px; padding: 1.5rem; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; text-decoration: none; color: inherit; }
-        .movie-card:hover { transform: translateY(-5px); border-color: var(--border-hover); box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6), 0 0 20px var(--gold-glow); }
+        .movie-card { background: var(--bg-card); backdrop-filter: blur(12px); border: 1px solid var(--border-glass); border-radius: 18px; padding: 1.5rem; position: relative; display: flex; flex-direction: column; justify-content: space-between; text-decoration: none; color: inherit; transition: all 0.2s ease; }
+        .movie-card:active { transform: scale(0.98); border-color: var(--gold-accent); }
 
         .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; gap: 10px; }
-        .movie-name { font-size: 1.35rem; font-weight: 800; color: #FFF; line-height: 1.25; }
-        .movie-year { font-size: 0.95rem; color: var(--text-muted); font-weight: 600; margin-left: 4px; }
+        .movie-name { font-size: 1.25rem; font-weight: 800; color: #FFF; line-height: 1.2; }
+        .movie-year { font-size: 0.9rem; color: var(--text-muted); font-weight: 600; margin-left: 4px; }
 
-        /* VERDICT BADGES */
-        .verdict-badge { padding: 0.25rem 0.6rem; border-radius: 8px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; white-space: nowrap; }
+        .verdict-badge { padding: 0.25rem 0.6rem; border-radius: 8px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; white-space: nowrap; }
         .verdict-badge.blockbuster { background: rgba(34, 197, 94, 0.2); color: #22C55E; border: 1px solid rgba(34, 197, 94, 0.4); }
         .verdict-badge.superhit { background: rgba(255, 199, 0, 0.18); color: #FFC700; border: 1px solid rgba(255, 199, 0, 0.4); }
         .verdict-badge.hit { background: rgba(56, 189, 248, 0.18); color: #38BDF8; border: 1px solid rgba(56, 189, 248, 0.4); }
@@ -177,26 +183,55 @@
         .verdict-badge.disaster { background: rgba(185, 28, 28, 0.25); color: #F87171; border: 1px solid rgba(185, 28, 28, 0.5); }
         .verdict-badge.upcoming { background: rgba(148, 163, 184, 0.15); color: var(--cyan-accent); border: 1px solid rgba(56, 189, 248, 0.3); }
 
-        .card-details { display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.88rem; margin-bottom: 1.2rem; }
+        .card-details { display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem; margin-bottom: 1.2rem; }
         .detail-row { display: flex; justify-content: space-between; color: var(--text-muted); }
         .detail-row span { color: var(--text-main); font-weight: 600; }
 
         .card-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; background: rgba(0, 0, 0, 0.3); padding: 0.8rem; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.04); }
         .stat-item { display: flex; flex-direction: column; }
-        .stat-label { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-        .stat-value { font-size: 1rem; font-weight: 700; color: var(--gold-accent); }
+        .stat-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-value { font-size: 0.95rem; font-weight: 700; color: var(--gold-accent); }
 
-        .view-btn { margin-top: 1rem; width: 100%; padding: 0.7rem; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-glass); border-radius: 10px; color: #FFF; font-weight: 700; text-align: center; transition: all 0.2s ease; }
-        .movie-card:hover .view-btn { background: var(--gold-accent); color: #000; border-color: var(--gold-accent); }
+        .view-btn { margin-top: 1rem; width: 100%; padding: 0.7rem; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-glass); border-radius: 10px; color: #FFF; font-weight: 800; text-align: center; }
 
-        .loading-spinner { text-align: center; padding: 4rem 0; color: var(--text-muted); font-size: 1.1rem; }
+        /* --- CEO CINESTAR SKELETON LOADERS --- */
+        .skel-card {
+            background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 18px; padding: 1.5rem;
+            position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 15px; height: 260px;
+        }
+        .skel-card::after {
+            content: ""; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.08), transparent);
+            animation: shimmer 1.5s infinite;
+        }
+        @keyframes shimmer { 100% { left: 200%; } }
+        
+        .skel-line { height: 16px; background: rgba(255,255,255,0.05); border-radius: 8px; }
+        .skel-title { width: 60%; height: 24px; }
+        .skel-badge { width: 80px; height: 24px; position: absolute; right: 1.5rem; top: 1.5rem; }
+        
+        /* The Cinestar Pulse */
+        .skel-icon-wrap { display: flex; justify-content: center; align-items: center; flex-grow: 1; opacity: 0.3; }
+        .skel-icon { font-size: 3.5rem; color: var(--cyan-accent); animation: pulse 2s infinite ease-in-out; }
+        @keyframes pulse { 0% { transform: scale(0.9); opacity: 0.5; } 50% { transform: scale(1.1); opacity: 1; filter: drop-shadow(0 0 10px var(--cyan-accent)); } 100% { transform: scale(0.9); opacity: 0.5; } }
 
         @media (max-width: 992px) { .gamified-layer { grid-template-columns: 1fr; } }
-        @media (max-width: 768px) { .hero-title { font-size: 1.8rem; } .grid-container { grid-template-columns: 1fr; } .auth-container { flex-direction: column; gap: 10px; align-items: flex-end; } }
-        @media (max-width: 480px) { .auth-btn { padding: 0.5rem 0.8rem; font-size: 0.8rem; } }
+        @media (max-width: 768px) { 
+            .hero-title { font-size: 1.8rem; } 
+            .grid-container { grid-template-columns: 1fr; } 
+            .auth-container { flex-direction: column; gap: 10px; align-items: flex-end; } 
+            nav { padding: 1rem; border-radius: 15px; }
+        }
     </style>
 </head>
 <body>
+    <!-- CEO: LIVE TICKER -->
+    <div class="live-ticker-wrap">
+        <div class="ticker-move">
+            ⚡ LIVE: 1,420 fans boosted 'The Raja Saab' • Mega Camp leads Power Standings by 3% • Industry reports record pre-release business for 'Peddi' • 'Ustaad Bhagat Singh' trending #1 in Telangana ⚡
+        </div>
+    </div>
+
     <div class="container">
         <!-- NAV BAR -->
         <nav>
@@ -204,7 +239,6 @@
                 <i class="fa-solid fa-film"></i> TeluguCineCraft
             </div>
             
-            <!-- CEO DUO LOGIN UI -->
             <div id="userMenuArea" class="auth-container">
                 <!-- Dynamically populated via JS -->
             </div>
@@ -219,16 +253,21 @@
                 <i class="fa-solid fa-magnifying-glass"></i>
                 <input type="text" id="searchInput" class="search-input" placeholder="Search by Movie, Star, or Director..." onkeyup="handleOmniSearch()">
                 
-                <!-- CEO OMNI-SEARCH DROPDOWN -->
-                <div id="searchSuggestions" class="suggestions-box">
-                    <!-- Suggestions inject here -->
-                </div>
+                <!-- OMNI-SEARCH DROPDOWN -->
+                <div id="searchSuggestions" class="suggestions-box"></div>
+            </div>
+
+            <!-- CEO: APP-STYLE MOOD CHIPS -->
+            <div class="filter-chips-wrap">
+                <button class="mood-chip" onclick="quickFilter('Blockbuster')">🏆 Blockbusters</button>
+                <button class="mood-chip" onclick="quickFilter('2026')">🔥 2026 Slate</button>
+                <button class="mood-chip" onclick="quickFilter('Hit')">💥 Super Hits</button>
+                <button class="mood-chip" onclick="quickFilter('Rajamouli')">👑 SS Rajamouli</button>
             </div>
         </div>
 
-        <!-- GAMIFIED LAYER (FACTION STANDINGS & DYNAMIC HYPE BOARD) -->
+        <!-- GAMIFIED LAYER -->
         <div class="gamified-layer">
-            <!-- Faction Standings -->
             <div class="faction-box">
                 <div class="gamified-header">
                     <div class="gamified-title"><i class="fa-solid fa-shield-halved" style="color:var(--cyan-accent);"></i> Faction Power Standings</div>
@@ -238,50 +277,35 @@
                     <div class="faction-card" onclick="triggerFOMOLogin('Rebel Star Force')">
                         <div class="faction-info-row">
                             <span class="faction-name">Rebel Star Force (Prabhas)</span>
-                            <span class="faction-stats">42% • 42,800 Pts</span>
+                            <span class="faction-stats">42%</span>
                         </div>
-                        <div class="faction-progress-bg">
-                            <div class="faction-progress-fill" style="width: 42%; background: var(--rebel-dark);"></div>
-                        </div>
+                        <div class="faction-progress-bg"><div class="faction-progress-fill" style="width: 42%; background: var(--rebel-dark);"></div></div>
                     </div>
-
                     <div class="faction-card" onclick="triggerFOMOLogin('Mega Camp')">
                         <div class="faction-info-row">
-                            <span class="faction-name">Mega Camp (Charan / AA / PK)</span>
-                            <span class="faction-stats">35% • 35,200 Pts</span>
+                            <span class="faction-name">Mega Camp (Charan/AA/PK)</span>
+                            <span class="faction-stats">35%</span>
                         </div>
-                        <div class="faction-progress-bg">
-                            <div class="faction-progress-fill" style="width: 35%; background: var(--mega-red);"></div>
-                        </div>
+                        <div class="faction-progress-bg"><div class="faction-progress-fill" style="width: 35%; background: var(--mega-red);"></div></div>
                     </div>
-
                     <div class="faction-card" onclick="triggerFOMOLogin('Nandamuri Tigers')">
                         <div class="faction-info-row">
-                            <span class="faction-name">Nandamuri Tigers (NTR / NBK)</span>
-                            <span class="faction-stats">13% • 13,100 Pts</span>
+                            <span class="faction-name">Nandamuri Tigers (NTR/NBK)</span>
+                            <span class="faction-stats">13%</span>
                         </div>
-                        <div class="faction-progress-bg">
-                            <div class="faction-progress-fill" style="width: 13%; background: var(--nandamuri-yellow);"></div>
-                        </div>
-                    </div>
-
-                    <div class="faction-card" onclick="triggerFOMOLogin('Superstar Cult')">
-                        <div class="faction-info-row">
-                            <span class="faction-name">Superstar Cult (Mahesh Babu)</span>
-                            <span class="faction-stats">10% • 10,400 Pts</span>
-                        </div>
-                        <div class="faction-progress-bg">
-                            <div class="faction-progress-fill" style="width: 10%; background: var(--superstar-blue);"></div>
-                        </div>
+                        <div class="faction-progress-bg"><div class="faction-progress-fill" style="width: 13%; background: var(--nandamuri-yellow);"></div></div>
                     </div>
                 </div>
+                <!-- CEO: WHATSAPP VIRAL LOOP -->
+                <button class="whatsapp-btn" onclick="shareToWhatsApp()">
+                    <i class="fa-brands fa-whatsapp" style="font-size:1.1rem;"></i> Challenge Friends on WhatsApp
+                </button>
             </div>
 
-            <!-- Dynamic Hype Leaderboard -->
             <div class="hype-board">
                 <div class="gamified-header">
                     <div class="gamified-title"><i class="fa-solid fa-fire-flame-curved" style="color:var(--danger);"></i> Live Hype Leaderboard</div>
-                    <span style="font-size:0.7rem; color:var(--cyan-accent); font-weight:700;">UPCOMING SLATE</span>
+                    <span style="font-size:0.7rem; color:var(--cyan-accent); font-weight:700;">UPCOMING</span>
                 </div>
                 <div id="hypeLeaderboardArea" class="hype-list-container">
                     <p style="color:var(--text-muted); font-size:0.85rem; text-align:center; padding:1rem;">Scanning unreleased movies...</p>
@@ -289,16 +313,16 @@
             </div>
         </div>
 
-        <!-- MOVIES FEED SECTION (THE BOARDROOM) -->
         <div class="section-header">
-            <div class="section-title">
-                <i class="fa-solid fa-chart-column"></i> Verified Trade Database
-            </div>
+            <div class="section-title"><i class="fa-solid fa-chart-column"></i> Verified Trade Database</div>
         </div>
 
-        <div id="content" class="loading-spinner">
-            <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
-            <p style="margin-top: 10px;">Loading top box office records...</p>
+        <!-- CEO: CINESTAR SKELETON LOADERS (Appears before JS injects data) -->
+        <div id="content" class="grid-container">
+            <div class="skel-card"><div class="skel-line skel-title"></div><div class="skel-line skel-badge"></div><div class="skel-icon-wrap"><i class="fa-solid fa-masks-theater skel-icon"></i></div></div>
+            <div class="skel-card"><div class="skel-line skel-title"></div><div class="skel-line skel-badge"></div><div class="skel-icon-wrap"><i class="fa-solid fa-masks-theater skel-icon"></i></div></div>
+            <div class="skel-card"><div class="skel-line skel-title"></div><div class="skel-line skel-badge"></div><div class="skel-icon-wrap"><i class="fa-solid fa-masks-theater skel-icon"></i></div></div>
+            <div class="skel-card"><div class="skel-line skel-title"></div><div class="skel-line skel-badge"></div><div class="skel-icon-wrap"><i class="fa-solid fa-masks-theater skel-icon"></i></div></div>
         </div>
     </div>
 
@@ -306,15 +330,27 @@
         let allMovies = [];
         let globalUser = null;
 
-        // --- CEO FOMO TRIGGER ---
+        // --- CEO UX EXPERT FUNCTIONS ---
+        function shareToWhatsApp() {
+            const msg = "🔥 Faction Wars are live! Mega Camp is losing to Rebel Star Force on TeluguCineCraft. Tap here to vote and save our rank: " + window.location.href;
+            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        function quickFilter(keyword) {
+            const input = document.getElementById('searchInput');
+            input.value = keyword;
+            handleOmniSearch(); // Trigger the search logic instantly
+            
+            // Scroll down to the results slightly for better mobile UX
+            document.querySelector('.section-header').scrollIntoView({ behavior: 'smooth' });
+        }
+
         function triggerFOMOLogin(targetName) {
             if (globalUser) {
                 alert(`Your vote for ${targetName} has been recorded! Fan power increased.`);
             } else {
                 const confirmed = confirm(`To boost ${targetName} and claim your vote, you must be logged in. Proceed to Sign In?`);
-                if (confirmed) {
-                    handleGoogleLogin();
-                }
+                if (confirmed) { handleGoogleLogin(); }
             }
         }
 
@@ -330,81 +366,58 @@
                 
                 if (user) {
                     area.innerHTML = `
-                        <span style="color:var(--text-muted); font-size: 0.9rem; font-weight:700;">
+                        <span style="color:var(--text-muted); font-size: 0.85rem; font-weight:700;">
                             <i class="fa-solid fa-circle-check" style="color:var(--success)"></i> Verified Fan: <span style="color:#FFF;">${user.user_metadata.full_name || 'User'}</span>
                         </span>
                         <button class="signout-btn" onclick="signOutUser()">Sign Out</button>
                     `;
                 } else {
                     area.innerHTML = `
-                        <a href="#" class="trade-login-link" onclick="triggerTradeLogin()">
-                            <i class="fa-solid fa-briefcase"></i> Industry Login
-                        </a>
-                        <button class="auth-btn" onclick="handleGoogleLogin()">
-                            <i class="fa-brands fa-google"></i> Audience Sign In
-                        </button>
+                        <a href="#" class="trade-login-link" onclick="triggerTradeLogin()"><i class="fa-solid fa-briefcase"></i> Trade Login</a>
+                        <button class="auth-btn" onclick="handleGoogleLogin()"><i class="fa-brands fa-google"></i> Sign In</button>
                     `;
                 }
-            } catch (err) {
-                console.warn("Auth check warning:", err);
-            }
+            } catch (err) { console.warn("Auth check warning:", err); }
         }
 
-        async function handleGoogleLogin() {
-            await db.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
-        }
-
-        async function signOutUser() {
-            await db.auth.signOut();
-            window.location.reload();
-        }
+        async function handleGoogleLogin() { await db.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } }); }
+        async function signOutUser() { await db.auth.signOut(); window.location.reload(); }
 
         function getCompletenessScore(movie) {
-            let score = 0;
-            const ignoreValues = ['N/A', 'TBA', '-', ''];
+            let score = 0; const ignoreValues = ['N/A', 'TBA', '-', ''];
             for (let key in movie) {
                 let val = movie[key];
                 if (val !== null && val !== undefined) {
-                    if (typeof val === 'string') {
-                        val = val.trim().toUpperCase();
-                        if (!ignoreValues.includes(val)) score++;
-                    } else {
-                        score++;
-                    }
+                    if (typeof val === 'string') { val = val.trim().toUpperCase(); if (!ignoreValues.includes(val)) score++; } else { score++; }
                 }
-            }
-            return score;
+            } return score;
         }
 
-        // --- CEO: OMNI-SEARCH ENGINE ---
         function handleOmniSearch() {
             const query = document.getElementById('searchInput').value.toLowerCase().trim();
             const suggBox = document.getElementById('searchSuggestions');
             
-            // Hide if empty
             if (!query) {
                 suggBox.classList.remove('active');
-                renderMovies(allMovies.slice(0, 10)); // reset main grid
+                renderMovies(allMovies.slice(0, 10)); 
                 return;
             }
 
-            // Find top matches
             const filtered = allMovies.filter(m => {
                 const name = (m.movie_name || m.title || '').toLowerCase();
                 const hero = (m.hero || m.starring || '').toLowerCase();
                 const director = (m.director || '').toLowerCase();
-                return name.includes(query) || hero.includes(query) || director.includes(query);
+                const year = extractYear(m).toLowerCase();
+                const vrd = (m.verdict || '').toLowerCase();
+                return name.includes(query) || hero.includes(query) || director.includes(query) || year.includes(query) || vrd.includes(query);
             });
 
-            // Populate Dropdown
             if (filtered.length > 0) {
-                // Show top 8 in the dropdown so it doesn't get too massive
-                suggBox.innerHTML = filtered.slice(0, 8).map(m => {
+                suggBox.innerHTML = filtered.slice(0, 6).map(m => {
                     const movieId = m.movie_id || m.id || '';
                     const name = m.movie_name || m.title || 'Untitled';
                     const yearStr = extractYear(m);
                     const hero = m.hero || 'N/A';
-                    
                     return `
                         <a href="movie.html?id=${movieId}" class="suggestion-item">
                             <i class="fa-solid fa-film sugg-icon"></i>
@@ -417,24 +430,19 @@
                 }).join('');
                 suggBox.classList.add('active');
             } else {
-                suggBox.innerHTML = `<div style="padding:14px 18px; color:var(--text-muted); font-size:0.85rem;"><i class="fa-solid fa-magnifying-glass"></i> No cinema records found for "${query}"</div>`;
+                suggBox.innerHTML = `<div style="padding:14px 18px; color:var(--text-muted); font-size:0.85rem;"><i class="fa-solid fa-magnifying-glass"></i> No cinema records found.</div>`;
                 suggBox.classList.add('active');
             }
 
-            // Also update the main grid behind the scenes
             renderMovies(filtered);
         }
 
-        // Close dropdown when clicking outside
         document.addEventListener('click', function(event) {
             const suggBox = document.getElementById('searchSuggestions');
             const searchInput = document.getElementById('searchInput');
-            if (!searchInput.contains(event.target) && !suggBox.contains(event.target)) {
-                suggBox.classList.remove('active');
-            }
+            if (!searchInput.contains(event.target) && !suggBox.contains(event.target)) { suggBox.classList.remove('active'); }
         });
 
-        // --- DYNAMIC HYPE BOARD RENDERER ---
         function renderHypeLeaderboard(moviesList) {
             const upcomingList = moviesList.filter(m => {
                 const yearStr = extractYear(m).toUpperCase();
@@ -445,18 +453,13 @@
             });
 
             const hypeArea = document.getElementById('hypeLeaderboardArea');
-
-            if (upcomingList.length === 0) {
-                hypeArea.innerHTML = `<p style="color:var(--text-muted); font-size:0.85rem; text-align:center; padding:1rem;">No unreleased films detected in active database.</p>`;
-                return;
-            }
+            if (upcomingList.length === 0) { hypeArea.innerHTML = `<p style="color:var(--text-muted); font-size:0.85rem; text-align:center; padding:1rem;">No unreleased films detected.</p>`; return; }
 
             let html = '';
             upcomingList.forEach((m, idx) => {
                 const name = m.movie_name || m.title || 'Upcoming Title';
                 const mId = m.movie_id || m.id || '';
                 const hypePoints = (85000 - (idx * 4200)).toLocaleString('en-IN');
-
                 html += `
                     <div class="hype-row">
                         <div class="hype-rank">${idx + 1}</div>
@@ -465,10 +468,8 @@
                             <div class="hype-points">${hypePoints} Anticipation Points</div>
                         </div>
                         <button class="boost-btn" onclick="triggerFOMOLogin('${name.replace(/'/g, "\\'")}')"><i class="fa-solid fa-bolt"></i> Boost</button>
-                    </div>
-                `;
+                    </div>`;
             });
-
             hypeArea.innerHTML = html;
         }
 
@@ -476,62 +477,45 @@
             updateAuthUI();
             
             let { data, error } = await db.from('box_office').select('*');
-            
             if (error || !data || data.length === 0) {
                 const res = await db.from('movies').select('*');
-                data = res.data;
-                error = res.error;
+                data = res.data; error = res.error;
             }
 
             if (error || !data || data.length === 0) {
-                document.getElementById('content').innerHTML = `
-                    <div style="text-align: center; color: var(--danger); padding: 3rem;">
-                        <p style="font-weight: 700; font-size: 1.1rem; margin-bottom: 0.5rem;">Unable to load movies.</p>
-                    </div>`;
+                document.getElementById('content').innerHTML = `<div style="text-align:center; color:var(--danger); padding:3rem;">Database connection failed.</div>`;
                 return;
             }
 
             const uniqueMoviesMap = new Map();
-            
             data.forEach(movie => {
                 const nameKey = (movie.movie_name || movie.title || '').toLowerCase().trim();
                 if (!nameKey) return;
-
                 if (uniqueMoviesMap.has(nameKey)) {
-                    const existingMovie = uniqueMoviesMap.get(nameKey);
-                    const currentScore = getCompletenessScore(movie);
-                    const existingScore = getCompletenessScore(existingMovie);
-
-                    if (currentScore > existingScore) {
-                        uniqueMoviesMap.set(nameKey, movie);
-                    }
-                } else {
-                    uniqueMoviesMap.set(nameKey, movie);
-                }
+                    if (getCompletenessScore(movie) > getCompletenessScore(uniqueMoviesMap.get(nameKey))) { uniqueMoviesMap.set(nameKey, movie); }
+                } else { uniqueMoviesMap.set(nameKey, movie); }
             });
 
-            data = Array.from(uniqueMoviesMap.values());
-
-            allMovies = data.sort((a, b) => {
+            allMovies = Array.from(uniqueMoviesMap.values()).sort((a, b) => {
                 const yearA = parseInt(extractYear(a) || '0', 10);
                 const yearB = parseInt(extractYear(b) || '0', 10);
                 return yearB - yearA; 
             });
 
-            renderHypeLeaderboard(allMovies);
-            renderMovies(allMovies.slice(0, 10)); 
+            // Small delay so users can actually see the beautiful skeleton loaders
+            setTimeout(() => {
+                renderHypeLeaderboard(allMovies);
+                renderMovies(allMovies.slice(0, 10)); 
+            }, 600);
         }
 
         function renderMovies(movies) {
             if (movies.length === 0) {
-                document.getElementById('content').innerHTML = `
-                    <div style="text-align: center; grid-column: 1/-1; padding: 3rem; color: var(--text-muted);">
-                        No matching movies found.
-                    </div>`;
+                document.getElementById('content').innerHTML = `<div style="text-align:center; grid-column:1/-1; padding:3rem; color:var(--text-muted);">No cinema records found.</div>`;
                 return;
             }
 
-            let html = `<div class="grid-container">`;
+            let html = '';
             movies.forEach(m => {
                 const movieId = m.movie_id || m.id || '';
                 const movieName = m.movie_name || m.title || 'Untitled Movie';
@@ -560,35 +544,20 @@
                                 <div class="movie-name">${movieName} ${yearDisplay}</div>
                                 <div class="${verdictObj.badgeClass}">${verdictObj.label}</div>
                             </div>
-                            
                             <div class="card-details">
-                                <div class="detail-row">
-                                    <span>Hero:</span> <span>${hero}</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span>Director:</span> <span>${director}</span>
-                                </div>
+                                <div class="detail-row"><span>Hero:</span> <span>${hero}</span></div>
+                                <div class="detail-row"><span>Director:</span> <span>${director}</span></div>
                             </div>
                         </div>
-
                         <div>
                             <div class="card-stats">
-                                <div class="stat-item">
-                                    <div class="stat-label">Budget</div>
-                                    <div class="stat-value">${budget}</div>
-                                </div>
-                                <div class="stat-item">
-                                    <div class="stat-label">Gross</div>
-                                    <div class="stat-value">${gross}</div>
-                                </div>
+                                <div class="stat-item"><div class="stat-label">Budget</div><div class="stat-value">${budget}</div></div>
+                                <div class="stat-item"><div class="stat-label">Gross</div><div class="stat-value">${gross}</div></div>
                             </div>
-                            <div class="view-btn">View Full Details <i class="fa-solid fa-arrow-right"></i></div>
                         </div>
                     </a>
                 `;
             });
-            html += `</div>`;
-
             document.getElementById('content').innerHTML = html;
         }
 
