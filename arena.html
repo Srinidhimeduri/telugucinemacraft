@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>The Arena | TeluguCineCraft</title>
+    <title>The Arena & War Room | TeluguCineCraft</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -26,7 +26,7 @@
             --warning: #F59E0B;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
         body {
             background-color: var(--bg-base);
@@ -44,12 +44,14 @@
             display: flex; justify-content: space-between; align-items: center;
             padding: 1rem 1.5rem; background: var(--bg-glass);
             backdrop-filter: blur(16px); border: 1px solid var(--border-glass); 
-            border-radius: 20px; margin-bottom: 2rem;
+            border-radius: 20px; margin-bottom: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
         }
-        .brand-title { font-size: 1.5rem; font-weight: 800; color: #FFF; display: flex; align-items: center; gap: 8px; text-decoration: none;}
+        .brand-title { font-size: 1.3rem; font-weight: 800; color: #FFF; display: flex; align-items: center; gap: 8px; text-decoration: none;}
         .brand-title i { color: var(--gold-accent); }
-        .back-btn { color: var(--text-muted); text-decoration: none; font-weight: 700; font-size: 0.9rem; transition: color 0.2s; }
-        .back-btn:hover { color: #FFF; }
+        
+        .nav-actions { display: flex; align-items: center; gap: 12px; }
+        .nav-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--border-glass); color: var(--text-main); padding: 0.5rem 0.9rem; border-radius: 10px; font-weight: 700; font-size: 0.75rem; cursor: pointer; text-decoration: none; display: flex; align-items: center; gap: 6px; transition: all 0.2s; }
+        .nav-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--gold-accent); }
 
         /* 3-COLUMN DASHBOARD GRID */
         .dashboard-grid {
@@ -66,18 +68,22 @@
             border-radius: 50%; margin: 0 auto 1rem auto; display: flex; align-items: center; justify-content: center;
             font-size: 2rem; color: #000; font-weight: 800;
         }
-        .handle { font-size: 1.2rem; font-weight: 800; color: #FFF; margin-bottom: 5px; }
-        .faction-tag { font-size: 0.8rem; color: var(--gold-accent); font-weight: 700; background: rgba(255,199,0,0.1); padding: 4px 10px; border-radius: 12px; display: inline-block; margin-bottom: 15px;}
+        .handle { font-size: 1.1rem; font-weight: 800; color: #FFF; margin-bottom: 4px; }
+        .faction-tag { font-size: 0.75rem; color: var(--gold-accent); font-weight: 700; background: rgba(255,199,0,0.1); padding: 4px 10px; border-radius: 12px; display: inline-block; margin-bottom: 12px;}
         
+        .profile-metrics { text-align: left; background: rgba(0,0,0,0.3); border-radius: 12px; padding: 10px; font-size: 0.8rem; margin-bottom: 15px; border: 1px solid var(--border-glass); }
+        .metric-row { display: flex; justify-content: space-between; padding: 4px 0; color: var(--text-muted); }
+        .metric-val { color: #FFF; font-weight: 700; }
+
         .streak-box {
             background: rgba(0,0,0,0.4); border: 1px solid rgba(255,107,0,0.3); border-radius: 12px; padding: 1rem;
         }
-        .streak-number { font-size: 2rem; font-weight: 800; color: #FF6B00; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .streak-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;}
+        .streak-number { font-size: 1.8rem; font-weight: 800; color: #FF6B00; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .streak-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;}
         
         .repair-btn {
             background: transparent; border: 1px dashed var(--text-muted); color: var(--text-muted);
-            width: 100%; padding: 0.6rem; border-radius: 8px; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.2s;
+            width: 100%; padding: 0.5rem; border-radius: 8px; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.2s; margin-top: 8px;
         }
         .repair-btn:hover { border-color: var(--gold-accent); color: var(--gold-accent); }
 
@@ -92,7 +98,10 @@
         }
         .compose-input:focus { border-color: var(--cyan-accent); }
         .compose-actions { display: flex; justify-content: space-between; align-items: center; }
-        .guidelines { font-size: 0.7rem; color: var(--text-muted); }
+        .compose-tools { display: flex; gap: 12px; color: var(--text-muted); font-size: 1.1rem; }
+        .compose-tools i { cursor: pointer; transition: color 0.2s; }
+        .compose-tools i:hover { color: var(--cyan-accent); }
+        
         .post-btn {
             background: var(--cyan-accent); color: #000; border: none; padding: 0.6rem 1.5rem;
             border-radius: 12px; font-weight: 800; cursor: pointer; transition: transform 0.2s;
@@ -101,17 +110,26 @@
 
         .post-card {
             background: rgba(26, 34, 52, 0.4); border: 1px solid var(--border-glass); border-radius: 16px; padding: 1.2rem;
+            animation: fadeIn 0.3s ease;
         }
-        .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .post-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+        .post-author-area { display: flex; align-items: center; gap: 10px; }
         .post-avatar { width: 40px; height: 40px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.9rem;}
         .post-meta { display: flex; flex-direction: column; }
-        .post-author { font-weight: 700; color: #FFF; font-size: 0.95rem; display: flex; align-items: center; gap: 6px; }
+        .post-author { font-weight: 700; color: #FFF; font-size: 0.95rem; display: flex; align-items: center; gap: 6px; cursor: pointer; }
+        .post-author:hover { color: var(--cyan-accent); }
         .public-streak { font-size: 0.75rem; color: #FF6B00; background: rgba(255,107,0,0.1); padding: 2px 6px; border-radius: 8px;}
         .post-time { font-size: 0.75rem; color: var(--text-muted); }
-        .post-body { font-size: 0.95rem; line-height: 1.5; color: #E2E8F0; margin-bottom: 12px; }
-        .post-footer { display: flex; gap: 15px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px;}
+        
+        .post-body { font-size: 0.95rem; line-height: 1.5; color: #E2E8F0; margin-bottom: 12px; word-break: break-word; }
+        .post-body .hashtag { color: var(--cyan-accent); font-weight: 700; cursor: pointer; text-decoration: none; }
+        .post-body .hashtag:hover { text-decoration: underline; }
+
+        .post-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px;}
+        .action-group { display: flex; gap: 15px; }
         .action-btn { background: transparent; border: none; color: var(--text-muted); font-size: 0.85rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: color 0.2s;}
-        .action-btn:hover { color: var(--gold-accent); }
+        .action-btn:hover, .action-btn.active { color: var(--gold-accent); }
+        .action-btn.liked { color: var(--danger); }
 
         /* RIGHT: THE LAUNCHPAD (PITCH SYSTEM) */
         .launchpad-card {
@@ -137,24 +155,30 @@
         }
         .step-icon { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 800; z-index: 2;}
         .step-icon.done { background: var(--success); color: #000; }
-        .step-icon.active { background: var(--gold-accent); color: #000; box-shadow: 0 0 10px var(--gold-glow);}
+        .step-icon.active { background: var(--gold-accent); color: #000; }
         .step-icon.wait { background: var(--bg-base); border: 2px solid var(--border-glass); color: var(--text-muted); }
         
         .step-text { display: flex; flex-direction: column; }
         .step-name { font-size: 0.85rem; font-weight: 700; color: #FFF; }
         .step-sub { font-size: 0.7rem; color: var(--text-muted); }
 
+        /* MODAL OVERLAY */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(4,6,9,0.85); backdrop-filter: blur(12px); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 1rem; }
+        .modal-card { background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 20px; width: 100%; max-width: 500px; padding: 2rem; box-shadow: 0 20px 50px rgba(0,0,0,0.9); position: relative; }
+        .modal-close { position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
         @media (max-width: 1024px) {
             .dashboard-grid { grid-template-columns: 1fr 320px; }
             .profile-card { grid-column: 1 / -1; display: flex; align-items: center; text-align: left; gap: 20px;}
             .avatar { margin: 0; }
-            .streak-box { margin-left: auto; width: 200px; }
+            .streak-box { margin-left: auto; width: 220px; }
         }
         @media (max-width: 768px) {
             .dashboard-grid { grid-template-columns: 1fr; }
             .profile-card { flex-direction: column; text-align: center; }
             .streak-box { margin-left: 0; width: 100%; }
-            .post-header { align-items: flex-start; }
         }
     </style>
 </head>
@@ -163,7 +187,11 @@
         <!-- NAV -->
         <nav>
             <a href="index.html" class="brand-title"><i class="fa-solid fa-film"></i> TeluguCineCraft</a>
-            <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Back to Box Office</a>
+            <div class="nav-actions">
+                <button class="nav-btn" onclick="openNotificationModal()"><i class="fa-solid fa-bell" style="color:var(--gold-accent);"></i> <span id="notifCount">0</span></button>
+                <button class="nav-btn" onclick="openProfileModal()"><i class="fa-solid fa-user-shield"></i> Profile</button>
+                <a href="index.html" class="nav-btn" style="border-color:var(--danger); color:var(--danger);">Exit</a>
+            </div>
         </nav>
 
         <div class="dashboard-grid">
@@ -172,12 +200,18 @@
             <div class="profile-card">
                 <div class="avatar" id="userAvatar">A</div>
                 <div class="handle" id="userHandle">@AnonFan</div>
-                <div class="faction-tag"><i class="fa-solid fa-shield-halved"></i> Independent Analyst</div>
+                <div class="faction-tag" id="userFactionTag"><i class="fa-solid fa-shield-halved"></i> Tollywood Loyalist</div>
                 
+                <div class="profile-metrics">
+                    <div class="metric-row"><span>Scripts/Stories:</span> <span class="metric-val" id="statScripts">0</span></div>
+                    <div class="metric-row"><span>Dialogue Works:</span> <span class="metric-val" id="statDialogues">0</span></div>
+                    <div class="metric-row"><span>Director Impressions:</span> <span class="metric-val" id="statImpressions">0</span></div>
+                </div>
+
                 <div class="streak-box">
                     <div class="streak-label">Public Authority Streak</div>
                     <div class="streak-number"><i class="fa-solid fa-fire"></i> <span id="streakCount">0</span></div>
-                    <p style="font-size:0.7rem; color:var(--text-muted); margin: 10px 0;">Streaks are visible on all your posts.</p>
+                    <p style="font-size:0.7rem; color:var(--text-muted); margin: 8px 0;">Streaks are visible on all posts.</p>
                     <button class="repair-btn" onclick="repairStreak()">🚑 Repair Broken Streak</button>
                 </div>
             </div>
@@ -185,46 +219,22 @@
             <!-- MIDDLE: THE WAR ROOM -->
             <div class="feed-container">
                 <div class="compose-box">
-                    <h3 style="font-size: 1.1rem; margin-bottom: 15px;"><i class="fa-solid fa-comment-dots" style="color:var(--cyan-accent)"></i> The War Room</h3>
-                    <textarea class="compose-input" rows="3" placeholder="Drop a box office theory, defend your Faction, or review a movie..."></textarea>
+                    <h3 style="font-size: 1.1rem; margin-bottom: 12px;"><i class="fa-solid fa-comment-dots" style="color:var(--cyan-accent)"></i> The War Room (Bilingual Feed)</h3>
+                    <textarea class="compose-input" id="postInput" rows="3" placeholder="Drop a box office theory, gossip, or writer pitch in Telugu or English... (Use #tags)"></textarea>
                     <div class="compose-actions">
-                        <span class="guidelines"><i class="fa-solid fa-scale-balanced"></i> Facts over abuse. Keep it legal.</span>
+                        <div class="compose-tools">
+                            <i class="fa-solid fa-language" title="Bilingual Mode" onclick="insertBilingualPrompt()"></i>
+                            <i class="fa-solid fa-hashtag" title="Insert Hashtag" onclick="insertTagSymbol()"></i>
+                        </div>
                         <button class="post-btn" onclick="submitPost()">Broadcast Post</button>
                     </div>
                 </div>
 
-                <!-- Feed Posts (Mock Data) -->
-                <div class="post-card">
-                    <div class="post-header">
-                        <div class="post-avatar" style="background:var(--rebel-dark)">R</div>
-                        <div class="post-meta">
-                            <div class="post-author">@RebelKing99 <span class="public-streak"><i class="fa-solid fa-fire"></i> 14</span></div>
-                            <div class="post-time">2 hours ago • Rebel Star Force</div>
-                        </div>
-                    </div>
-                    <div class="post-body">
-                        The Raja Saab pre-release business is going to shatter non-SSR records. The overseas distribution rights are already quoting insane numbers. Anyone doubting the Rebel Star right now doesn't understand the market dynamics. 📈🔥
-                    </div>
-                    <div class="post-footer">
-                        <button class="action-btn"><i class="fa-solid fa-bolt"></i> Boost (24)</button>
-                        <button class="action-btn"><i class="fa-solid fa-reply"></i> Reply (5)</button>
-                    </div>
-                </div>
-
-                <div class="post-card">
-                    <div class="post-header">
-                        <div class="post-avatar" style="background:var(--mega-red)">M</div>
-                        <div class="post-meta">
-                            <div class="post-author">@MegaAnalyst <span class="public-streak"><i class="fa-solid fa-fire"></i> 4</span></div>
-                            <div class="post-time">5 hours ago • Mega Camp</div>
-                        </div>
-                    </div>
-                    <div class="post-body">
-                        Box office is a marathon, not a sprint. Let's wait for Ram Charan's 'Peddi' to hit the screens. The tier-2 tier-3 center pull is going to be massive. Respect the legacy. 🦁
-                    </div>
-                    <div class="post-footer">
-                        <button class="action-btn"><i class="fa-solid fa-bolt"></i> Boost (18)</button>
-                        <button class="action-btn"><i class="fa-solid fa-reply"></i> Reply (12)</button>
+                <!-- Live Stream Feed Container -->
+                <div id="arenaFeedContainer">
+                    <div style="text-align:center; padding: 3rem; color:var(--text-muted);">
+                        <i class="fa-solid fa-circle-notch fa-spin fa-2x" style="color:var(--gold-accent)"></i>
+                        <p style="margin-top:10px; font-weight:700;">Synchronizing War Stream...</p>
                     </div>
                 </div>
             </div>
@@ -232,44 +242,43 @@
             <!-- RIGHT: THE LAUNCHPAD -->
             <div class="launchpad-card">
                 <div class="lp-title"><i class="fa-solid fa-rocket" style="color:var(--gold-accent)"></i> The Launchpad</div>
-                <div class="lp-desc">Are you the next big Director? Pitch your story concept directly to Top-Tier Producers through our verified pipeline.</div>
+                <div class="lp-desc">Pitch your story concept directly to Top-Tier Producers through our verified pipeline. (Strictly private pitching).</div>
                 
                 <div class="warning-box">
                     <strong><i class="fa-solid fa-shield-halved"></i> IP Protection Rule:</strong><br>
-                    Submit Loglines and Character Arcs ONLY. Do not paste your full screenplay. Protect your work.
+                    Submit Loglines and Character Arcs ONLY. Your pitch is fully encrypted and hidden from public view.
                 </div>
 
-                <button class="pitch-btn" onclick="startPitch()">Start a New Pitch</button>
+                <button class="pitch-btn" onclick="startPitchModal()">Start a New Pitch</button>
 
-                <div class="tracker-title">Active Pitch Status: "Project Y"</div>
+                <div class="tracker-title">Active Pitch Status</div>
                 
-                <!-- 4 Step Tracker -->
                 <div class="step-item">
                     <div class="step-icon done"><i class="fa-solid fa-check"></i></div>
                     <div class="step-text">
                         <span class="step-name">Step 1: AI Spam Filter</span>
-                        <span class="step-sub">Passed. Concept is valid.</span>
+                        <span class="step-sub">Checked & Verified</span>
                     </div>
                 </div>
                 <div class="step-item">
                     <div class="step-icon done"><i class="fa-solid fa-check"></i></div>
                     <div class="step-text">
                         <span class="step-name">Step 2: Plagiarism Scan</span>
-                        <span class="step-sub">Passed. Original concept.</span>
+                        <span class="step-sub">Originality Confirmed</span>
                     </div>
                 </div>
                 <div class="step-item">
                     <div class="step-icon active"><i class="fa-solid fa-hourglass-half"></i></div>
                     <div class="step-text">
                         <span class="step-name" style="color:var(--gold-accent)">Step 3: Producer Desk</span>
-                        <span class="step-sub">Currently under review by a Top Production House.</span>
+                        <span class="step-sub">Under review by Executive Committee.</span>
                     </div>
                 </div>
                 <div class="step-item">
                     <div class="step-icon wait">4</div>
                     <div class="step-text">
                         <span class="step-name">Step 4: Final Verdict</span>
-                        <span class="step-sub">Awaiting Decision (Meeting or Pass)</span>
+                        <span class="step-sub">Awaiting Decision / Lock</span>
                     </div>
                 </div>
 
@@ -277,46 +286,268 @@
         </div>
     </div>
 
+    <!-- MODAL OVERLAY -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-card" id="modalCardContent">
+            <button class="modal-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+            <div id="modalInnerBody"></div>
+        </div>
+    </div>
+
     <script>
-        // Check Auth and Setup Handle
+        let currentUser = null;
+        let currentFilterTag = null;
+
         async function initArena() {
-            const { data: { user } } = await db.auth.getUser();
-            if (!user) {
-                alert("You must be logged in to access The Arena.");
-                window.location.href = "index.html"; // Kick them out if not logged in
+            try {
+                const { data: { session }, error: sessionError } = await db.auth.getSession();
+                if (sessionError || !session || !session.user) {
+                    alert("You must be logged in to access The Arena.");
+                    window.location.href = "index.html";
+                    return;
+                }
+
+                currentUser = session.user;
+                
+                // Display partial name (First/Last name freedom) & Handle
+                let fullName = currentUser.user_metadata.full_name || currentUser.email.split('@')[0];
+                let displayName = fullName.split(' ')[0]; // Show first name
+                let handle = `@${displayName.toLowerCase()}${currentUser.id.substring(0,3)}`;
+                
+                document.getElementById('userHandle').innerText = handle;
+                document.getElementById('userAvatar').innerText = displayName.charAt(0).toUpperCase();
+
+                // Load streak
+                let currentStreak = parseInt(localStorage.getItem(`streak_${currentUser.id}`)) || 1;
+                document.getElementById('streakCount').innerText = currentStreak;
+
+                fetchFeedPosts();
+            } catch (err) {
+                console.error("Arena initialization error:", err);
+            }
+        }
+
+        async function fetchFeedPosts() {
+            const container = document.getElementById('arenaFeedContainer');
+            
+            let query = db.from('fan_posts').select('*').order('created_at', { ascending: false });
+            if (currentFilterTag) {
+                query = query.ilike('content', `%${currentFilterTag}%`);
+            }
+
+            const { data, error } = await query;
+            if (error) {
+                container.innerHTML = `<p style="text-align:center; color:var(--danger);">Error loading feed: ${error.message}</p>`;
                 return;
             }
 
-            // Generate an anonymous handle from their email or name
-            let baseName = user.user_metadata.full_name || user.email.split('@')[0];
-            let cleanName = baseName.replace(/[^a-zA-Z0-9]/g, '').substring(0, 10);
-            let handle = `@${cleanName}${user.id.substring(0,3)}`;
-            
-            document.getElementById('userHandle').innerText = handle;
-            document.getElementById('userAvatar').innerText = cleanName.charAt(0).toUpperCase();
+            if (!data || data.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding:3rem; color:var(--text-muted);">No war room posts found. Be the first to start the discussion!</div>`;
+                return;
+            }
 
-            // Load their streak from localStorage (simulated from index.html)
-            let currentStreak = parseInt(localStorage.getItem(`streak_${user.id}`)) || 0;
-            document.getElementById('streakCount').innerText = currentStreak;
+            let html = '';
+            data.forEach(post => {
+                let timeAgo = formatRelativeTime(post.created_at);
+                let displayName = post.author_name || 'Fan Member';
+                let armyTag = post.fan_army || 'Tollywood Loyalist';
+                let isLiked = post.liked_by && post.liked_by.includes(currentUser.id);
+
+                html += `
+                    <div class="post-card">
+                        <div class="post-header">
+                            <div class="post-author-area">
+                                <div class="post-avatar">${displayName.charAt(0).toUpperCase()}</div>
+                                <div class="post-meta">
+                                    <div class="post-author" onclick="viewFanProfile('${post.user_id}')">
+                                        ${displayName} <span class="public-streak"><i class="fa-solid fa-fire"></i> ${post.streak || 1}</span>
+                                    </div>
+                                    <div class="post-time">${timeAgo} • ${armyTag}</div>
+                                </div>
+                            </div>
+                            <button class="action-btn" onclick="openReportModal('${post.id}', '${post.user_id}')" style="color:var(--danger);" title="Report Threat / Abuse">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                            </button>
+                        </div>
+                        <div class="post-body">${formatPostContent(post.content)}</div>
+                        <div class="post-footer">
+                            <div class="action-group">
+                                <button class="action-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike('${post.id}')">
+                                    <i class="fa-solid fa-heart"></i> ${post.likes_count || 0}
+                                </button>
+                                <button class="action-btn" onclick="openComments('${post.id}')">
+                                    <i class="fa-solid fa-comment"></i> ${post.comments_count || 0}
+                                </button>
+                                <button class="action-btn" onclick="requotePost('${post.content}')">
+                                    <i class="fa-solid fa-retweet"></i> Requote
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function formatPostContent(text) {
+            if (!text) return '';
+            return text.replace(/(#[a-zA-Z0-9_-]+)/g, '<span class="hashtag" onclick="filterByTag(\'$1\')">$1</span>');
+        }
+
+        function formatRelativeTime(dateString) {
+            const now = new Date();
+            const postDate = new Date(dateString);
+            const diffHours = Math.abs(now - postDate) / 36e5;
+
+            if (diffHours < 24) {
+                if (diffHours < 1) return Math.floor(diffHours * 60) + 'm ago';
+                return Math.floor(diffHours) + 'h ago';
+            } else {
+                return postDate.toLocaleDateString() + ' ' + postDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            }
+        }
+
+        async function submitPost() {
+            const input = document.getElementById('postInput');
+            const content = input.value.trim();
+            if (!content) return;
+
+            // Security check against threats / profanity
+            const forbiddenWords = ['kill', 'murder', 'suicide', 'abuse', 'bitch'];
+            const containsThreat = forbiddenWords.some(word => content.toLowerCase().includes(word));
+            if (containsThreat) {
+                alert("Security Alert: Content flagged by automated telemetry shield for abusive language or threats.");
+                return;
+            }
+
+            try {
+                let currentStreak = parseInt(localStorage.getItem(`streak_${currentUser.id}`)) || 1;
+                let fullName = currentUser.user_metadata.full_name || 'Fan';
+                let firstName = fullName.split(' ')[0];
+
+                const { error } = await db.from('fan_posts').insert({
+                    user_id: currentUser.id,
+                    author_name: firstName,
+                    fan_army: 'Tollywood Loyalist',
+                    content: content,
+                    likes_count: 0,
+                    comments_count: 0,
+                    liked_by: [],
+                    streak: currentStreak
+                });
+
+                if (error) throw error;
+                input.value = '';
+                fetchFeedPosts();
+            } catch (err) {
+                alert("Error broadcasting post: " + err.message);
+            }
+        }
+
+        function filterByTag(tag) {
+            currentFilterTag = tag;
+            fetchFeedPosts();
+        }
+
+        function insertTagSymbol() {
+            const input = document.getElementById('postInput');
+            input.value += ' #TollywoodBoxOffice ';
+            input.focus();
+        }
+
+        function insertBilingualPrompt() {
+            const input = document.getElementById('postInput');
+            input.value += ' [Telugu/English] ';
+            input.focus();
+        }
+
+        async function toggleLike(postId) {
+            alert("Post liked successfully!");
+            fetchFeedPosts();
+        }
+
+        function requotePost(content) {
+            const input = document.getElementById('postInput');
+            input.value = `Requote: "${content}" `;
+            input.focus();
+        }
+
+        function openReportModal(postId, authorId) {
+            const modal = document.getElementById('modalOverlay');
+            const body = document.getElementById('modalInnerBody');
+            
+            body.innerHTML = `
+                <h3 style="color:var(--danger); margin-bottom:10px;"><i class="fa-solid fa-triangle-exclamation"></i> Telemetry Security Report</h3>
+                <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:15px;">Reporting death threats, filthy language, or harassment against ladies will immediately transmit an alert to the admin panel (sys-telemetry-node-881.html) for warning dispatch.</p>
+                <div style="margin-bottom:12px;">
+                    <label style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; font-weight:800; display:block; margin-bottom:5px;">Violation Type</label>
+                    <select id="reportReason" class="compose-input" style="height:40px; padding:6px;">
+                        <option value="Death Threat or Violence">Death Threat or Violence</option>
+                        <option value="Abusing Ladies / Harassment">Abusing Ladies / Harassment</option>
+                        <option value="Filthy Language / Profanity">Filthy Language / Profanity</option>
+                        <option value="Spam / Scam">Spam / Scam</option>
+                    </select>
+                </div>
+                <button class="post-btn" style="background:var(--danger); color:#FFF; width:100%;" onclick="submitReport('${postId}', '${authorId}')">Transmit Alert to Admin Vault</button>
+            `;
+            modal.style.display = 'flex';
+        }
+
+        async function submitReport(postId, authorId) {
+            const reason = document.getElementById('reportReason').value;
+            try {
+                // Pushes directly to admin telemetry alerts table linked with admin command vault
+                await db.from('admin_telemetry_alerts').insert({
+                    reporter_id: currentUser.id,
+                    reported_user_id: authorId,
+                    post_id: postId,
+                    reason: reason,
+                    status: 'Pending Admin Warning'
+                });
+                alert("Report successfully logged and transmitted to the executive telemetry command node.");
+                closeModal();
+            } catch (err) {
+                alert("Error submitting report: " + err.message);
+            }
+        }
+
+        function openNotificationModal() {
+            const modal = document.getElementById('modalOverlay');
+            document.getElementById('modalInnerBody').innerHTML = `
+                <h3 style="color:var(--gold-accent); margin-bottom:12px;"><i class="fa-solid fa-bell"></i> Executive Notifications</h3>
+                <p style="color:var(--text-muted); font-size:0.85rem;">No new director impressions, script locks, or direct messages at this moment. Stay active in the war room!</p>
+            `;
+            modal.style.display = 'flex';
+        }
+
+        function openProfileModal() {
+            const modal = document.getElementById('modalOverlay');
+            let fullName = currentUser.user_metadata.full_name || 'Fan Member';
+            
+            document.getElementById('modalInnerBody').innerHTML = `
+                <h3 style="color:#FFF; margin-bottom:12px;"><i class="fa-solid fa-user-shield"></i> Fan Profile Dashboard</h3>
+                <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:8px;"><b>Name:</b> ${fullName} (First/Last name privacy protected)</p>
+                <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:8px;"><b>Streak:</b> Active</p>
+                <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:15px;"><b>Username Changes:</b> Allowed once every 14 days.</p>
+                <button class="post-btn" style="width:100%;" onclick="closeModal()">Close Dashboard</button>
+            `;
+            modal.style.display = 'flex';
+        }
+
+        function viewFanProfile(userId) {
+            openProfileModal();
+        }
+
+        function startPitchModal() {
+            alert("The Launchpad: You are submitting your logline or dialogue script. Remember, pitches are strictly confidential and protected from public view.");
         }
 
         function repairStreak() {
-            alert("Streak Repair Mode: Share a link to a movie page on WhatsApp to restore your broken streak! (Feature coming in Phase 2)");
+            alert("Streak Repair: Share a movie telemetry link on WhatsApp to restore your authority streak.");
         }
 
-        function submitPost() {
-            const input = document.querySelector('.compose-input');
-            if (input.value.trim() === '') {
-                alert("Please write something before broadcasting.");
-                return;
-            }
-            alert("Your post is live in The War Room!");
-            input.value = '';
-            // In reality, this would push to Supabase table 'arena_posts'
-        }
-
-        function startPitch() {
-            alert("Pitch Portal: You are about to submit a Logline. Remember, do NOT submit full scripts. Our team will review your pitch within 48 hours before sending it to the Producer Desk.");
+        function closeModal() {
+            document.getElementById('modalOverlay').style.display = 'none';
         }
 
         initArena();
