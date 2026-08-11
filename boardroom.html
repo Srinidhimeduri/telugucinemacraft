@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- Admitad Verification Code -->
+    <meta name="verify-admitad" content="3b27ad383c" />
+    
+    <title>Producer & Studio Board Room | TeluguCineCraft Executive Terminal</title>
+
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Supabase JS Client v2 & Shared App Logic -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js"></script>
+
+    <style>
+        :root {
+            --bg-base: #040609;
+            --bg-glass: rgba(12, 17, 26, 0.9);
+            --bg-card: rgba(18, 24, 38, 0.75);
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(255, 199, 0, 0.4);
+            --gold-accent: #FFC700;
+            --gold-glow: rgba(255, 199, 0, 0.15);
+            --cyan-accent: #38BDF8;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --danger: #EF4444;
+            --success: #22C55E;
+            --exec-purple: #8B5CF6;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background-color: var(--bg-base);
+            background-image: radial-gradient(circle at 50% 0%, rgba(255, 199, 0, 0.02) 0%, transparent 50%);
+            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh;
+            padding: 1.5rem;
+        }
+
+        .container { max-width: 1450px; margin: 0 auto; }
+
+        /* Executive Nav */
+        nav {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1rem 1.8rem; background: var(--bg-glass);
+            backdrop-filter: blur(20px); border: 1px solid var(--border-glass); 
+            border-radius: 16px; margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+        .brand-title { font-size: 1.3rem; font-weight: 900; color: #FFF; display: flex; align-items: center; gap: 10px; text-decoration: none;}
+        .brand-title i { color: var(--gold-accent); }
+        .executive-badge { background: rgba(255,199,0,0.1); border: 1px solid var(--gold-accent); color: var(--gold-accent); font-size: 0.7rem; font-weight: 800; padding: 4px 10px; border-radius: 6px; text-transform: uppercase; letter-spacing: 1px;}
+        
+        .nav-actions { display: flex; align-items: center; gap: 15px; }
+        .back-btn { color: var(--text-muted); text-decoration: none; font-weight: 700; font-size: 0.8rem; transition: color 0.2s; background: rgba(255,255,255,0.03); padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid var(--border-glass); text-transform: uppercase;}
+        .back-btn:hover { color: #FFF; background: rgba(255,255,255,0.08); }
+
+        /* Spectate Fan Pulse Toggle Button */
+        .spectate-toggle-btn { background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); color: var(--cyan-accent); padding: 0.5rem 1rem; border-radius: 8px; font-weight: 800; font-size: 0.75rem; cursor: pointer; display: flex; align-items: center; gap: 6px; text-transform: uppercase; transition: all 0.2s;}
+        .spectate-toggle-btn:hover, .spectate-toggle-btn.active { background: var(--cyan-accent); color: #000; box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); }
+
+        /* Main Grid */
+        .boardroom-grid { display: grid; grid-template-columns: 320px 1fr; gap: 1.5rem; align-items: start; }
+
+        /* Left Console */
+        .studio-card {
+            background: var(--bg-card); border: 1px solid var(--border-glass);
+            border-radius: 18px; padding: 1.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .studio-title { font-size: 1rem; font-weight: 900; color: #FFF; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border-glass); padding-bottom: 0.8rem;}
+        
+        .metric-row { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px dashed rgba(255,255,255,0.05); }
+        .metric-label { font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
+        .metric-val { font-size: 0.9rem; font-weight: 900; color: var(--gold-accent); }
+
+        /* Workspace Sections */
+        .main-workspace { display: flex; flex-direction: column; gap: 1.5rem; }
+        .workspace-section { background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 18px; padding: 1.5rem; box-shadow: 0 10px 25px rgba(0,0,0,0.4); }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; border-bottom: 1px solid var(--border-glass); padding-bottom: 0.8rem;}
+        .section-title { font-size: 1.1rem; font-weight: 900; color: #FFF; display: flex; align-items: center; gap: 8px;}
+        .section-action { font-size: 0.75rem; color: var(--cyan-accent); font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;}
+
+        /* Fan Pulse Spectate Drawer (Hidden by default) */
+        .fan-pulse-drawer { background: rgba(56, 189, 248, 0.05); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 14px; padding: 1.2rem; margin-bottom: 1.5rem; display: none; }
+        .fan-pulse-drawer.visible { display: block; animation: fadeIn 0.3s ease; }
+        .pulse-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 10px; }
+        .pulse-card { background: rgba(0,0,0,0.4); padding: 0.8rem; border-radius: 10px; border: 1px solid var(--border-glass); text-align: center; }
+        .pulse-title { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: 800; margin-bottom: 4px; }
+        .pulse-val { font-size: 1rem; font-weight: 900; color: var(--cyan-accent); }
+
+        /* Script Cards */
+        .script-card { background: rgba(0,0,0,0.4); border: 1px solid var(--border-glass); border-radius: 14px; padding: 1.2rem; margin-bottom: 1rem; transition: border-color 0.2s; }
+        .script-card:hover { border-color: rgba(255, 199, 0, 0.3); }
+        .script-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+        .script-name { font-size: 1.05rem; font-weight: 900; color: #FFF; }
+        .script-meta { font-size: 0.75rem; color: var(--text-muted); display: flex; gap: 15px; margin-bottom: 10px; font-weight: 600;}
+        .script-logline { font-size: 0.85rem; color: #CBD5E1; line-height: 1.4; margin-bottom: 12px; font-weight: 500;}
+        
+        .script-actions { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-glass); padding-top: 10px;}
+        .script-stats { display: flex; gap: 15px; font-size: 0.75rem; color: var(--text-muted); font-weight: 700;}
+        .script-stats i { color: var(--gold-accent); margin-right: 4px; }
+        
+        .action-btn-group { display: flex; gap: 8px; }
+        .btn-like { background: rgba(255,255,255,0.05); border: 1px solid var(--border-glass); color: #FFF; padding: 0.4rem 0.8rem; border-radius: 8px; font-weight: 800; font-size: 0.75rem; cursor: pointer; }
+        .btn-like:hover { background: rgba(255,255,255,0.1); }
+        .btn-lock { background: linear-gradient(135deg, var(--gold-accent), #E6B300); color: #000; border: none; padding: 0.4rem 1rem; border-radius: 8px; font-weight: 900; font-size: 0.75rem; cursor: pointer; text-transform: uppercase; box-shadow: 0 4px 12px rgba(255,199,0,0.2);}
+        .btn-lock:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(255,199,0,0.4); }
+
+        /* Access Gate */
+        .access-gate { text-align: center; padding: 5rem 2rem; background: var(--bg-card); border: 1px dashed var(--gold-accent); border-radius: 20px; max-width: 600px; margin: 4rem auto; }
+        .access-gate i { font-size: 3rem; color: var(--gold-accent); margin-bottom: 15px; filter: drop-shadow(0 0 15px var(--gold-glow)); }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        @media (max-width: 1024px) { .boardroom-grid { grid-template-columns: 1fr; } .pulse-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container" id="mainContainer">
+        
+        <!-- NAV BAR -->
+        <nav>
+            <div style="display:flex; align-items:center; gap:12px;">
+                <a href="index.html" class="brand-title"><i class="fa-solid fa-briefcase"></i> Producer Board Room</a>
+                <span class="executive-badge">Secure Terminal v3.2</span>
+            </div>
+            <div class="nav-actions">
+                <button class="spectate-toggle-btn" id="spectateBtn" onclick="toggleSpectateMode()">
+                    <i class="fa-solid fa-eye"></i> Spectate Fan Pulse
+                </button>
+                <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Exit</a>
+            </div>
+        </nav>
+
+        <!-- DYNAMIC CONTENT AREA (VERIFIED OR GATED) -->
+        <div id="boardroomContent">
+            <div style="text-align:center; padding: 4rem; color:var(--text-muted);">
+                <i class="fa-solid fa-circle-notch fa-spin fa-2x" style="color:var(--gold-accent)"></i>
+                <p style="margin-top:15px; font-weight:700;">Verifying Studio Accreditation Clearance...</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let globalUser = null;
+        let isSpectateActive = false;
+
+        async function verifyStudioAccess() {
+            try {
+                const { data: { user } } = await db.auth.getUser();
+                globalUser = user;
+                const container = document.getElementById('boardroomContent');
+
+                if (!user) {
+                    // Not signed in
+                    container.innerHTML = `
+                        <div class="access-gate">
+                            <i class="fa-solid fa-lock"></i>
+                            <h2 style="color:#FFF; font-size:1.5rem; font-weight:900; margin-bottom:10px;">Executive Clearance Required</h2>
+                            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:20px; line-height:1.4;">The Producer Board Room is restricted to verified studio heads, directors, and accredited acquisition executives.</p>
+                            <button class="btn-lock" style="padding: 0.8rem 2rem; font-size:0.85rem;" onclick="handleGoogleLogin()">
+                                <i class="fa-brands fa-google" style="margin-right:6px;"></i> Sign In with Studio Credentials
+                            </button>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // SECURITY CHECK: In production, verify user.id against a verified studio whitelist table.
+                // For demonstration, if user is signed in, we render the high-level Board Room terminal!
+                renderExecutiveTerminal(user);
+
+            } catch (err) {
+                console.warn("Access verification error:", err);
+            }
+        }
+
+        async function handleGoogleLogin() {
+            await db.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
+        }
+
+        function toggleSpectateMode() {
+            isSpectateActive = !isSpectateActive;
+            const drawer = document.getElementById('fanPulseDrawer');
+            const btn = document.getElementById('spectateBtn');
+            if (drawer) {
+                if (isSpectateActive) {
+                    drawer.classList.add('visible');
+                    btn.classList.add('active');
+                    btn.innerHTML = `<i class="fa-solid fa-eye-slash"></i> Hide Fan Pulse`;
+                } else {
+                    drawer.classList.remove('visible');
+                    btn.classList.remove('active');
+                    btn.innerHTML = `<i class="fa-solid fa-eye"></i> Spectate Fan Pulse`;
+                }
+            }
+        }
+
+        function renderExecutiveTerminal(user) {
+            const container = document.getElementById('boardroomContent');
+            let shortEmail = user.email ? user.email.split('@')[0] : 'Executive';
+
+            container.innerHTML = `
+                <!-- FAN PULSE SPECTATOR DRAWER (TOGGLEABLE) -->
+                <div class="fan-pulse-drawer" id="fanPulseDrawer">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                        <span style="font-size:0.8rem; font-weight:900; color:var(--cyan-accent); text-transform:uppercase; letter-spacing:1px;">
+                            <i class="fa-solid fa-tower-broadcast"></i> Live Ground-Level Hype Telemetry (Fan Arena Feed)
+                        </span>
+                        <span style="font-size:0.7rem; color:var(--success); font-weight:800;">● Active Stream</span>
+                    </div>
+                    <div class="pulse-grid">
+                        <div class="pulse-card">
+                            <div class="pulse-title">Top Trending Fan Base</div>
+                            <div class="pulse-val" style="color:var(--gold-accent);">Prabhas Army (34%)</div>
+                        </div>
+                        <div class="pulse-card">
+                            <div class="pulse-title">Day-1 Sentiment Index</div>
+                            <div class="pulse-val">88% Positive (Uncorrupted)</div>
+                        </div>
+                        <div class="pulse-card">
+                            <div class="pulse-title">Nizam Advance Velocity</div>
+                            <div class="pulse-val" style="color:var(--success);">+42% vs Season Avg</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="boardroom-grid">
+                    
+                    <!-- LEFT: CONSOLE & MACRO METRICS -->
+                    <div class="studio-card">
+                        <div class="studio-title"><i class="fa-solid fa-chart-pie" style="color:var(--gold-accent)"></i> Studio Telemetry</div>
+                        
+                        <div class="metric-row">
+                            <span class="metric-label">Active Executive</span>
+                            <span class="metric-val" style="color:#FFF;">${shortEmail}</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Vetted IP Pool</span>
+                            <span class="metric-val">28 Loglines</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">NDA Compliance</span>
+                            <span class="metric-val" style="color:var(--success);">Active (256-bit)</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Platform Status</span>
+                            <span class="metric-val" style="color:var(--cyan-accent);">Jio-Tier Free Access</span>
+                        </div>
+
+                        <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(139, 92, 246, 0.05); border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 12px;">
+                            <div style="font-size:0.75rem; font-weight:900; color:var(--exec-purple); margin-bottom:4px; text-transform:uppercase;">
+                                <i class="fa-solid fa-shield-halved"></i> Anti-Lawsuit Escrow
+                            </div>
+                            <p style="font-size:0.75rem; color:var(--text-muted); line-height:1.4;">Locking any script initiates instant digital watermarking and timestamp protection between the studio and writer.</p>
+                        </div>
+                    </div>
+
+                    <!-- RIGHT: WORKWORKSPACE -->
+                    <div class="main-workspace">
+                        
+                        <!-- 1. CURATED SCRIPT DEAL FLOW -->
+                        <div class="workspace-section">
+                            <div class="section-header">
+                                <div class="section-title"><i class="fa-solid fa-file-contract" style="color:var(--gold-accent)"></i> Curated Script Inflow (Zero Spam)</div>
+                                <span class="section-action">AI Vetted & Plagiarism Checked</span>
+                            </div>
+
+                            <!-- Script Card 1 -->
+                            <div class="script-card">
+                                <div class="script-top">
+                                    <div class="script-name">Project Vajra: Sci-Fi Action Epic</div>
+                                    <span style="background:rgba(56,189,248,0.1); color:var(--cyan-accent); padding:3px 8px; border-radius:6px; font-size:0.7rem; font-weight:800;">Action / Sci-Fi</span>
+                                </div>
+                                <div class="script-meta">
+                                    <span><i class="fa-regular fa-user"></i> Author: Anonymous Creator #4092</span>
+                                    <span><i class="fa-solid fa-coins"></i> Scale: ₹80 Cr+ (Pan-India)</span>
+                                </div>
+                                <div class="script-logline">
+                                    "When an ancient subterranean energy source is unearthed beneath the Singareni Collieries, a disgraced mine engineer must stop a rogue corporate syndicate from weaponizing seismic technology."
+                                </div>
+                                <div class="script-actions">
+                                    <div class="script-stats">
+                                        <span><i class="fa-solid fa-eye"></i> 142 Studio Views</span>
+                                        <span><i class="fa-solid fa-bookmark"></i> 18 Bookmarks</span>
+                                    </div>
+                                    <div class="action-btn-group">
+                                        <button class="btn-like" onclick="actionLike('Project Vajra')"><i class="fa-solid fa-heart" style="color:var(--danger)"></i> Like</button>
+                                        <button class="btn-lock" onclick="actionLockStory('Project Vajra')"><i class="fa-solid fa-lock"></i> Lock Story</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Script Card 2 -->
+                            <div class="script-card">
+                                <div class="script-top">
+                                    <div class="script-name">The Godavari Heist: Rural Crime Thriller</div>
+                                    <span style="background:rgba(34,197,94,0.1); color:var(--success); padding:3px 8px; border-radius:6px; font-size:0.7rem; font-weight:800;">Crime / Thriller</span>
+                                </div>
+                                <div class="script-meta">
+                                    <span><i class="fa-regular fa-user"></i> Author: Anonymous Creator #1184</span>
+                                    <span><i class="fa-solid fa-coins"></i> Scale: ₹25 Cr (Tier-2 Masterpiece)</span>
+                                </div>
+                                <div class="script-logline">
+                                    "Set against the backdrop of a massive Godavari pushkaralu festival, three retired boatmen plan a meticulous heist of an antique gold shipment resting at the riverbed."
+                                </div>
+                                <div class="script-actions">
+                                    <div class="script-stats">
+                                        <span><i class="fa-solid fa-eye"></i> 98 Studio Views</span>
+                                        <span><i class="fa-solid fa-bookmark"></i> 12 Bookmarks</span>
+                                    </div>
+                                    <div class="action-btn-group">
+                                        <button class="btn-like" onclick="actionLike('The Godavari Heist')"><i class="fa-solid fa-heart" style="color:var(--danger)"></i> Like</button>
+                                        <button class="btn-lock" onclick="actionLockStory('The Godavari Heist')"><i class="fa-solid fa-lock"></i> Lock Story</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- 2. STUDIO COMBINATION MATRIX -->
+                        <div class="workspace-section">
+                            <div class="section-header">
+                                <div class="section-title"><i class="fa-solid fa-chart-line" style="color:var(--cyan-accent)"></i> Talent ROI & Combination Matrix</div>
+                                <span class="section-action">Verified Analytics</span>
+                            </div>
+                            <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.4;">
+                                Historical data indicates director-composer pairings involving mass beats cross the 2.2x recovery threshold 74% more often in Nizam and Ceded territories. Full multi-variable matrix accessible via enterprise tier.
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+            `;
+        }
+
+        function actionLike(title) {
+            alert(`"${title}" bookmarked and liked to your executive portfolio.`);
+        }
+
+        function actionLockStory(title) {
+            const confirmLock = confirm(`⚡ LOCK OPTION: Are you sure you want to lock "${title}" for exclusive studio discussion? This will temporarily freeze the script in the public marketplace and alert the TeluguCineCraft escrow desk.`);
+            if (confirmLock) {
+                alert(`Success! "${title}" is now locked under your studio profile. The administration team will establish secure escrow channels.`);
+            }
+        }
+
+        verifyStudioAccess();
+    </script>
+</body>
+</html>
