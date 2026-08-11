@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Executive Command Vault | TeluguCineCraft Admin</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js"></script>
+
+    <style>
+        :root {
+            --bg-base: #020408;
+            --bg-card: rgba(14, 19, 30, 0.9);
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --gold-accent: #FFC700;
+            --cyan-accent: #38BDF8;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --danger: #EF4444;
+            --success: #22C55E;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        .vault-header {
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--bg-card); border: 1px solid var(--border-glass);
+            padding: 1.2rem 2rem; border-radius: 16px; margin-bottom: 2rem;
+        }
+
+        .vault-title { font-size: 1.2rem; font-weight: 900; color: #FFF; display: flex; align-items: center; gap: 10px; }
+        .vault-title i { color: var(--gold-accent); }
+
+        .admin-table-container {
+            background: var(--bg-card); border: 1px solid var(--border-glass);
+            border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        }
+
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background: rgba(0,0,0,0.4); padding: 1rem 1.2rem; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 800; letter-spacing: 1px; border-bottom: 1px solid var(--border-glass); }
+        td { padding: 1rem 1.2rem; font-size: 0.85rem; border-bottom: 1px solid rgba(255,255,255,0.03); font-weight: 500; }
+        tr:hover td { background: rgba(255,255,255,0.01); }
+
+        .badge-status { padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; }
+        .badge-pending { background: rgba(56,189,248,0.1); color: var(--cyan-accent); border: 1px solid rgba(56,189,248,0.3); }
+        .badge-approved { background: rgba(34,197,94,0.1); color: var(--success); border: 1px solid rgba(34,197,94,0.3); }
+        .badge-rejected { background: rgba(239,68,68,0.1); color: var(--danger); border: 1px solid rgba(239,68,68,0.3); }
+
+        .action-btn { padding: 6px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 800; cursor: pointer; border: none; text-transform: uppercase; margin-right: 6px; transition: all 0.2s; }
+        .btn-approve { background: var(--success); color: #000; }
+        .btn-approve:hover { filter: brightness(1.1); }
+        .btn-reject { background: rgba(239,68,68,0.15); color: var(--danger); border: 1px solid rgba(239,68,68,0.3); }
+        .btn-reject:hover { background: var(--danger); color: #FFF; }
+
+        .lockdown-screen { text-align: center; padding: 6rem 2rem; max-width: 500px; margin: 4rem auto; background: var(--bg-card); border: 1px solid var(--danger); border-radius: 20px; }
+        .lockdown-screen i { font-size: 3rem; color: var(--danger); margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container" id="adminContainer">
+        <div style="text-align:center; padding: 4rem; color:var(--text-muted);">
+            <i class="fa-solid fa-circle-notch fa-spin fa-2x" style="color:var(--gold-accent)"></i>
+            <p style="margin-top:15px; font-weight:700;">Verifying Cryptographic Admin Session...</p>
+        </div>
+    </div>
+
+    <script>
+        // REPLACE WITH YOUR EXACT MASTER ADMIN EMAIL
+        const MASTER_ADMIN_EMAIL = "YOUR_ADMIN_EMAIL@gmail.com";
+
+        async function verifyAdminVault() {
+            try {
+                const { data: { user } } = await db.auth.getUser();
+                const container = document.getElementById('adminContainer');
+
+                if (!user || user.email !== MASTER_ADMIN_EMAIL) {
+                    // BREACH DETECTED: Render absolute lockdown screen
+                    container.innerHTML = `
+                        <div class="lockdown-screen">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <h2 style="color:#FFF; font-size:1.4rem; font-weight:900; margin-bottom:10px;">ACCESS DENIED</h2>
+                            <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:20px; line-height:1.5;">Unauthorized intrusion attempt detected. This cryptographic vault is monitored and restricted to master executive clearance only.</p>
+                            <a href="index.html" style="color:var(--cyan-accent); font-weight:800; font-size:0.8rem; text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Return to Public Terminal</a>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Authorized! Load executive applications
+                renderAdminDashboard(user);
+
+            } catch (err) {
+                console.error("Vault verification error:", err);
+            }
+        }
+
+        async function renderAdminDashboard(user) {
+            const container = document.getElementById('adminContainer');
+            
+            container.innerHTML = `
+                <div class="vault-header">
+                    <div class="vault-title"><i class="fa-solid fa-vault"></i> Executive Command Vault</div>
+                    <div style="display:flex; align-items:center; gap:15px;">
+                        <span style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">Admin: ${user.email}</span>
+                        <button onclick="signOutAdmin()" style="background:none; border:1px solid var(--border-glass); color:var(--text-muted); padding:5px 10px; border-radius:6px; font-size:0.7rem; font-weight:800; cursor:pointer;">Lock Vault</button>
+                    </div>
+                </div>
+
+                <div class="admin-table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Applicant Name</th>
+                                <th>Studio / Banner</th>
+                                <th>Role</th>
+                                <th>Email</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="approvalsTableBody">
+                            <tr><td colspan="6" style="text-align:center; padding:2rem; color:var(--text-muted);">Decrypting secure applicant records...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            fetchApprovals();
+        }
+
+        async function fetchApprovals() {
+            const { data, error } = await db
+                .from('studio_approvals')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            const tbody = document.getElementById('approvalsTableBody');
+            if (error) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--danger); padding:2rem;">Error loading secure records: ${error.message}</td></tr>`;
+                return;
+            }
+
+            if (!data || data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:2rem; color:var(--text-muted);">No pending studio accreditations found.</td></tr>`;
+                return;
+            }
+
+            let html = '';
+            data.forEach(row => {
+                let badgeClass = row.status === 'approved' ? 'badge-approved' : (row.status === 'rejected' ? 'badge-rejected' : 'badge-pending');
+                html += `
+                    <tr>
+                        <td style="font-weight:800; color:#FFF;">${row.full_name}</td>
+                        <td style="color:var(--gold-accent); font-weight:700;">${row.studio_name}</td>
+                        <td>${row.role}</td>
+                        <td style="color:var(--text-muted);">${row.email}</td>
+                        <td><span class="badge-status ${badgeClass}">${row.status}</span></td>
+                        <td>
+                            <button class="action-btn btn-approve" onclick="updateStatus('${row.id}', 'approved')">Approve</button>
+                            <button class="action-btn btn-reject" onclick="updateStatus('${row.id}', 'rejected')">Reject</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        async function updateStatus(recordId, newStatus) {
+            try {
+                const { error } = await db
+                    .from('studio_approvals')
+                    .update({ status: newStatus })
+                    .eq('id', recordId);
+
+                if (error) throw error;
+                
+                fetchApprovals();
+            } catch (err) {
+                alert("Security authorization failed: " + err.message);
+            }
+        }
+
+        async function signOutAdmin() {
+            await db.auth.signOut();
+            window.location.reload();
+        }
+
+        verifyAdminVault();
+    </script>
+</body>
+</html>
