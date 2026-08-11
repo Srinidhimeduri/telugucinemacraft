@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+\<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -437,7 +437,10 @@
             }
         }
 
-        function triggerTradeLogin() { alert("💼 Industry Portal Verification System is rolling out in Phase 3. Filmmakers and Producers must apply for verified access. Please use Fan Sign In for now."); }
+        // --- CEO: HOOKED TO BOARD ROOM ---
+        function triggerTradeLogin() { 
+            window.location.href = "boardroom.html"; 
+        }
 
         function calculateAndGetStreak(userId) {
             const today = new Date().toDateString();
@@ -534,7 +537,6 @@
             if (upcomingList.length === 0) { hypeArea.innerHTML = `<p style="color:var(--text-muted); text-align:center; padding:1rem;">No unreleased films detected.</p>`; return; }
 
             let html = '';
-            // Only show Top 10 to keep list compact
             upcomingList.slice(0, 10).forEach((m, idx) => {
                 const name = m.movie_name || m.title || 'Upcoming Title'; const mId = m.movie_id || m.id || '';
                 const hypePoints = (85000 - (idx * 4200)).toLocaleString('en-IN');
@@ -570,7 +572,7 @@
 
             setTimeout(() => {
                 renderHypeLeaderboard(allMovies);
-                renderMovies(allMovies.slice(0, 12)); // Show slightly more initially
+                renderMovies(allMovies.slice(0, 12));
             }, 600);
         }
 
