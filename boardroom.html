@@ -152,7 +152,9 @@
 
         async function verifyStudioAccess() {
             try {
-                const { data: { user } } = await db.auth.getUser();
+                const { data: { user }, error: authError } = await db.auth.getUser();
+                if (authError) throw authError;
+                
                 globalUser = user;
                 const container = document.getElementById('boardroomContent');
 
@@ -171,21 +173,21 @@
                     return;
                 }
 
-                // Check Supabase if this authenticated user has an approval record
-                const { data: approvalRecord, error } = await db
+                // Safe fetch: Gets the latest approval record without crashing on multi-rows
+                const { data: records, error } = await db
                     .from('studio_approvals')
                     .select('*')
                     .eq('user_id', user.id)
-                    .single();
+                    .order('created_at', { ascending: false });
+
+                const approvalRecord = records && records.length > 0 ? records[0] : null;
 
                 if (error || !approvalRecord) {
-                    // Authenticated via Google, but has not submitted the studio accreditation form yet
                     renderAccreditationForm(user);
                     return;
                 }
 
                 if (approvalRecord.status === 'pending') {
-                    // Submitted, pending admin approval (Authoritative tone)
                     container.innerHTML = `
                         <div class="access-gate" style="border-color: rgba(56, 189, 248, 0.3);">
                             <div style="font-size: 0.7rem; letter-spacing: 2px; color: var(--cyan-accent); font-weight: 800; text-transform: uppercase; margin-bottom: 8px;">
@@ -215,8 +217,37 @@
                     return;
                 }
 
+                if (approvalRecord.status === 'rejected') {
+                    container.innerHTML = `
+                        <div class="access-gate" style="border-color: rgba(239, 68, 68, 0.4); max-width: 650px; background: rgba(12, 17, 26, 0.95);">
+                            <div style="font-size: 0.7rem; letter-spacing: 2px; color: var(--danger); font-weight: 800; text-transform: uppercase; margin-bottom: 8px;">
+                                [ PROTOCOL 04: AUDIT FAILED ]
+                            </div>
+                            <h2 style="color:#FFF; font-size: 1.25rem; font-weight: 900; margin-bottom: 6px; text-transform: uppercase; letter-spacing: -0.2px;">
+                                Accreditation Status: Verification Failure
+                            </h2>
+                            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700; margin-bottom: 24px; text-transform: uppercase; letter-spacing: 0.5px;">
+                                Entity: ${approvalRecord.studio_name} (${approvalRecord.role})
+                            </div>
+                            
+                            <div style="background: rgba(0,0,0,0.6); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 12px; padding: 1.8rem; text-align: left; margin-bottom: 24px;">
+                                <p style="color: var(--text-muted); font-size: 0.88rem; line-height: 1.6; font-weight: 500; margin-bottom: 16px;">
+                                    Your studio credentials could not be automatically authenticated against recognized Tollywood corporate registries or active production banners. 
+                                </p>
+                                <div style="border-top: 1px solid rgba(255,255,255,0.06); padding-top: 14px; font-size: 0.8rem; color: #FFF; font-weight: 700; line-height: 1.5;">
+                                    <i class="fa-solid fa-headset" style="color: var(--cyan-accent); margin-right: 6px;"></i> 
+                                    Action Required: Please contact the TeluguCineCraft Executive Committee support team to submit manual proof of firm-surety.
+                                </div>
+                            </div>
+                            <button class="back-btn" onclick="signOutUser()" style="margin: 0 auto; display: inline-flex; font-size: 0.75rem; letter-spacing: 0.5px;">
+                                Switch Profile / Sign Out
+                            </button>
+                        </div>
+                    `;
+                    return;
+                }
+
                 if (approvalRecord.status === 'approved') {
-                    // APPROVED! Enter the boardroom.
                     renderExecutiveTerminal(user);
                 }
 
