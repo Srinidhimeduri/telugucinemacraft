@@ -2,186 +2,183 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- Admitad Verification Code -->
+    <meta name="verify-admitad" content="3b27ad383c" />
+    
     <title>TeluguCineCraft | TFI Technician Directory & Talent Hub</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Supabase JS Client v2 & Shared App Logic -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js"></script>
+
     <style>
         :root {
-            --bg-color: #0B0F19;
-            --card-bg: #1E293B;
-            --accent-gold: #FBBF24;
+            --bg-base: #06080C;
+            --bg-glass: rgba(18, 24, 38, 0.75);
+            --bg-card: rgba(26, 34, 52, 0.6);
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(255, 199, 0, 0.4);
+            --gold-accent: #FFC700;
+            --gold-glow: rgba(255, 199, 0, 0.15);
+            --cyan-accent: #38BDF8;
             --text-main: #F8FAFC;
-            --text-sub: #94A3B8;
-            --border-color: #334155;
-            --badge-green: #34D399;
+            --text-muted: #94A3B8;
+            --danger: #EF4444;
+            --success: #22C55E;
         }
 
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
         body {
-            background-color: var(--bg-color);
+            background-color: var(--bg-base);
+            background-image: 
+                radial-gradient(circle at 15% 10%, rgba(255, 199, 0, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(56, 189, 248, 0.04) 0%, transparent 40%);
             color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            margin: 0;
-            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh;
+            padding: 1.2rem;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
+        .container { max-width: 1350px; margin: 0 auto; width: 100%; }
+
+        /* --- NAV BAR --- */
         nav {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0.85rem 1.6rem; background: var(--bg-glass);
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-glass); border-radius: 16px;
+            margin-bottom: 2rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            width: 100%; max-width: 1350px;
+        }
+        .brand-title { font-size: 1.4rem; font-weight: 900; color: #FFF; display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .brand-title i { color: var(--gold-accent); }
+
+        .auth-container { display: flex; align-items: center; gap: 12px; }
+        .user-identity { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 0.85rem; color: #FFF; background: rgba(255,255,255,0.05); padding: 0.4rem 0.8rem; border-radius: 8px; border: 1px solid var(--border-glass); }
+        .streak-fire { color: #FF6B00; font-weight: 800; display: flex; align-items: center; gap: 4px; margin-left: 5px; background: rgba(255, 107, 0, 0.1); padding: 2px 6px; border-radius: 6px; }
+
+        .auth-btn { background: rgba(255, 199, 0, 0.12); border: 1px solid var(--gold-accent); color: var(--gold-accent); padding: 0.55rem 1.2rem; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 0.88rem; transition: all 0.3s ease; display: flex; align-items: center; gap: 6px; text-decoration: none; text-transform: uppercase;}
+        .auth-btn:hover { background: var(--gold-accent); color: #000; box-shadow: 0 0 15px var(--gold-glow); }
+        .signout-btn { background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 0.45rem 0.8rem; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.78rem; transition: all 0.2s ease; }
+        .signout-btn:hover { background: var(--danger); color: #FFF; }
+        
+        .nav-links { display: flex; align-items: center; gap: 1rem; }
+        .nav-links a { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; font-weight: 700; transition: color 0.2s; }
+        .nav-links a:hover, .nav-links a.active { color: var(--gold-accent); }
+
+        /* Main Content Area */
+        .directory-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             width: 100%;
-            background-color: #0F172A;
-            border-bottom: 1px solid var(--border-color);
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
 
-        .nav-logo {
-            color: var(--accent-gold);
-            font-size: 1.4rem;
-            font-weight: bold;
-            text-decoration: none;
-        }
-
-        .nav-links a {
-            color: var(--text-sub);
-            text-decoration: none;
-            margin-left: 1.2rem;
-            font-size: 0.95rem;
-            font-weight: 500;
-        }
-
-        .nav-links a.active {
-            color: var(--accent-gold);
-            font-weight: 600;
-        }
-
-        .container {
-            width: 92%;
-            max-width: 1000px;
-            margin: 2rem 0;
-        }
-
-        .header-title {
-            color: var(--accent-gold);
-            font-size: 1.8rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .header-desc {
-            color: var(--text-sub);
-            margin-bottom: 1.5rem;
-            font-size: 0.95rem;
-            line-height: 1.4;
-        }
+        .header-title { color: var(--gold-accent); font-size: 2rem; font-weight: 900; margin-bottom: 0.5rem; letter-spacing: -0.5px;}
+        .header-desc { color: var(--text-muted); margin-bottom: 2rem; font-size: 0.95rem; line-height: 1.5; font-weight: 500;}
 
         .search-box {
-            width: 100%;
-            max-width: 500px;
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
+            width: 100%; max-width: 550px;
+            background-color: rgba(0,0,0,0.4);
+            border: 1px solid var(--border-glass);
             color: var(--text-main);
-            padding: 12px 16px;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            outline: none;
-            margin-bottom: 1.5rem;
+            padding: 1rem 1rem 1rem 3rem;
+            border-radius: 14px;
+            font-size: 0.95rem; outline: none;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
         }
-
-        .search-box:focus {
-            border-color: var(--accent-gold);
-        }
+        .search-box:focus { border-color: var(--gold-accent); box-shadow: 0 0 15px var(--gold-glow); background: var(--bg-base); }
+        .search-wrapper { position: relative; max-width: 550px; margin-bottom: 2rem;}
+        .search-wrapper i { position: absolute; left: 1.2rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
 
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 1rem;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.2rem;
         }
 
         .tech-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 1.2rem;
-            transition: transform 0.2s, border-color 0.2s;
+            background-color: rgba(0,0,0,0.3);
+            border: 1px solid var(--border-glass);
+            border-radius: 14px;
+            padding: 1.5rem;
+            transition: all 0.2s ease;
             text-decoration: none;
             color: inherit;
-            display: block;
+            display: flex; flex-direction: column; justify-content: space-between;
         }
 
         .tech-card:hover {
-            transform: translateY(-2px);
-            border-color: var(--accent-gold);
+            transform: translateY(-4px);
+            border-color: var(--gold-accent);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4), 0 0 10px var(--gold-glow);
         }
 
-        .tech-name {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: var(--accent-gold);
-            margin-bottom: 0.3rem;
-        }
-
+        .tech-name { font-size: 1.2rem; font-weight: 800; color: #FFF; margin-bottom: 0.4rem; }
         .craft-tag {
-            display: inline-block;
-            background-color: rgba(251, 191, 36, 0.15);
-            color: var(--accent-gold);
-            border: 1px solid var(--accent-gold);
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-bottom: 0.8rem;
+            display: inline-block; background-color: rgba(255, 199, 0, 0.1);
+            color: var(--gold-accent); border: 1px solid rgba(255, 199, 0, 0.3);
+            padding: 3px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 800;
+            margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.5px;
         }
 
-        .tech-bio {
-            color: var(--text-sub);
-            font-size: 0.88rem;
-            line-height: 1.4;
-            margin: 0;
-        }
+        .tech-bio { color: var(--text-muted); font-size: 0.85rem; line-height: 1.4; margin-bottom: 1rem; font-weight: 500;}
+        .verified-badge { font-size: 0.75rem; color: var(--success); font-weight: 700; display: flex; align-items: center; gap: 5px; }
 
-        .verified-badge {
-            margin-top: 0.8rem;
-            font-size: 0.75rem;
-            color: var(--badge-green);
-            font-weight: 600;
-        }
-
-        @media (max-width: 600px) {
-            nav { padding: 1rem; }
-            .header-title { font-size: 1.4rem; }
-            .grid { grid-template-columns: 1fr; }
+        @media (max-width: 768px) {
+            nav { flex-direction: column; gap: 1rem; padding: 1rem; text-align: center;}
+            .auth-container { flex-direction: column-reverse; width: 100%; align-items: stretch;}
+            .header-title { font-size: 1.6rem; }
+            .directory-box { padding: 1.2rem; }
         }
     </style>
 </head>
 <body>
 
     <nav>
-        <a href="index.html" class="nav-logo">TeluguCineCraft</a>
+        <a href="index.html" class="brand-title"><i class="fa-solid fa-film"></i> TeluguCineCraft</a>
         <div class="nav-links">
-            <a href="index.html">Movies</a>
+            <a href="index.html">Box Office</a>
             <a href="technicians.html" class="active">Talent Directory</a>
+        </div>
+        <div id="userMenuArea" class="auth-container">
+            <!-- Populated via Supabase Auth -->
         </div>
     </nav>
 
     <div class="container">
-        <h1 class="header-title">TFI Craft & Technician Directory</h1>
-        <p class="header-desc">Discover verified TFI talent across all crafts—from visionaries to unsung behind-the-scenes crew members.</p>
+        <div class="directory-box">
+            <h1 class="header-title">TFI Craft & Technician Directory</h1>
+            <p class="header-desc">Discover verified TFI talent across all crafts—from master directors to unsung behind-the-scenes crew members.</p>
 
-        <input type="text" id="techSearch" class="search-box" placeholder="Search technician by name or craft (e.g., Director, Stunts, DOP)..." oninput="filterTechs()">
+            <div class="search-wrapper">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="techSearch" class="search-box" placeholder="Search technician by name or craft (e.g., Director, Stunts, DOP)..." oninput="filterTechs()" style="margin-bottom:0;">
+            </div>
 
-        <div class="grid" id="techGrid">
-            <p style="color:var(--text-sub);">Loading technicians index...</p>
+            <div class="grid" id="techGrid">
+                <p style="color:var(--text-muted);">Loading technicians index...</p>
+            </div>
         </div>
     </div>
 
     <script>
-        const SUPABASE_URL = "https://eosgvjvpdwxmpxzerxit.supabase.co";
-        const SUPABASE_ANON_KEY = "sb_publishable_FVXC4U8wUB2l1SmWLpmoeg_4RkydeLx";
         let allTechs = [];
+        let globalUser = null;
 
         function escapeHTML(str) {
             if (!str) return '';
@@ -190,14 +187,70 @@
             });
         }
 
-        document.addEventListener("DOMContentLoaded", async function() {
-            if (typeof supabase !== 'undefined') {
-                const { createClient } = supabase;
-                const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        function calculateAndGetStreak(userId) {
+            const today = new Date().toDateString();
+            const yesterday = new Date(Date.now() - 86400000).toDateString();
+            let lastVisit = localStorage.getItem(`lastVisit_${userId}`);
+            let storedStreak = parseInt(localStorage.getItem(`streak_${userId}`)) || 0;
+            let newStreak = (lastVisit === yesterday) ? storedStreak + 1 : (lastVisit === today ? storedStreak || 1 : 1);
+            localStorage.setItem(`lastVisit_${userId}`, today);
+            localStorage.setItem(`streak_${userId}`, newStreak);
+            return newStreak;
+        }
+
+        async function updateAuthUI() {
+            try {
+                const { data: { user } } = await db.auth.getUser();
+                globalUser = user;
+                const area = document.getElementById('userMenuArea');
                 
-                const { data: techs } = await supabaseClient.from('technicians').select('*');
+                if (user) {
+                    const streakCount = calculateAndGetStreak(user.id);
+                    let baseName = user.user_metadata.full_name || user.email.split('@')[0];
+                    let shortName = baseName.split(' ')[0].substring(0, 10);
+
+                    area.innerHTML = `
+                        <div class="user-identity">
+                            <i class="fa-solid fa-user-astronaut" style="color:var(--cyan-accent)"></i> ${shortName}
+                            <span class="streak-fire"><i class="fa-solid fa-fire"></i> ${streakCount}</span>
+                        </div>
+                        <a href="arena.html" class="auth-btn" style="background: rgba(239, 68, 68, 0.15); border-color: var(--danger); color: #FFF; padding:0.4rem 0.8rem; font-size:0.75rem;">
+                            <i class="fa-solid fa-khanda" style="color: var(--danger);"></i> Fan Arena
+                        </a>
+                        <button class="signout-btn" title="Sign Out" onclick="signOutUser()"><i class="fa-solid fa-right-from-bracket"></i></button>
+                    `;
+                } else {
+                    area.innerHTML = `
+                        <button class="auth-btn" onclick="handleGoogleLogin()">
+                            <i class="fa-brands fa-google"></i> Sign In
+                        </button>
+                    `;
+                }
+            } catch (err) {
+                console.warn("Auth check warning:", err);
+            }
+        }
+
+        async function handleGoogleLogin() { 
+            await db.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } }); 
+        }
+        
+        async function signOutUser() { 
+            await db.auth.signOut(); 
+            window.location.reload(); 
+        }
+
+        document.addEventListener("DOMContentLoaded", async function() {
+            await updateAuthUI();
+            
+            try {
+                const { data: techs, error } = await db.from('technicians').select('*');
+                if (error) throw error;
                 allTechs = techs || [];
                 renderTechs(allTechs);
+            } catch (err) {
+                console.warn("Error fetching technicians:", err);
+                document.getElementById('techGrid').innerHTML = `<p style="color:var(--danger); grid-column:1/-1;">Failed to load technicians index from database.</p>`;
             }
         });
 
@@ -206,19 +259,21 @@
             if (list && list.length > 0) {
                 techGrid.innerHTML = list.map(t => `
                     <a href="technician.html?id=${t.id}" class="tech-card">
-                        <div class="tech-name">${escapeHTML(t.name)}</div>
-                        <span class="craft-tag">${escapeHTML(t.craft)}</span>
-                        <p class="tech-bio">${escapeHTML(t.bio || 'Verified TFI Technician.')}</p>
-                        <div class="verified-badge">✓ Verified TFI Index</div>
+                        <div>
+                            <div class="tech-name">${escapeHTML(t.name)}</div>
+                            <span class="craft-tag">${escapeHTML(t.craft)}</span>
+                            <p class="tech-bio">${escapeHTML(t.bio || 'Verified TFI Master Craftsman & Technical Expert.')}</p>
+                        </div>
+                        <div class="verified-badge"><i class="fa-solid fa-circle-check"></i> Verified TFI Index</div>
                     </a>
                 `).join('');
             } else {
-                techGrid.innerHTML = `<p style="color:var(--text-sub); grid-column:1/-1;">No technicians found matching your search.</p>`;
+                techGrid.innerHTML = `<p style="color:var(--text-muted); grid-column:1/-1; padding: 2rem 0; text-align:center;">No technicians found matching your search.</p>`;
             }
         }
 
         function filterTechs() {
-            const q = document.getElementById('techSearch').value.toLowerCase();
+            const q = document.getElementById('techSearch').value.toLowerCase().trim();
             const filtered = allTechs.filter(t => 
                 (t.name && t.name.toLowerCase().includes(q)) ||
                 (t.craft && t.craft.toLowerCase().includes(q))
