@@ -124,6 +124,7 @@
             border-radius: 12px; font-weight: 800; cursor: pointer; transition: transform 0.2s;
         }
         .post-btn:active { transform: scale(0.95); }
+        .post-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
         .post-card {
             background: rgba(26, 34, 52, 0.4); border: 1px solid var(--border-glass); border-radius: 16px; padding: 1.2rem;
@@ -215,7 +216,7 @@
                 <div class="profile-card">
                     <div class="avatar" id="userAvatar">A</div>
                     <div class="handle" id="userHandle">@AnonFan</div>
-                    <div class="faction-tag" id="userFactionTag"><i class="fa-solid fa-shield-halved"></i> Fan</div>
+                    <div class="faction-tag" id="userFactionTag"><i class="fa-solid fa-shield-halved"></i> Independent Fan</div>
                     <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:12px;"><i class="fa-solid fa-location-dot"></i> <span id="userLocation">Location Not Set</span></div>
                     
                     <div class="profile-metrics">
@@ -312,34 +313,21 @@
                     <button class="pitch-btn" onclick="startPitchModal()">Start a New Pitch</button>
 
                     <div class="tracker-title">Active Pitch Status</div>
-                    
                     <div class="step-item">
                         <div class="step-icon done"><i class="fa-solid fa-check"></i></div>
-                        <div class="step-text">
-                            <span class="step-name">Step 1: AI Spam Filter</span>
-                            <span class="step-sub">Checked & Verified</span>
-                        </div>
+                        <div class="step-text"><span class="step-name">Step 1: AI Spam Filter</span><span class="step-sub">Checked & Verified</span></div>
                     </div>
                     <div class="step-item">
                         <div class="step-icon done"><i class="fa-solid fa-check"></i></div>
-                        <div class="step-text">
-                            <span class="step-name">Step 2: Plagiarism Scan</span>
-                            <span class="step-sub">Originality Confirmed</span>
-                        </div>
+                        <div class="step-text"><span class="step-name">Step 2: Plagiarism Scan</span><span class="step-sub">Originality Confirmed</span></div>
                     </div>
                     <div class="step-item">
                         <div class="step-icon active"><i class="fa-solid fa-hourglass-half"></i></div>
-                        <div class="step-text">
-                            <span class="step-name" style="color:var(--gold-accent)">Step 3: Producer Desk</span>
-                            <span class="step-sub">Under review by Executive Committee.</span>
-                        </div>
+                        <div class="step-text"><span class="step-name" style="color:var(--gold-accent)">Step 3: Producer Desk</span><span class="step-sub">Under review by Executive Committee.</span></div>
                     </div>
                     <div class="step-item">
                         <div class="step-icon wait">4</div>
-                        <div class="step-text">
-                            <span class="step-name">Step 4: Final Verdict</span>
-                            <span class="step-sub">Awaiting Decision / Lock</span>
-                        </div>
+                        <div class="step-text"><span class="step-name">Step 4: Final Verdict</span><span class="step-sub">Awaiting Decision / Lock</span></div>
                     </div>
                 </div>
             </div>
@@ -617,7 +605,8 @@
             } else {
                 likedBy.push(currentUser.id);
                 newLikesCount++;
-                sendNotification(authorId, 'like', `liked your post! Total likes: ${newLikesCount}`, true); // true = Anonymous
+                // Notify the author (Anonymous = true)
+                sendNotification(authorId, 'like', `liked your post! Total likes: ${newLikesCount}`, true); 
             }
 
             post.liked_by = likedBy;
@@ -639,7 +628,8 @@
 
             try {
                 await db.from('fan_posts').update({ comments_count: newCount }).eq('id', postId);
-                sendNotification(authorId, 'comment', `commented: "${commentText.substring(0, 30)}..."`, false); // false = Show Identity
+                // Notify the author (Anonymous = false, so it shows identity)
+                sendNotification(authorId, 'comment', `commented: "${commentText.substring(0, 30)}..."`, false); 
             } catch (err) { }
         }
 
@@ -658,7 +648,8 @@
 
             try {
                 await db.from('fan_posts').update({ requotes_count: newRequoteCount }).eq('id', postId);
-                sendNotification(authorId, 'requote', `requoted your post!`, false); // false = Show Identity
+                // Notify the author (Anonymous = false)
+                sendNotification(authorId, 'requote', `requoted your post!`, false); 
             } catch(err) {}
         }
 
@@ -745,9 +736,9 @@
                     <input type="text" id="editLocation" class="compose-input" style="padding:0.6rem; margin-bottom:10px;" placeholder="e.g., Hyderabad, Nizam" value="${location}">
                     
                     <label style="font-size:0.7rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Your Fan Army / Faction</label>
-                    <input type="text" id="editArmy" class="compose-input" style="padding:0.6rem; margin-bottom:15px;" placeholder="e.g., Rebel Star Force, Cult Nani, etc." value="${fanArmy}">
+                    <input type="text" id="editArmy" class="compose-input" style="padding:0.6rem; margin-bottom:15px;" placeholder="e.g., Rebel Star, Mega Camp, etc." value="${fanArmy}">
                     
-                    <button class="post-btn" style="width:100%; margin-bottom: 10px;" onclick="saveProfile()">Save & Update Past Posts</button>
+                    <button class="post-btn" style="width:100%; margin-bottom: 10px;" onclick="saveProfile(event)">Save & Update Past Posts</button>
                     <button class="action-btn" style="width:100%; justify-content:center; border: 1px solid var(--border-glass);" onclick="toggleEditProfile()">Cancel</button>
                 </div>
             `;
@@ -766,7 +757,7 @@
             }
         }
 
-        async function saveProfile() {
+        async function saveProfile(event) {
             const newName = document.getElementById('editName').value.trim();
             let newHandle = document.getElementById('editHandle').value.trim();
             const newLocation = document.getElementById('editLocation').value.trim();
@@ -777,29 +768,36 @@
             }
             if (!newHandle.startsWith('@')) newHandle = '@' + newHandle;
 
+            // Visual Loading Feedback
+            const saveBtn = event.target;
+            saveBtn.innerText = "Synchronizing Database...";
+            saveBtn.disabled = true;
+
             try {
-                // 1. Update Metadata
+                // 1. Update Auth MetaData
                 const { data, error: authError } = await db.auth.updateUser({
                     data: { custom_name: newName, handle: newHandle, location: newLocation, fan_army: newArmy }
                 });
                 if (authError) throw authError;
+                
                 currentUser = data.user; 
                 
-                // 2. RETROACTIVE PROPAGATION: Force update on all past posts
-                const { error: dbError } = await db.from('fan_posts').update({
+                // 2. RETROACTIVE PROPAGATION: Force update on all past posts and return updated rows to verify
+                const { data: updatedRows, error: dbError } = await db.from('fan_posts').update({
                     author_name: newName,
                     fan_army: newArmy || 'Fan'
-                }).eq('user_id', currentUser.id);
+                }).eq('user_id', currentUser.id).select();
 
                 if (dbError) {
-                    console.error("DB Update Error:", dbError);
-                    throw new Error("Database blocked the retroactive update. You must run the SQL policy provided.");
+                    throw new Error("Supabase blocked the update. Did you run the required SQL policy override? Error: " + dbError.message);
                 }
 
-                alert("Profile successfully updated. Past posts have been synchronized.");
+                alert(`Identity Secured! Successfully synchronized ${updatedRows ? updatedRows.length : 0} past posts.`);
                 window.location.reload(); 
             } catch (err) {
-                alert("Error updating profile: \n" + err.message);
+                alert("Error updating profile:\n" + err.message);
+                saveBtn.innerText = "Save & Update Past Posts";
+                saveBtn.disabled = false;
             }
         }
 
