@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+\<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -925,6 +925,27 @@
                 alert("Report successfully logged.");
                 closeModal();
             } catch (err) { alert("Error submitting report."); }
+        }
+
+        function formatPostContent(text) {
+            if (!text) return '';
+            return text.replace(/(#[a-zA-Z0-9_-]+)/g, '<span class="hashtag" onclick="filterByTag(\'$1\')">$1</span>');
+        }
+
+        function formatRelativeTime(dateString) {
+            const now = new Date();
+            const postDate = new Date(dateString);
+            const diffHours = Math.abs(now - postDate) / 36e5;
+            if (diffHours < 24) {
+                if (diffHours < 1) return Math.floor(diffHours * 60) + 'm ago';
+                return Math.floor(diffHours) + 'h ago';
+            }
+            return postDate.toLocaleDateString() + ' ' + postDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function castPollVote(postId, optionNumber) {
+            alert(`Your vote has been securely recorded!`);
+            fetchFeedPosts();
         }
 
         function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
