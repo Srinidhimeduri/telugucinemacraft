@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>The War Room & Arena | TeluguCineCraft</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -155,21 +155,48 @@
         .vote-option-btn { background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); color: #FFF; padding: 0.7rem 1rem; border-radius: 10px; font-weight: 700; font-size: 0.85rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s;}
         .vote-option-btn:hover { border-color: var(--gold-accent); background: rgba(255,199,0,0.08); }
 
-        /* RIGHT: THE LAUNCHPAD */
-        .launchpad-card {
-            background: linear-gradient(180deg, var(--bg-card) 0%, rgba(0,0,0,0.8) 100%);
-            border: 1px solid var(--border-glass); border-radius: 20px; padding: 1.5rem;
+        /* RIGHT: THE PRO-MAX PITCH HOOK CARD */
+        .pitch-hook-card {
+            background: linear-gradient(145deg, rgba(26, 34, 52, 0.9) 0%, rgba(6, 8, 12, 1) 100%);
+            border: 1px solid var(--gold-accent); border-radius: 20px; padding: 1.8rem; margin-bottom: 1.5rem;
+            box-shadow: 0 0 25px rgba(255, 199, 0, 0.15); position: relative; overflow: hidden;
         }
-        .lp-title { font-size: 1.1rem; font-weight: 800; color: #FFF; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;}
-        .lp-desc { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px; line-height: 1.4;}
-        .warning-box { background: rgba(239, 68, 68, 0.1); border-left: 3px solid var(--danger); padding: 10px; font-size: 0.75rem; color: #FCC; margin-bottom: 15px;}
+        .pitch-hook-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+            background: linear-gradient(90deg, var(--cyan-accent), var(--gold-accent));
+        }
+        .ph-badge {
+            background: rgba(255,199,0,0.15); color: var(--gold-accent); font-size: 0.65rem;
+            font-weight: 900; letter-spacing: 1px; text-transform: uppercase;
+            padding: 5px 12px; border-radius: 8px; display: inline-block; margin-bottom: 15px; border: 1px solid rgba(255,199,0,0.3);
+        }
+        .ph-title { font-size: 1.4rem; font-weight: 900; color: #FFF; margin-bottom: 10px; line-height: 1.2; }
+        .ph-desc { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; line-height: 1.5; font-weight: 500;}
+        .ph-features { list-style: none; margin-bottom: 25px; }
+        .ph-features li { font-size: 0.8rem; color: #E2E8F0; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; font-weight: 600;}
         
-        .pitch-btn {
-            width: 100%; background: var(--gold-accent); color: #000; border: none; padding: 0.8rem;
-            border-radius: 12px; font-weight: 800; font-size: 0.95rem; cursor: pointer; transition: transform 0.2s;
-            margin-bottom: 20px;
+        .ph-btn {
+            width: 100%; background: linear-gradient(135deg, var(--gold-accent), #E6B300); color: #000; border: none; padding: 1rem;
+            border-radius: 12px; font-weight: 900; font-size: 1rem; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex; justify-content: center; align-items: center; gap: 10px; box-shadow: 0 10px 20px rgba(255, 199, 0, 0.2);
         }
-        .pitch-btn:active { transform: scale(0.97); }
+        .ph-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(255, 199, 0, 0.4); }
+        .ph-btn:active { transform: translateY(0); }
+
+        /* MINIMAL TRACKER */
+        .mini-tracker { background: rgba(0,0,0,0.3); border: 1px solid var(--border-glass); border-radius: 16px; padding: 1.2rem; }
+        .tracker-title { font-size: 0.85rem; font-weight: 800; color: #FFF; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;}
+        .step-item { display: flex; gap: 12px; margin-bottom: 12px; position: relative; }
+        .step-item:not(:last-child)::after {
+            content: ''; position: absolute; left: 11px; top: 24px; width: 2px; height: calc(100% - 10px); background: var(--border-glass);
+        }
+        .step-icon { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 800; z-index: 2;}
+        .step-icon.done { background: var(--success); color: #000; }
+        .step-icon.active { background: var(--gold-accent); color: #000; }
+        .step-icon.wait { background: var(--bg-base); border: 2px solid var(--border-glass); color: var(--text-muted); }
+        .step-text { display: flex; flex-direction: column; }
+        .step-name { font-size: 0.85rem; font-weight: 700; color: #FFF; }
+        .step-sub { font-size: 0.7rem; color: var(--text-muted); }
 
         /* MODAL OVERLAY */
         .modal-overlay { position: fixed; inset: 0; background: rgba(4,6,9,0.85); backdrop-filter: blur(12px); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 1rem; }
@@ -291,43 +318,50 @@
                 </div>
             </div>
 
-            <!-- RIGHT: THE LAUNCHPAD & TOP 5 HASHTAGS -->
+            <!-- RIGHT: THE HOOK & HASHTAGS -->
             <div>
-                <!-- TOP 5 TRENDING HASHTAGS WIDGET -->
-                <div class="widget-card">
-                    <div class="widget-title"><i class="fa-solid fa-hashtag" style="color:var(--cyan-accent);"></i> Top #5 Hashtags Today</div>
-                    <div id="trendingHashtagsList">
-                        <span style="font-size:0.75rem; color:var(--text-muted);">Loading trending tags...</span>
+                <!-- PRODUCER HOOK (Replacing Old Launchpad) -->
+                <div class="pitch-hook-card">
+                    <div class="ph-badge">Verified Producer Pipeline</div>
+                    <h3 class="ph-title">Got a Blockbuster Script? 🎬</h3>
+                    <p class="ph-desc">Stop waiting for connections. Bypass the gatekeepers and pitch your story, logline, or dialogue directly to Tollywood's top-tier producers.</p>
+                    
+                    <ul class="ph-features">
+                        <li><i class="fa-solid fa-lock" style="color:var(--success)"></i> 100% IP Protected & Encrypted</li>
+                        <li><i class="fa-solid fa-eye-slash" style="color:var(--success)"></i> Hidden from Public View</li>
+                        <li><i class="fa-solid fa-bolt" style="color:var(--gold-accent)"></i> Guaranteed Executive Review</li>
+                    </ul>
+
+                    <button class="ph-btn" onclick="window.location.href='pitchstory.html'">
+                        <i class="fa-solid fa-rocket"></i> Pitch Your Story Now
+                    </button>
+                    <div style="font-size:0.65rem; color:var(--text-muted); text-align:center; margin-top:15px; font-weight: 700;">
+                        JOIN 450+ WRITERS ALREADY IN THE PIPELINE
                     </div>
                 </div>
 
-                <div class="launchpad-card">
-                    <div class="lp-title"><i class="fa-solid fa-rocket" style="color:var(--gold-accent)"></i> The Launchpad</div>
-                    <div class="lp-desc">Pitch your story concept directly to Top-Tier Producers through our verified pipeline. (Strictly private pitching).</div>
-                    
-                    <div class="warning-box">
-                        <strong><i class="fa-solid fa-shield-halved"></i> IP Protection Rule:</strong><br>
-                        Submit Loglines and Character Arcs ONLY. Your pitch is fully encrypted and hidden from public view.
-                    </div>
-
-                    <button class="pitch-btn" onclick="startPitchModal()">Start a New Pitch</button>
-
-                    <div class="tracker-title">Active Pitch Status</div>
+                <!-- MINI TRACKER -->
+                <div class="mini-tracker">
+                    <div class="tracker-title"><i class="fa-solid fa-satellite-dish" style="color:var(--cyan-accent);"></i> My Active Pitches</div>
                     <div class="step-item">
                         <div class="step-icon done"><i class="fa-solid fa-check"></i></div>
-                        <div class="step-text"><span class="step-name">Step 1: AI Spam Filter</span><span class="step-sub">Checked & Verified</span></div>
+                        <div class="step-text"><span class="step-name">Step 1: AI Filter</span><span class="step-sub">Verified</span></div>
                     </div>
                     <div class="step-item">
                         <div class="step-icon done"><i class="fa-solid fa-check"></i></div>
-                        <div class="step-text"><span class="step-name">Step 2: Plagiarism Scan</span><span class="step-sub">Originality Confirmed</span></div>
+                        <div class="step-text"><span class="step-name">Step 2: Plagiarism</span><span class="step-sub">Originality Confirmed</span></div>
                     </div>
                     <div class="step-item">
                         <div class="step-icon active"><i class="fa-solid fa-hourglass-half"></i></div>
-                        <div class="step-text"><span class="step-name" style="color:var(--gold-accent)">Step 3: Producer Desk</span><span class="step-sub">Under review by Executive Committee.</span></div>
+                        <div class="step-text"><span class="step-name" style="color:var(--gold-accent)">Step 3: Review</span><span class="step-sub">At Producer Desk</span></div>
                     </div>
-                    <div class="step-item">
-                        <div class="step-icon wait">4</div>
-                        <div class="step-text"><span class="step-name">Step 4: Final Verdict</span><span class="step-sub">Awaiting Decision / Lock</span></div>
+                </div>
+
+                <!-- TOP 5 TRENDING HASHTAGS WIDGET -->
+                <div class="widget-card" style="margin-top: 1.5rem;">
+                    <div class="widget-title"><i class="fa-solid fa-hashtag" style="color:var(--cyan-accent);"></i> Top #5 Hashtags Today</div>
+                    <div id="trendingHashtagsList">
+                        <span style="font-size:0.75rem; color:var(--text-muted);">Loading trending tags...</span>
                     </div>
                 </div>
             </div>
@@ -346,7 +380,7 @@
         let currentUser = null;
         let currentFilterTag = null;
         let isPollActive = false;
-        let globalPosts = [];
+        let globalPosts = []; 
 
         async function initArena() {
             try {
@@ -359,7 +393,6 @@
 
                 currentUser = session.user;
                 
-                // Pull Profile Data from Metadata
                 let meta = currentUser.user_metadata || {};
                 let fullName = meta.full_name || currentUser.email.split('@')[0];
                 let defaultFirstName = fullName.split(' ')[0];
@@ -369,7 +402,6 @@
                 let fanArmy = meta.fan_army || '';
                 let location = meta.location || '';
                 
-                // Update Left Side Profile Card
                 document.getElementById('userHandle').innerText = handle;
                 document.getElementById('userAvatar').innerText = displayName.charAt(0).toUpperCase();
                 
@@ -388,7 +420,6 @@
             }
         }
 
-        /* --- HYBRID NOTIFICATION SYSTEM (Anonymous vs Identified) --- */
         async function checkNotifications() {
             try {
                 const { data, error } = await db.from('notifications').select('*').eq('user_id', currentUser.id).eq('is_read', false);
@@ -400,7 +431,6 @@
             } catch(e) {}
         }
 
-        // isAnonymous Flag: True for Likes, False for Comments/Requotes
         async function sendNotification(receiverId, type, message, isAnonymous = false) {
             if (receiverId === currentUser.id) return; 
             
@@ -456,7 +486,6 @@
             }
         }
 
-        /* --- THE WAR ROOM FEED --- */
         async function fetchFeedPosts() {
             let query = db.from('fan_posts').select('*').order('created_at', { ascending: false });
             if (currentFilterTag) {
@@ -590,7 +619,6 @@
             container.innerHTML = injectedPostHTML + html;
         }
 
-        /* --- POST INTERACTIONS --- */
         async function toggleLike(postId, authorId) {
             let post = globalPosts.find(p => p.id === postId);
             if(!post) return;
@@ -605,7 +633,6 @@
             } else {
                 likedBy.push(currentUser.id);
                 newLikesCount++;
-                // Notify the author (Anonymous = true)
                 sendNotification(authorId, 'like', `liked your post! Total likes: ${newLikesCount}`, true); 
             }
 
@@ -628,7 +655,6 @@
 
             try {
                 await db.from('fan_posts').update({ comments_count: newCount }).eq('id', postId);
-                // Notify the author (Anonymous = false, so it shows identity)
                 sendNotification(authorId, 'comment', `commented: "${commentText.substring(0, 30)}..."`, false); 
             } catch (err) { }
         }
@@ -648,7 +674,6 @@
 
             try {
                 await db.from('fan_posts').update({ requotes_count: newRequoteCount }).eq('id', postId);
-                // Notify the author (Anonymous = false)
                 sendNotification(authorId, 'requote', `requoted your post!`, false); 
             } catch(err) {}
         }
@@ -667,7 +692,6 @@
             try { await db.from('fan_posts').update({ poll_data: pd }).eq('id', postId); } catch(e) { }
         }
 
-        /* --- VIEW PUBLIC PROFILE --- */
         function viewFanProfile(postId) {
             const post = globalPosts.find(p => p.id === postId);
             if(!post) return;
@@ -699,7 +723,6 @@
             modal.style.display = 'flex';
         }
 
-        /* --- EDIT MY PROFILE SYSTEM --- */
         function openProfileModal() {
             const modal = document.getElementById('modalOverlay');
             
@@ -736,9 +759,9 @@
                     <input type="text" id="editLocation" class="compose-input" style="padding:0.6rem; margin-bottom:10px;" placeholder="e.g., Hyderabad, Nizam" value="${location}">
                     
                     <label style="font-size:0.7rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Your Fan Army / Faction</label>
-                    <input type="text" id="editArmy" class="compose-input" style="padding:0.6rem; margin-bottom:15px;" placeholder="e.g., Rebel Star, Mega Camp, etc." value="${fanArmy}">
+                    <input type="text" id="editArmy" class="compose-input" style="padding:0.6rem; margin-bottom:15px;" placeholder="e.g., Rebel Star Force, Cult Nani, etc." value="${fanArmy}">
                     
-                    <button class="post-btn" style="width:100%; margin-bottom: 10px;" onclick="saveProfile(event)">Save & Update Past Posts</button>
+                    <button id="saveProfileBtn" class="post-btn" style="width:100%; margin-bottom: 10px;" onclick="saveProfile(event)">Save & Update Past Posts</button>
                     <button class="action-btn" style="width:100%; justify-content:center; border: 1px solid var(--border-glass);" onclick="toggleEditProfile()">Cancel</button>
                 </div>
             `;
@@ -762,19 +785,17 @@
             let newHandle = document.getElementById('editHandle').value.trim();
             const newLocation = document.getElementById('editLocation').value.trim();
             const newArmy = document.getElementById('editArmy').value.trim();
+            const saveBtn = document.getElementById('saveProfileBtn');
 
             if (!newName || !newHandle) {
                 return alert("Name and Handle cannot be empty.");
             }
             if (!newHandle.startsWith('@')) newHandle = '@' + newHandle;
 
-            // Visual Loading Feedback
-            const saveBtn = event.target;
-            saveBtn.innerText = "Synchronizing Database...";
+            saveBtn.innerText = "Synchronizing...";
             saveBtn.disabled = true;
 
             try {
-                // 1. Update Auth MetaData
                 const { data, error: authError } = await db.auth.updateUser({
                     data: { custom_name: newName, handle: newHandle, location: newLocation, fan_army: newArmy }
                 });
@@ -782,17 +803,15 @@
                 
                 currentUser = data.user; 
                 
-                // 2. RETROACTIVE PROPAGATION: Force update on all past posts and return updated rows to verify
                 const { data: updatedRows, error: dbError } = await db.from('fan_posts').update({
                     author_name: newName,
                     fan_army: newArmy || 'Fan'
                 }).eq('user_id', currentUser.id).select();
 
                 if (dbError) {
-                    throw new Error("Supabase blocked the update. Did you run the required SQL policy override? Error: " + dbError.message);
-                }
-
-                alert(`Identity Secured! Successfully synchronized ${updatedRows ? updatedRows.length : 0} past posts.`);
+                    console.error("DB Error:", dbError);
+                    alert("Profile saved locally, but past posts were BLOCKED by Supabase Security Rules.");
+                } 
                 window.location.reload(); 
             } catch (err) {
                 alert("Error updating profile:\n" + err.message);
@@ -801,7 +820,6 @@
             }
         }
 
-        /* --- POST CREATION & UTILS --- */
         async function submitPost() {
             const input = document.getElementById('postInput');
             const content = input.value.trim();
@@ -870,7 +888,6 @@
         function filterByTag(tag) { currentFilterTag = tag; fetchFeedPosts(); }
         function insertTagSymbol() { document.getElementById('postInput').value += ' #TollywoodBoxOffice '; document.getElementById('postInput').focus(); }
 
-        /* --- TELEMETRY HOOK: DYNAMIC HASHTAGS --- */
         async function loadTrendingHashtags() {
             const listContainer = document.getElementById('trendingHashtagsList');
             let tagsHTML = '';
@@ -934,7 +951,6 @@
         }
 
         function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
-        function startPitchModal() { alert("The Launchpad: Submit your logline. Pitches are encrypted and strictly private."); }
         function repairStreak() { alert("Streak Repair: Share a movie telemetry link on WhatsApp to restore your authority streak."); }
 
         initArena();
