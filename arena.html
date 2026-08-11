@@ -1,4 +1,4 @@
-\<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -230,8 +230,8 @@
                 <div class="profile-card">
                     <div class="avatar" id="userAvatar">A</div>
                     <div class="handle" id="userHandle">@AnonFan</div>
-                    <div class="faction-tag" id="userFactionTag"><i class="fa-solid fa-shield-halved"></i> Independent Fan</div>
-                    <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:12px;"><i class="fa-solid fa-location-dot"></i> <span id="userLocation">Unknown Location</span></div>
+                    <div class="faction-tag" id="userFactionTag"><i class="fa-solid fa-shield-halved"></i> No Faction Set</div>
+                    <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:12px;"><i class="fa-solid fa-location-dot"></i> <span id="userLocation">Location Not Set</span></div>
                     
                     <div class="profile-metrics">
                         <div class="metric-row"><span>Scripts/Stories:</span> <span class="metric-val" id="statScripts">0</span></div>
@@ -394,14 +394,16 @@
                 
                 let displayName = meta.custom_name || defaultFirstName;
                 let handle = meta.handle || `@${displayName.toLowerCase()}${currentUser.id.substring(0,3)}`;
-                let fanArmy = meta.fan_army || 'Independent Fan';
-                let location = meta.location || 'Unknown Location';
+                let fanArmy = meta.fan_army || '';
+                let location = meta.location || '';
                 
                 // Update Left Side Profile Card
                 document.getElementById('userHandle').innerText = handle;
                 document.getElementById('userAvatar').innerText = displayName.charAt(0).toUpperCase();
-                document.getElementById('userFactionTag').innerHTML = `<i class="fa-solid fa-shield-halved"></i> ${fanArmy}`;
-                document.getElementById('userLocation').innerText = location;
+                
+                let armyTagHTML = fanArmy ? `<i class="fa-solid fa-shield-halved"></i> ${fanArmy}` : `<i class="fa-solid fa-circle-exclamation"></i> Set Your Faction`;
+                document.getElementById('userFactionTag').innerHTML = armyTagHTML;
+                document.getElementById('userLocation').innerText = location ? location : 'Location Not Set';
 
                 let currentStreak = parseInt(localStorage.getItem(`streak_${currentUser.id}`)) || 1;
                 document.getElementById('streakCount').innerText = currentStreak;
@@ -414,7 +416,7 @@
             }
         }
 
-        /* --- NOTIFICATION SYSTEM --- */
+        /* --- ANONYMOUS GAMIFIED NOTIFICATION SYSTEM --- */
         async function checkNotifications() {
             try {
                 const { data, error } = await db.from('notifications')
@@ -431,9 +433,7 @@
         }
 
         async function sendNotification(receiverId, type, message) {
-            if (receiverId === currentUser.id) return; // Don't notify yourself
-            
-            // To maintain privacy, we mask the actor name and focus entirely on the hype
+            // We use a safe anonymous actor name to prioritize hype and privacy
             let safeActorName = "Arena Activity"; 
             
             try {
@@ -485,10 +485,8 @@
             }
         }
 
-        /* --- THE WAR ROOM FEED --- */
+        /* --- THE WAR ROOM FEED & OPTIMISTIC RENDERING --- */
         async function fetchFeedPosts() {
-            const container = document.getElementById('arenaFeedContainer');
-            
             let query = db.from('fan_posts').select('*').order('created_at', { ascending: false });
             if (currentFilterTag) {
                 query = query.ilike('content', `%${currentFilterTag}%`);
@@ -496,12 +494,17 @@
             const { data, error } = await query;
             
             if (error) {
-                container.innerHTML = `<p style="text-align:center; color:var(--danger);">Error loading feed: ${error.message}</p>`;
+                document.getElementById('arenaFeedContainer').innerHTML = `<p style="text-align:center; color:var(--danger);">Error loading feed: ${error.message}</p>`;
                 return;
             }
 
-            globalPosts = data || []; // Store locally for interaction logic
+            globalPosts = data || []; // Store locally
+            renderFeedPosts();
+        }
 
+        async function renderFeedPosts() {
+            const container = document.getElementById('arenaFeedContainer');
+            
             let injectedPostHTML = '';
             try {
                 const { data: botPromo } = await db.from('executive_overrides').select('*').eq('campaign_type', 'bot_post').eq('is_active', true).single();
@@ -544,7 +547,7 @@
             globalPosts.forEach(post => {
                 let timeAgo = formatRelativeTime(post.created_at);
                 let displayName = post.author_name || 'Fan Member';
-                let armyTag = post.fan_army || 'Independent Fan';
+                let armyTag = post.fan_army || 'Unaffiliated';
                 let likedByArray = post.liked_by || [];
                 let isLiked = likedByArray.includes(currentUser.id);
                 let isAuthor = post.user_id === currentUser.id;
@@ -606,7 +609,7 @@
                                     <i class="fa-solid fa-comment"></i> ${post.comments_count || 0}
                                 </button>
                                 <button class="action-btn" onclick="requotePost('${post.id}', '${post.user_id}')">
-                                    <i class="fa-solid fa-retweet"></i> ${post.requotes_count || 0}
+                                    <i class="fa-solid fa-retweet"></i> ${post.requotes_count || 0} Requote
                                 </button>
                             </div>
                         </div>
@@ -631,13 +634,18 @@
             } else {
                 likedBy.push(currentUser.id);
                 newLikesCount++;
-                // Send Anonymous Privacy-first Notification
-                sendNotification(authorId, 'like', `A fan liked your post! Total likes: ${newLikesCount}`);
+                if (authorId !== currentUser.id) {
+                    sendNotification(authorId, 'like', `A fan liked your post! Total likes: ${newLikesCount}`);
+                }
             }
+
+            // Optimistic UI update for speed
+            post.liked_by = likedBy;
+            post.likes_count = newLikesCount;
+            renderFeedPosts();
 
             try {
                 await db.from('fan_posts').update({ likes_count: newLikesCount, liked_by: likedBy }).eq('id', postId);
-                fetchFeedPosts(); 
             } catch (err) { console.error("Like error", err); }
         }
 
@@ -648,11 +656,16 @@
             let post = globalPosts.find(p => p.id === postId);
             let newCount = (post.comments_count || 0) + 1;
 
+            // Optimistic UI update
+            post.comments_count = newCount;
+            renderFeedPosts();
+
             try {
                 await db.from('fan_posts').update({ comments_count: newCount }).eq('id', postId);
-                sendNotification(authorId, 'comment', `Someone commented on your post! Total comments: ${newCount}`);
-                alert("Comment added!");
-                fetchFeedPosts();
+                if (authorId !== currentUser.id) {
+                    sendNotification(authorId, 'comment', `A fan commented on your post! Total comments: ${newCount}`);
+                }
+                alert("Comment broadcasted!");
             } catch (err) { console.error("Comment error", err); }
         }
 
@@ -665,11 +678,16 @@
             input.focus();
             window.scrollTo({ top: 0, behavior: 'smooth' });
 
-            // Increment original post requote count
             let newRequoteCount = (post.requotes_count || 0) + 1;
-            await db.from('fan_posts').update({ requotes_count: newRequoteCount }).eq('id', postId);
             
-            sendNotification(authorId, 'requote', `Your post was requoted! Total requotes: ${newRequoteCount}`);
+            // Optimistic UI update
+            post.requotes_count = newRequoteCount;
+            renderFeedPosts();
+
+            await db.from('fan_posts').update({ requotes_count: newRequoteCount }).eq('id', postId);
+            if (authorId !== currentUser.id) {
+                sendNotification(authorId, 'requote', `A fan requoted your post! Total requotes: ${newRequoteCount}`);
+            }
         }
 
         /* --- VIEW OTHER USERS PUBLIC PROFILE --- */
@@ -677,7 +695,7 @@
             const post = globalPosts.find(p => p.id === postId);
             if(!post) return;
 
-            // If they click their own post, open their editable dashboard instead
+            // If user clicks their own post, open the edit profile modal
             if(post.user_id === currentUser.id) {
                 openProfileModal();
                 return;
@@ -691,7 +709,7 @@
                     <div style="text-align:center; margin-bottom:20px; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 16px; border: 1px solid var(--border-glass);">
                         <div class="avatar" style="width:80px; height:80px; font-size:2rem; margin: 0 auto 10px auto;">${post.author_name.charAt(0).toUpperCase()}</div>
                         <h2 style="color:#FFF; font-weight:800; margin-bottom:5px;">${post.author_name}</h2>
-                        <div class="faction-tag" style="margin-bottom:15px;"><i class="fa-solid fa-shield-halved"></i> ${post.fan_army}</div>
+                        <div class="faction-tag" style="margin-bottom:15px;"><i class="fa-solid fa-shield-halved"></i> ${post.fan_army || 'Unaffiliated'}</div>
                         
                         <div style="display:inline-flex; align-items:center; gap:8px; background:rgba(255,107,0,0.1); padding: 8px 16px; border-radius: 12px; border: 1px solid rgba(255,107,0,0.3);">
                             <span style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase;">Authority Streak:</span>
@@ -713,7 +731,7 @@
             let defaultName = meta.full_name ? meta.full_name.split(' ')[0] : 'Fan';
             let displayName = meta.custom_name || defaultName;
             let handle = meta.handle || `@${displayName.toLowerCase()}${currentUser.id.substring(0,3)}`;
-            let fanArmy = meta.fan_army || 'Independent Fan';
+            let fanArmy = meta.fan_army || '';
             let location = meta.location || '';
             
             document.getElementById('modalInnerBody').innerHTML = `
@@ -721,8 +739,8 @@
                     <h3 style="color:#FFF; margin-bottom:12px;"><i class="fa-solid fa-user-shield"></i> Fan Profile Dashboard</h3>
                     <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:8px;"><b>Display Name:</b> ${displayName}</p>
                     <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:8px;"><b>Handle:</b> ${handle}</p>
-                    <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:8px;"><b>Location:</b> ${location || 'Unknown'}</p>
-                    <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:8px;"><b>Fan Army:</b> ${fanArmy}</p>
+                    <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:8px;"><b>Location:</b> ${location || 'Not Set'}</p>
+                    <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:8px;"><b>Fan Army:</b> ${fanArmy || 'Unaffiliated'}</p>
                     <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:15px;"><b>Account Status:</b> Active Authority</p>
                     
                     <button class="post-btn" style="width:100%; margin-bottom: 10px;" onclick="toggleEditProfile()">Edit Profile</button>
@@ -742,7 +760,7 @@
                     <input type="text" id="editLocation" class="compose-input" style="padding:0.6rem; margin-bottom:10px;" placeholder="e.g., Hyderabad, Nizam" value="${location}">
                     
                     <label style="font-size:0.7rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Your Fan Army / Faction</label>
-                    <input type="text" id="editArmy" class="compose-input" style="padding:0.6rem; margin-bottom:15px;" placeholder="e.g., Rebel Star Force, Cult Nani, etc." value="${fanArmy}">
+                    <input type="text" id="editArmy" class="compose-input" style="padding:0.6rem; margin-bottom:15px;" placeholder="e.g., Rebel Star, Mega Camp, etc." value="${fanArmy}">
                     
                     <button class="post-btn" style="width:100%; margin-bottom: 10px;" onclick="saveProfile()">Save & Update Past Posts</button>
                     <button class="action-btn" style="width:100%; justify-content:center; border: 1px solid var(--border-glass);" onclick="toggleEditProfile()">Cancel</button>
@@ -767,7 +785,7 @@
             const newName = document.getElementById('editName').value.trim();
             let newHandle = document.getElementById('editHandle').value.trim();
             const newLocation = document.getElementById('editLocation').value.trim();
-            const newArmy = document.getElementById('editArmy').value.trim() || 'Independent Fan';
+            const newArmy = document.getElementById('editArmy').value.trim();
 
             if (!newName || !newHandle) {
                 return alert("Name and Handle cannot be empty.");
@@ -776,29 +794,27 @@
 
             try {
                 // 1. Update Identity in Auth MetaData
-                const { data, error } = await db.auth.updateUser({
+                const { data, error: authError } = await db.auth.updateUser({
                     data: { custom_name: newName, handle: newHandle, location: newLocation, fan_army: newArmy }
                 });
-                if (error) throw error;
+                if (authError) throw authError;
+                
                 currentUser = data.user; 
                 
-                // 2. RETROACTIVE PROPAGATION: Update all past posts by this user to reflect their new Identity!
-                await db.from('fan_posts').update({
+                // 2. RETROACTIVE PROPAGATION: Force update on all past posts
+                const { error: dbError } = await db.from('fan_posts').update({
                     author_name: newName,
                     fan_army: newArmy
                 }).eq('user_id', currentUser.id);
 
-                // Update Left Side UI
-                document.getElementById('userHandle').innerText = newHandle;
-                document.getElementById('userAvatar').innerText = newName.charAt(0).toUpperCase();
-                document.getElementById('userFactionTag').innerHTML = `<i class="fa-solid fa-shield-halved"></i> ${newArmy}`;
-                document.getElementById('userLocation').innerText = newLocation || 'Unknown Location';
-                
+                if (dbError) throw dbError;
+
                 alert("Profile successfully updated. Past posts have been synchronized.");
-                closeModal();
-                fetchFeedPosts(); // Refresh feed to show new names on past posts
+                
+                // 3. Force a hard browser reload to completely wipe the local UI cache and fetch fresh data
+                window.location.reload(); 
             } catch (err) {
-                alert("Error updating profile: " + err.message);
+                alert("Error updating profile: Ensure Database Update Policy is enabled. \n" + err.message);
             }
         }
 
@@ -824,7 +840,7 @@
                 let currentStreak = parseInt(localStorage.getItem(`streak_${currentUser.id}`)) || 1;
                 let fullName = meta.full_name || 'Fan';
                 let displayName = meta.custom_name || fullName.split(' ')[0];
-                let armyTag = meta.fan_army || 'Independent Fan';
+                let armyTag = meta.fan_army || 'Unaffiliated';
 
                 const { error } = await db.from('fan_posts').insert({
                     user_id: currentUser.id,
@@ -851,15 +867,6 @@
                 fetchFeedPosts();
             } catch (err) {
                 alert("Error broadcasting post: " + err.message);
-            }
-        }
-
-        async function adminDeletePost(postId) {
-            if (confirm("ADMIN OVERRIDE: Permanently delete this post?")) {
-                try {
-                    await db.from('fan_posts').delete().eq('id', postId);
-                    fetchFeedPosts();
-                } catch (err) { alert("Admin deletion failed: " + err.message); }
             }
         }
         
