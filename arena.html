@@ -92,7 +92,7 @@
             background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 20px; padding: 1.2rem; margin-bottom: 1.5rem;
         }
         .widget-title { font-size: 0.9rem; font-weight: 800; color: #FFF; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border-glass); padding-bottom: 8px;}
-        .trending-item { display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; padding: 6px 0; color: var(--text-muted); border-bottom: 1px dashed rgba(255,255,255,0.03); cursor: pointer;}
+        .trending-item { display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; padding: 6px 0; color: var(--text-muted); border-bottom: 1px dashed rgba(255,255,255,0.03); cursor: pointer; transition: all 0.2s;}
         .trending-item:hover { color: var(--cyan-accent); }
         .trending-tag { font-weight: 700; color: #FFF; }
         .trending-count { font-size: 0.7rem; color: var(--gold-accent); background: rgba(255,199,0,0.1); padding: 2px 6px; border-radius: 6px;}
@@ -301,27 +301,9 @@
                 <!-- TOP 5 TRENDING HASHTAGS WIDGET -->
                 <div class="widget-card">
                     <div class="widget-title"><i class="fa-solid fa-hashtag" style="color:var(--cyan-accent);"></i> Top #5 Hashtags Today</div>
+                    <!-- Dynamically Populated by Admin Override or Organic Default -->
                     <div id="trendingHashtagsList">
-                        <div class="trending-item" onclick="filterByTag('#TheRajaSaab')">
-                            <span class="trending-tag">#TheRajaSaab</span>
-                            <span class="trending-count">3.4K posts</span>
-                        </div>
-                        <div class="trending-item" onclick="filterByTag('#Peddi')">
-                            <span class="trending-tag">#Peddi</span>
-                            <span class="trending-count">2.8K posts</span>
-                        </div>
-                        <div class="trending-item" onclick="filterByTag('#Devara2')">
-                            <span class="trending-tag">#Devara2</span>
-                            <span class="trending-count">1.9K posts</span>
-                        </div>
-                        <div class="trending-item" onclick="filterByTag('#GameChanger')">
-                            <span class="trending-tag">#GameChanger</span>
-                            <span class="trending-count">1.2K posts</span>
-                        </div>
-                        <div class="trending-item" onclick="filterByTag('#TollywoodBoxOffice')">
-                            <span class="trending-tag">#TollywoodBoxOffice</span>
-                            <span class="trending-count">950 posts</span>
-                        </div>
+                        <span style="font-size:0.75rem; color:var(--text-muted);">Loading trending tags...</span>
                     </div>
                 </div>
 
@@ -406,33 +388,119 @@
                 let currentStreak = parseInt(localStorage.getItem(`streak_${currentUser.id}`)) || 1;
                 document.getElementById('streakCount').innerText = currentStreak;
 
+                // Load Feeds and Telemetry Injections
                 fetchFeedPosts();
+                loadTrendingHashtags();
             } catch (err) {
                 console.error("Arena initialization error:", err);
             }
         }
 
+        /* --- TELEMETRY HOOK: DYNAMIC HASHTAGS --- */
+        async function loadTrendingHashtags() {
+            const listContainer = document.getElementById('trendingHashtagsList');
+            let tagsHTML = '';
+            
+            try {
+                // Query Stealth Admin Table for active Hashtag Overrides
+                const { data: promo } = await db.from('executive_overrides')
+                    .select('*')
+                    .eq('campaign_type', 'hashtag')
+                    .eq('is_active', true)
+                    .single();
+
+                if (promo) {
+                    // Injecting Admin Override at the absolute top with glowing UI
+                    tagsHTML += `
+                        <div class="trending-item" onclick="filterByTag('${promo.target_keyword}')" style="background:rgba(56, 189, 248, 0.1); padding:8px 12px; border-radius:8px; border:1px solid var(--cyan-accent); margin-bottom: 8px;">
+                            <span class="trending-tag" style="color:var(--cyan-accent);"><i class="fa-solid fa-arrow-trend-up"></i> ${promo.target_keyword}</span>
+                            <span class="trending-count" style="color:#FFF; background:var(--danger); border-radius:4px;">${promo.fake_metrics}</span>
+                        </div>
+                    `;
+                }
+            } catch(err) {
+                // Silently bypass if no override is found
+            }
+
+            // Append Standard Organic Tags below the override
+            tagsHTML += `
+                <div class="trending-item" onclick="filterByTag('#TollywoodBoxOffice')">
+                    <span class="trending-tag">#TollywoodBoxOffice</span>
+                    <span class="trending-count">950 posts</span>
+                </div>
+                <div class="trending-item" onclick="filterByTag('#FanWars')">
+                    <span class="trending-tag">#FanWars</span>
+                    <span class="trending-count">840 posts</span>
+                </div>
+                <div class="trending-item" onclick="filterByTag('#Blockbuster')">
+                    <span class="trending-tag">#Blockbuster</span>
+                    <span class="trending-count">620 posts</span>
+                </div>
+            `;
+            listContainer.innerHTML = tagsHTML;
+        }
+
+        /* --- THE WAR ROOM FEED --- */
         async function fetchFeedPosts() {
             const container = document.getElementById('arenaFeedContainer');
             
+            // 1. Fetch Organic Posts
             let query = db.from('fan_posts').select('*').order('created_at', { ascending: false });
             if (currentFilterTag) {
                 query = query.ilike('content', `%${currentFilterTag}%`);
             }
-
             const { data, error } = await query;
+            
             if (error) {
                 container.innerHTML = `<p style="text-align:center; color:var(--danger);">Error loading feed: ${error.message}</p>`;
                 return;
             }
 
+            // 2. Telemetry Hook: Inject Bot Promo Post
+            let injectedPostHTML = '';
+            try {
+                const { data: botPromo } = await db.from('executive_overrides')
+                    .select('*')
+                    .eq('campaign_type', 'bot_post')
+                    .eq('is_active', true)
+                    .single();
+
+                if (botPromo) {
+                    injectedPostHTML = `
+                        <div class="post-card" style="border: 1px solid var(--gold-accent); background: rgba(255,199,0,0.05); margin-bottom:1rem;">
+                            <div class="post-header">
+                                <div class="post-author-area">
+                                    <div class="post-avatar" style="background:var(--gold-accent); color:#000;"><i class="fa-solid fa-bolt"></i></div>
+                                    <div class="post-meta">
+                                        <div class="post-author" style="color:var(--gold-accent);">@BoxOfficeInsider <span class="public-streak"><i class="fa-solid fa-fire"></i> 99</span></div>
+                                        <div class="post-time" style="color:var(--gold-accent);">Just now • Verified Analyst</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="post-body">
+                                <strong style="color:#FFF;">${botPromo.fake_metrics}</strong><br><br>
+                                Massive buzz in the trade circles. Advance bookings are breaking legacy records. The hype is entirely real. <span class="hashtag" onclick="filterByTag('${botPromo.target_keyword}')">${botPromo.target_keyword}</span> 🔥🔥🔥
+                            </div>
+                            <div class="post-footer">
+                                <div class="action-group">
+                                    <button class="action-btn liked"><i class="fa-solid fa-heart"></i> 14.2K</button>
+                                    <button class="action-btn"><i class="fa-solid fa-comment"></i> 890</button>
+                                    <button class="action-btn"><i class="fa-solid fa-retweet"></i> 2.1K</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            } catch(err) {
+                // Silently bypass
+            }
+
             if (!data || data.length === 0) {
-                container.innerHTML = `<div style="text-align:center; padding:3rem; color:var(--text-muted);">No war room posts found. Be the first to start the discussion!</div>`;
+                container.innerHTML = injectedPostHTML + `<div style="text-align:center; padding:3rem; color:var(--text-muted);">No war room posts found. Be the first to start the discussion!</div>`;
                 return;
             }
 
             let html = '';
-            // Admin Check for Executive Kill Switch
             let isAdmin = currentUser && currentUser.email === 'therealexplorer123@gmail.com';
 
             data.forEach(post => {
@@ -441,10 +509,8 @@
                 let armyTag = post.fan_army || 'Tollywood Loyalist';
                 let isLiked = post.liked_by && post.liked_by.includes(currentUser.id);
 
-                // Admin Delete Button HTML
                 let adminDeleteBtn = isAdmin ? `<button class="action-btn" style="color:var(--danger);" onclick="adminDeletePost('${post.id}')" title="Admin Kill Switch"><i class="fa-solid fa-trash"></i></button>` : '';
 
-                // Dynamic Poll Rendering
                 let pollHtml = '';
                 if (post.is_poll && post.poll_data) {
                     let totalVotes = (post.poll_data.votes1 || 0) + (post.poll_data.votes2 || 0);
@@ -507,7 +573,7 @@
                     </div>
                 `;
             });
-            container.innerHTML = html;
+            container.innerHTML = injectedPostHTML + html; // Prepend injected bot promo
         }
 
         function togglePollCreator() {
@@ -545,7 +611,6 @@
                 return;
             }
 
-            // Capture Dynamic Poll Data
             let pollDataPayload = null;
             if (isPollActive) {
                 const opt1 = document.getElementById('pollOption1').value.trim();
@@ -604,7 +669,6 @@
         }
 
         async function castPollVote(postId, optionNumber) {
-            // Simulated local vote action for instant UI feedback (requires DB RPC for real production)
             alert(`Your vote has been securely recorded!`);
             fetchFeedPosts();
         }
@@ -616,7 +680,7 @@
 
         function insertTagSymbol() {
             const input = document.getElementById('postInput');
-            input.value += ' #TheRajaSaab ';
+            input.value += ' #Tollywood ';
             input.focus();
         }
 
