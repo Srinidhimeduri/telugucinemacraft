@@ -89,7 +89,7 @@
         }
         .repair-btn:hover { border-color: var(--gold-accent); color: var(--gold-accent); }
 
-        /* TRENDING WIDGETS (LEFT & RIGHT) */
+        /* TRENDING WIDGETS */
         .widget-card {
             background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 20px; padding: 1.2rem; margin-bottom: 1.5rem;
         }
@@ -154,7 +154,7 @@
         .vote-option-btn { background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); color: #FFF; padding: 0.7rem 1rem; border-radius: 10px; font-weight: 700; font-size: 0.85rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s;}
         .vote-option-btn:hover { border-color: var(--gold-accent); background: rgba(255,199,0,0.08); }
 
-        /* RIGHT: THE LAUNCHPAD (PITCH SYSTEM) */
+        /* RIGHT: THE LAUNCHPAD */
         .launchpad-card {
             background: linear-gradient(180deg, var(--bg-card) 0%, rgba(0,0,0,0.8) 100%);
             border: 1px solid var(--border-glass); border-radius: 20px; padding: 1.5rem;
@@ -224,14 +224,13 @@
         </nav>
 
         <div class="dashboard-grid">
-            
             <!-- LEFT: PROFILE & TRENDING USERS -->
             <div>
                 <div class="profile-card">
                     <div class="avatar" id="userAvatar">A</div>
                     <div class="handle" id="userHandle">@AnonFan</div>
-                    <div class="faction-tag" id="userFactionTag"><i class="fa-solid fa-shield-halved"></i> No Faction Set</div>
-                    <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:12px;"><i class="fa-solid fa-location-dot"></i> <span id="userLocation">Location Not Set</span></div>
+                    <div class="faction-tag" id="userFactionTag"><i class="fa-solid fa-shield-halved"></i> Independent Fan</div>
+                    <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:12px;"><i class="fa-solid fa-location-dot"></i> <span id="userLocation">Unknown Location</span></div>
                     
                     <div class="profile-metrics">
                         <div class="metric-row"><span>Scripts/Stories:</span> <span class="metric-val" id="statScripts">0</span></div>
@@ -327,36 +326,22 @@
                     <button class="pitch-btn" onclick="startPitchModal()">Start a New Pitch</button>
 
                     <div class="tracker-title">Active Pitch Status</div>
-                    
                     <div class="step-item">
                         <div class="step-icon done"><i class="fa-solid fa-check"></i></div>
-                        <div class="step-text">
-                            <span class="step-name">Step 1: AI Spam Filter</span>
-                            <span class="step-sub">Checked & Verified</span>
-                        </div>
+                        <div class="step-text"><span class="step-name">Step 1: AI Spam Filter</span><span class="step-sub">Checked & Verified</span></div>
                     </div>
                     <div class="step-item">
                         <div class="step-icon done"><i class="fa-solid fa-check"></i></div>
-                        <div class="step-text">
-                            <span class="step-name">Step 2: Plagiarism Scan</span>
-                            <span class="step-sub">Originality Confirmed</span>
-                        </div>
+                        <div class="step-text"><span class="step-name">Step 2: Plagiarism Scan</span><span class="step-sub">Originality Confirmed</span></div>
                     </div>
                     <div class="step-item">
                         <div class="step-icon active"><i class="fa-solid fa-hourglass-half"></i></div>
-                        <div class="step-text">
-                            <span class="step-name" style="color:var(--gold-accent)">Step 3: Producer Desk</span>
-                            <span class="step-sub">Under review by Executive Committee.</span>
-                        </div>
+                        <div class="step-text"><span class="step-name" style="color:var(--gold-accent)">Step 3: Producer Desk</span><span class="step-sub">Under review by Executive Committee.</span></div>
                     </div>
                     <div class="step-item">
                         <div class="step-icon wait">4</div>
-                        <div class="step-text">
-                            <span class="step-name">Step 4: Final Verdict</span>
-                            <span class="step-sub">Awaiting Decision / Lock</span>
-                        </div>
+                        <div class="step-text"><span class="step-name">Step 4: Final Verdict</span><span class="step-sub">Awaiting Decision / Lock</span></div>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -394,16 +379,14 @@
                 
                 let displayName = meta.custom_name || defaultFirstName;
                 let handle = meta.handle || `@${displayName.toLowerCase()}${currentUser.id.substring(0,3)}`;
-                let fanArmy = meta.fan_army || '';
-                let location = meta.location || '';
+                let fanArmy = meta.fan_army || 'Independent Fan';
+                let location = meta.location || 'Unknown Location';
                 
                 // Update Left Side Profile Card
                 document.getElementById('userHandle').innerText = handle;
                 document.getElementById('userAvatar').innerText = displayName.charAt(0).toUpperCase();
-                
-                let armyTagHTML = fanArmy ? `<i class="fa-solid fa-shield-halved"></i> ${fanArmy}` : `<i class="fa-solid fa-circle-exclamation"></i> Set Your Faction`;
-                document.getElementById('userFactionTag').innerHTML = armyTagHTML;
-                document.getElementById('userLocation').innerText = location ? location : 'Location Not Set';
+                document.getElementById('userFactionTag').innerHTML = `<i class="fa-solid fa-shield-halved"></i> ${fanArmy}`;
+                document.getElementById('userLocation').innerText = location;
 
                 let currentStreak = parseInt(localStorage.getItem(`streak_${currentUser.id}`)) || 1;
                 document.getElementById('streakCount').innerText = currentStreak;
@@ -433,7 +416,9 @@
         }
 
         async function sendNotification(receiverId, type, message) {
-            // We use a safe anonymous actor name to prioritize hype and privacy
+            if (receiverId === currentUser.id) return; // Don't notify yourself
+            
+            // To maintain privacy, we mask the actor name and focus entirely on the hype
             let safeActorName = "Arena Activity"; 
             
             try {
@@ -507,7 +492,7 @@
             
             let injectedPostHTML = '';
             try {
-                const { data: botPromo } = await db.from('executive_overrides').select('*').eq('campaign_type', 'bot_post').eq('is_active', true).single();
+                const { data: botPromo } = await db.from('executive_overrides').select('*').eq('campaign_type', 'bot_post').eq('is_active', true).maybeSingle();
                 if (botPromo) {
                     injectedPostHTML = `
                         <div class="post-card" style="border: 1px solid var(--gold-accent); background: rgba(255,199,0,0.05); margin-bottom:1rem;">
@@ -547,7 +532,7 @@
             globalPosts.forEach(post => {
                 let timeAgo = formatRelativeTime(post.created_at);
                 let displayName = post.author_name || 'Fan Member';
-                let armyTag = post.fan_army || 'Unaffiliated';
+                let armyTag = post.fan_army || 'Independent Fan';
                 let likedByArray = post.liked_by || [];
                 let isLiked = likedByArray.includes(currentUser.id);
                 let isAuthor = post.user_id === currentUser.id;
@@ -609,7 +594,7 @@
                                     <i class="fa-solid fa-comment"></i> ${post.comments_count || 0}
                                 </button>
                                 <button class="action-btn" onclick="requotePost('${post.id}', '${post.user_id}')">
-                                    <i class="fa-solid fa-retweet"></i> ${post.requotes_count || 0} Requote
+                                    <i class="fa-solid fa-retweet"></i> ${post.requotes_count || 0}
                                 </button>
                             </div>
                         </div>
@@ -665,7 +650,6 @@
                 if (authorId !== currentUser.id) {
                     sendNotification(authorId, 'comment', `A fan commented on your post! Total comments: ${newCount}`);
                 }
-                alert("Comment broadcasted!");
             } catch (err) { console.error("Comment error", err); }
         }
 
@@ -684,10 +668,29 @@
             post.requotes_count = newRequoteCount;
             renderFeedPosts();
 
-            await db.from('fan_posts').update({ requotes_count: newRequoteCount }).eq('id', postId);
-            if (authorId !== currentUser.id) {
-                sendNotification(authorId, 'requote', `A fan requoted your post! Total requotes: ${newRequoteCount}`);
-            }
+            try {
+                await db.from('fan_posts').update({ requotes_count: newRequoteCount }).eq('id', postId);
+                if (authorId !== currentUser.id) {
+                    sendNotification(authorId, 'requote', `A fan requoted your post! Total requotes: ${newRequoteCount}`);
+                }
+            } catch(err) { console.error("Requote error", err); }
+        }
+
+        async function castPollVote(postId, optionNumber) {
+            let post = globalPosts.find(p => p.id === postId);
+            if(!post || !post.is_poll || !post.poll_data) return;
+
+            let pd = { ...post.poll_data };
+            if(optionNumber === 1) pd.votes1 = (pd.votes1 || 0) + 1;
+            if(optionNumber === 2) pd.votes2 = (pd.votes2 || 0) + 1;
+
+            // Optimistic UI Update
+            post.poll_data = pd;
+            renderFeedPosts(); 
+
+            try {
+                await db.from('fan_posts').update({ poll_data: pd }).eq('id', postId);
+            } catch(e) { console.error("Poll vote error:", e); }
         }
 
         /* --- VIEW OTHER USERS PUBLIC PROFILE --- */
@@ -709,7 +712,7 @@
                     <div style="text-align:center; margin-bottom:20px; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 16px; border: 1px solid var(--border-glass);">
                         <div class="avatar" style="width:80px; height:80px; font-size:2rem; margin: 0 auto 10px auto;">${post.author_name.charAt(0).toUpperCase()}</div>
                         <h2 style="color:#FFF; font-weight:800; margin-bottom:5px;">${post.author_name}</h2>
-                        <div class="faction-tag" style="margin-bottom:15px;"><i class="fa-solid fa-shield-halved"></i> ${post.fan_army || 'Unaffiliated'}</div>
+                        <div class="faction-tag" style="margin-bottom:15px;"><i class="fa-solid fa-shield-halved"></i> ${post.fan_army || 'Independent Fan'}</div>
                         
                         <div style="display:inline-flex; align-items:center; gap:8px; background:rgba(255,107,0,0.1); padding: 8px 16px; border-radius: 12px; border: 1px solid rgba(255,107,0,0.3);">
                             <span style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase;">Authority Streak:</span>
@@ -731,7 +734,7 @@
             let defaultName = meta.full_name ? meta.full_name.split(' ')[0] : 'Fan';
             let displayName = meta.custom_name || defaultName;
             let handle = meta.handle || `@${displayName.toLowerCase()}${currentUser.id.substring(0,3)}`;
-            let fanArmy = meta.fan_army || '';
+            let fanArmy = meta.fan_army || 'Independent Fan';
             let location = meta.location || '';
             
             document.getElementById('modalInnerBody').innerHTML = `
@@ -740,7 +743,7 @@
                     <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:8px;"><b>Display Name:</b> ${displayName}</p>
                     <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:8px;"><b>Handle:</b> ${handle}</p>
                     <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:8px;"><b>Location:</b> ${location || 'Not Set'}</p>
-                    <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:8px;"><b>Fan Army:</b> ${fanArmy || 'Unaffiliated'}</p>
+                    <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:8px;"><b>Fan Army:</b> ${fanArmy}</p>
                     <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:15px;"><b>Account Status:</b> Active Authority</p>
                     
                     <button class="post-btn" style="width:100%; margin-bottom: 10px;" onclick="toggleEditProfile()">Edit Profile</button>
@@ -785,7 +788,7 @@
             const newName = document.getElementById('editName').value.trim();
             let newHandle = document.getElementById('editHandle').value.trim();
             const newLocation = document.getElementById('editLocation').value.trim();
-            const newArmy = document.getElementById('editArmy').value.trim();
+            const newArmy = document.getElementById('editArmy').value.trim() || 'Independent Fan';
 
             if (!newName || !newHandle) {
                 return alert("Name and Handle cannot be empty.");
@@ -840,7 +843,7 @@
                 let currentStreak = parseInt(localStorage.getItem(`streak_${currentUser.id}`)) || 1;
                 let fullName = meta.full_name || 'Fan';
                 let displayName = meta.custom_name || fullName.split(' ')[0];
-                let armyTag = meta.fan_army || 'Unaffiliated';
+                let armyTag = meta.fan_army || 'Independent Fan';
 
                 const { error } = await db.from('fan_posts').insert({
                     user_id: currentUser.id,
@@ -869,6 +872,15 @@
                 alert("Error broadcasting post: " + err.message);
             }
         }
+
+        async function adminDeletePost(postId) {
+            if (confirm("ADMIN OVERRIDE: Permanently delete this post?")) {
+                try {
+                    await db.from('fan_posts').delete().eq('id', postId);
+                    fetchFeedPosts();
+                } catch (err) { alert("Admin deletion failed: " + err.message); }
+            }
+        }
         
         async function deletePost(postId) {
             if (confirm("Permanently delete your post?")) {
@@ -892,7 +904,7 @@
             const listContainer = document.getElementById('trendingHashtagsList');
             let tagsHTML = '';
             try {
-                const { data: promo } = await db.from('executive_overrides').select('*').eq('campaign_type', 'hashtag').eq('is_active', true).single();
+                const { data: promo } = await db.from('executive_overrides').select('*').eq('campaign_type', 'hashtag').eq('is_active', true).maybeSingle();
                 if (promo) {
                     tagsHTML += `
                         <div class="trending-item" onclick="filterByTag('${promo.target_keyword}')" style="background:rgba(56, 189, 248, 0.1); padding:8px 12px; border-radius:8px; border:1px solid var(--cyan-accent); margin-bottom: 8px;">
@@ -948,11 +960,6 @@
                 return Math.floor(diffHours) + 'h ago';
             }
             return postDate.toLocaleDateString() + ' ' + postDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        }
-
-        function castPollVote(postId, optionNumber) {
-            alert(`Your vote has been securely recorded!`);
-            fetchFeedPosts();
         }
 
         function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
