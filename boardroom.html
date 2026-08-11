@@ -109,7 +109,7 @@
         .btn-lock:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(255,199,0,0.4); }
 
         /* Security Gate Styles */
-        .access-gate { text-align: center; padding: 4rem 2rem; background: var(--bg-card); border: 1px dashed var(--gold-accent); border-radius: 20px; max-width: 600px; margin: 3rem auto; box-shadow: 0 15px 40px rgba(0,0,0,0.7); }
+        .access-gate { text-align: center; padding: 4rem 2rem; background: var(--bg-card); border: 1px dashed var(--gold-accent); border-radius: 20px; max-width: 650px; margin: 3rem auto; box-shadow: 0 15px 40px rgba(0,0,0,0.7); }
         .access-gate i { font-size: 3rem; color: var(--gold-accent); margin-bottom: 15px; filter: drop-shadow(0 0 15px var(--gold-glow)); }
 
         .accreditation-form { background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 20px; padding: 2.5rem; max-width: 550px; margin: 2rem auto; box-shadow: 0 15px 40px rgba(0,0,0,0.8); text-align: left; }
@@ -162,7 +162,7 @@
                         <div class="access-gate">
                             <i class="fa-solid fa-shield-halved"></i>
                             <h2 style="color:#FFF; font-size:1.6rem; font-weight:900; margin-bottom:10px;">Executive Clearance Required</h2>
-                            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:25px; line-height:1.5;">The Producer Board Room is protected against unauthorized access and bot infiltration. Secure Google / iCloud identity verification is required to proceed.</p>
+                            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:25px; line-height:1.5;">The Producer Board Room is restricted exclusively to verified Tollywood Producers and Directors. Secure Google or iCloud identity verification is required to proceed.</p>
                             <button class="btn-lock" style="padding: 0.9rem 2.5rem; font-size:0.9rem;" onclick="handleGoogleLogin()">
                                 <i class="fa-brands fa-google" style="margin-right:8px;"></i> Authenticate & Request Access
                             </button>
@@ -185,14 +185,31 @@
                 }
 
                 if (approvalRecord.status === 'pending') {
-                    // Submitted, but waiting for admin approval
+                    // Submitted, pending admin approval (Authoritative tone)
                     container.innerHTML = `
-                        <div class="access-gate" style="border-color: var(--cyan-accent);">
-                            <i class="fa-solid fa-hourglass-half" style="color: var(--cyan-accent);"></i>
-                            <h2 style="color:#FFF; font-size:1.4rem; font-weight:900; margin-bottom:10px;">Accreditation Under Review</h2>
-                            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:15px; line-height:1.4;">Your studio credentials for <strong>${approvalRecord.studio_name}</strong> have been securely logged and are awaiting manual review by the TeluguCineCraft Executive Committee.</p>
-                            <p style="font-size:0.75rem; color:var(--cyan-accent); margin-bottom:20px;">Once approved by our administration, your terminal access will unlock automatically.</p>
-                            <button class="back-btn" onclick="signOutUser()">Sign Out / Switch Account</button>
+                        <div class="access-gate" style="border-color: rgba(56, 189, 248, 0.3);">
+                            <div style="font-size: 0.7rem; letter-spacing: 2px; color: var(--cyan-accent); font-weight: 800; text-transform: uppercase; margin-bottom: 8px;">
+                                [ PROTOCOL 04: CREDENTIAL AUDIT ]
+                            </div>
+                            <h2 style="color:#FFF; font-size: 1.25rem; font-weight: 900; margin-bottom: 6px; text-transform: uppercase;">
+                                Security Clearance: Pending Verification
+                            </h2>
+                            <div style="font-size: 0.8rem; color: var(--gold-accent); font-weight: 700; margin-bottom: 24px; text-transform: uppercase; letter-spacing: 0.5px;">
+                                Entity: ${approvalRecord.studio_name} (${approvalRecord.role})
+                            </div>
+                            
+                            <div style="background: rgba(0,0,0,0.6); border: 1px solid var(--border-glass); border-radius: 12px; padding: 1.8rem; text-align: left; margin-bottom: 24px;">
+                                <p style="color: var(--text-muted); font-size: 0.88rem; line-height: 1.6; font-weight: 500; margin-bottom: 16px;">
+                                    Your executive dossier has been securely logged with the TeluguCineCraft Executive Committee. Per compliance mandates for Producers and Directors, manual identity and firm-surety verification is required before granting access to proprietary script ledgers and trade telemetry.
+                                </p>
+                                <div style="border-top: 1px solid rgba(255,255,255,0.06); padding-top: 14px; display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem;">
+                                    <span style="color: #64748B; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Status: Under Review</span>
+                                    <span style="color: var(--cyan-accent); font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">Resolution: Within 4 Business Days</span>
+                                </div>
+                            </div>
+                            <button class="back-btn" onclick="signOutUser()" style="margin: 0 auto; display: inline-flex; font-size: 0.75rem; letter-spacing: 0.5px;">
+                                Switch Profile / Sign Out
+                            </button>
                         </div>
                     `;
                     return;
@@ -225,8 +242,8 @@
                 <div class="accreditation-form">
                     <div style="text-align:center; margin-bottom: 1.5rem;">
                         <i class="fa-solid fa-id-card-clip fa-2x" style="color:var(--gold-accent); margin-bottom:8px;"></i>
-                        <h2 style="color:#FFF; font-size:1.3rem; font-weight:900;">Studio Accreditation Form</h2>
-                        <p style="color:var(--text-muted); font-size:0.8rem; margin-top:4px;">Verified via Google Identity (${user.email}). Complete your studio profile for manual vetting.</p>
+                        <h2 style="color:#FFF; font-size:1.3rem; font-weight:900;">Executive Accreditation</h2>
+                        <p style="color:var(--text-muted); font-size:0.8rem; margin-top:4px;">Restricted exclusively to verified Producers and Directors.</p>
                     </div>
 
                     <form id="accreditationForm" onsubmit="submitAccreditation(event)">
@@ -236,11 +253,15 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label">Studio / Banner / Production Firm Name</label>
-                            <input type="text" id="accStudio" class="form-input" placeholder="e.g., Annapurna Studios / Mythri" required>
+                            <input type="text" id="accStudio" class="form-input" placeholder="e.g., Annapurna Studios / Mythri Movie Makers" required>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Executive Role / Designation</label>
-                            <input type="text" id="accRole" class="form-input" placeholder="e.g., Producer / Head of Development" required>
+                            <label class="form-label">Executive Role</label>
+                            <select id="accRole" class="form-input" required style="cursor: pointer;">
+                                <option value="" disabled selected>Select your industry role...</option>
+                                <option value="Producer">Producer / Studio Executive</option>
+                                <option value="Director">Film Director / Showrunner</option>
+                            </select>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Authenticated Google Email</label>
@@ -250,6 +271,14 @@
                             <i class="fa-solid fa-paper-plane" style="margin-right:6px;"></i> Submit for Admin Approval
                         </button>
                     </form>
+                    
+                    <div style="margin-top: 20px; padding-top: 15px; border-top: 1px dashed var(--border-glass); text-align: center;">
+                        <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px;">Are you a Scriptwriter looking to pitch a story?</p>
+                        <a href="arena.html" style="color: var(--cyan-accent); font-size: 0.8rem; font-weight: 800; text-decoration: none;">
+                            <i class="fa-solid fa-arrow-right"></i> Pitch securely via Fan Arena Launchpad
+                        </a>
+                    </div>
+
                     <div style="text-align:center; margin-top:15px;">
                         <button onclick="signOutUser()" style="background:none; border:none; color:var(--text-muted); font-size:0.75rem; cursor:pointer; text-decoration:underline;">Sign Out</button>
                     </div>
