@@ -91,14 +91,16 @@
         .pulse-title { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: 800; margin-bottom: 4px; }
         .pulse-val { font-size: 1rem; font-weight: 900; color: var(--cyan-accent); }
 
-        .script-card { background: rgba(0,0,0,0.4); border: 1px solid var(--border-glass); border-radius: 14px; padding: 1.2rem; margin-bottom: 1rem; transition: border-color 0.2s; }
+        /* Dynamic Script Elements */
+        .script-card { background: rgba(0,0,0,0.4); border: 1px solid var(--border-glass); border-radius: 14px; padding: 1.5rem; margin-bottom: 1rem; transition: border-color 0.2s; position: relative;}
         .script-card:hover { border-color: rgba(255, 199, 0, 0.3); }
-        .script-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
-        .script-name { font-size: 1.05rem; font-weight: 900; color: #FFF; }
-        .script-meta { font-size: 0.75rem; color: var(--text-muted); display: flex; gap: 15px; margin-bottom: 10px; font-weight: 600;}
-        .script-logline { font-size: 0.85rem; color: #CBD5E1; line-height: 1.4; margin-bottom: 12px; font-weight: 500;}
+        .script-card::after { content: 'INDUSTRY READY ✓'; position: absolute; top: 0; right: 0; background: var(--success); color: #000; font-size: 0.6rem; font-weight: 900; padding: 4px 12px; border-bottom-left-radius: 12px; border-top-right-radius: 12px;}
+        .script-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; padding-right: 120px;}
+        .script-name { font-size: 1.2rem; font-weight: 900; color: #FFF; text-transform: uppercase;}
+        .script-meta { font-size: 0.75rem; color: var(--text-muted); display: flex; gap: 15px; margin-bottom: 15px; font-weight: 600;}
+        .script-logline { font-size: 0.95rem; color: #CBD5E1; line-height: 1.5; margin-bottom: 15px; font-weight: 500; background: rgba(0,0,0,0.3); padding: 12px; border-left: 3px solid var(--gold-accent); border-radius: 4px;}
         
-        .script-actions { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-glass); padding-top: 10px;}
+        .script-actions { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-glass); padding-top: 15px; margin-top: 15px;}
         .script-stats { display: flex; gap: 15px; font-size: 0.75rem; color: var(--text-muted); font-weight: 700;}
         .script-stats i { color: var(--gold-accent); margin-right: 4px; }
         
@@ -107,6 +109,13 @@
         .btn-like:hover { background: rgba(255,255,255,0.1); }
         .btn-lock { background: linear-gradient(135deg, var(--gold-accent), #E6B300); color: #000; border: none; padding: 0.4rem 1rem; border-radius: 8px; font-weight: 900; font-size: 0.75rem; cursor: pointer; text-transform: uppercase; box-shadow: 0 4px 12px rgba(255,199,0,0.2);}
         .btn-lock:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(255,199,0,0.4); }
+
+        .expand-btn { width: 100%; text-align: center; background: transparent; border: 1px dashed var(--text-muted); color: var(--text-muted); padding: 10px; border-radius: 8px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; cursor: pointer; margin-bottom: 5px; transition: all 0.2s;}
+        .expand-btn:hover { border-color: var(--cyan-accent); color: var(--cyan-accent); }
+        
+        .expanded-content { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--border-glass); animation: fadeIn 0.3s ease;}
+        .expanded-content h4 { color: var(--cyan-accent); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 5px; margin-top: 15px; font-weight: 800;}
+        .expanded-content p { color: var(--text-main); font-size: 0.9rem; line-height: 1.6; }
 
         /* Security Gate Styles */
         .access-gate { text-align: center; padding: 4rem 2rem; background: var(--bg-card); border: 1px dashed var(--gold-accent); border-radius: 20px; max-width: 650px; margin: 3rem auto; box-shadow: 0 15px 40px rgba(0,0,0,0.7); }
@@ -153,8 +162,6 @@
         async function verifyStudioAccess() {
             try {
                 const container = document.getElementById('boardroomContent');
-
-                // Safely retrieve the current session without throwing AuthSessionMissingError
                 const { data: { session }, error: sessionError } = await db.auth.getSession();
                 
                 if (sessionError || !session || !session.user) {
@@ -174,7 +181,6 @@
                 globalUser = session.user;
                 const user = globalUser;
 
-                // Safe fetch: Gets the latest approval record without crashing on multi-rows
                 const { data: records, error } = await db
                     .from('studio_approvals')
                     .select('*')
@@ -191,15 +197,9 @@
                 if (approvalRecord.status === 'pending') {
                     container.innerHTML = `
                         <div class="access-gate" style="border-color: rgba(56, 189, 248, 0.3);">
-                            <div style="font-size: 0.7rem; letter-spacing: 2px; color: var(--cyan-accent); font-weight: 800; text-transform: uppercase; margin-bottom: 8px;">
-                                [ PROTOCOL 04: CREDENTIAL AUDIT ]
-                            </div>
-                            <h2 style="color:#FFF; font-size: 1.25rem; font-weight: 900; margin-bottom: 6px; text-transform: uppercase;">
-                                Security Clearance: Pending Verification
-                            </h2>
-                            <div style="font-size: 0.8rem; color: var(--gold-accent); font-weight: 700; margin-bottom: 24px; text-transform: uppercase; letter-spacing: 0.5px;">
-                                Entity: ${approvalRecord.studio_name} (${approvalRecord.role})
-                            </div>
+                            <div style="font-size: 0.7rem; letter-spacing: 2px; color: var(--cyan-accent); font-weight: 800; text-transform: uppercase; margin-bottom: 8px;">[ PROTOCOL 04: CREDENTIAL AUDIT ]</div>
+                            <h2 style="color:#FFF; font-size: 1.25rem; font-weight: 900; margin-bottom: 6px; text-transform: uppercase;">Security Clearance: Pending Verification</h2>
+                            <div style="font-size: 0.8rem; color: var(--gold-accent); font-weight: 700; margin-bottom: 24px; text-transform: uppercase; letter-spacing: 0.5px;">Entity: ${approvalRecord.studio_name} (${approvalRecord.role})</div>
                             
                             <div style="background: rgba(0,0,0,0.6); border: 1px solid var(--border-glass); border-radius: 12px; padding: 1.8rem; text-align: left; margin-bottom: 24px;">
                                 <p style="color: var(--text-muted); font-size: 0.88rem; line-height: 1.6; font-weight: 500; margin-bottom: 16px;">
@@ -210,9 +210,7 @@
                                     <span style="color: var(--cyan-accent); font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">Resolution: Within 4 Business Days</span>
                                 </div>
                             </div>
-                            <button class="back-btn" onclick="signOutUser()" style="margin: 0 auto; display: inline-flex; font-size: 0.75rem; letter-spacing: 0.5px;">
-                                Switch Profile / Sign Out
-                            </button>
+                            <button class="back-btn" onclick="signOutUser()" style="margin: 0 auto; display: inline-flex; font-size: 0.75rem; letter-spacing: 0.5px;">Switch Profile / Sign Out</button>
                         </div>
                     `;
                     return;
@@ -221,15 +219,9 @@
                 if (approvalRecord.status === 'rejected') {
                     container.innerHTML = `
                         <div class="access-gate" style="border-color: rgba(239, 68, 68, 0.4); max-width: 650px; background: rgba(12, 17, 26, 0.95);">
-                            <div style="font-size: 0.7rem; letter-spacing: 2px; color: var(--danger); font-weight: 800; text-transform: uppercase; margin-bottom: 8px;">
-                                [ PROTOCOL 04: AUDIT FAILED ]
-                            </div>
-                            <h2 style="color:#FFF; font-size: 1.25rem; font-weight: 900; margin-bottom: 6px; text-transform: uppercase; letter-spacing: -0.2px;">
-                                Accreditation Status: Verification Failure
-                            </h2>
-                            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700; margin-bottom: 24px; text-transform: uppercase; letter-spacing: 0.5px;">
-                                Entity: ${approvalRecord.studio_name} (${approvalRecord.role})
-                            </div>
+                            <div style="font-size: 0.7rem; letter-spacing: 2px; color: var(--danger); font-weight: 800; text-transform: uppercase; margin-bottom: 8px;">[ PROTOCOL 04: AUDIT FAILED ]</div>
+                            <h2 style="color:#FFF; font-size: 1.25rem; font-weight: 900; margin-bottom: 6px; text-transform: uppercase; letter-spacing: -0.2px;">Accreditation Status: Verification Failure</h2>
+                            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700; margin-bottom: 24px; text-transform: uppercase; letter-spacing: 0.5px;">Entity: ${approvalRecord.studio_name} (${approvalRecord.role})</div>
                             
                             <div style="background: rgba(0,0,0,0.6); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 12px; padding: 1.8rem; text-align: left; margin-bottom: 24px;">
                                 <p style="color: var(--text-muted); font-size: 0.88rem; line-height: 1.6; font-weight: 500; margin-bottom: 16px;">
@@ -240,37 +232,19 @@
                                     Action Required: Please contact the TeluguCineCraft Executive Committee support team to submit manual proof of firm-surety.
                                 </div>
                             </div>
-                            <button class="back-btn" onclick="signOutUser()" style="margin: 0 auto; display: inline-flex; font-size: 0.75rem; letter-spacing: 0.5px;">
-                                Switch Profile / Sign Out
-                            </button>
+                            <button class="back-btn" onclick="signOutUser()" style="margin: 0 auto; display: inline-flex; font-size: 0.75rem; letter-spacing: 0.5px;">Switch Profile / Sign Out</button>
                         </div>
                     `;
                     return;
                 }
 
                 if (approvalRecord.status === 'approved') {
-                    // APPROVED! Enter the boardroom.
-                    renderExecutiveTerminal(user);
+                    // APPROVED! Load the Terminal & Inject Dynamic Pitches
+                    renderExecutiveTerminal(user, approvalRecord);
                 }
 
             } catch (err) {
                 console.error("Access verification error:", err);
-                const container = document.getElementById('boardroomContent');
-                if (container) {
-                    container.innerHTML = `
-                        <div class="access-gate" style="border-color: rgba(239, 68, 68, 0.4); max-width: 600px;">
-                            <i class="fa-solid fa-triangle-exclamation" style="color: var(--danger); font-size: 2.5rem; margin-bottom: 12px;"></i>
-                            <h2 style="color:#FFF; font-size: 1.2rem; font-weight: 900; margin-bottom: 8px; text-transform: uppercase;">Telemetry Connection Fault</h2>
-                            <div style="background: rgba(0,0,0,0.5); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 12px; padding: 1.5rem; text-align: left; margin-bottom: 20px;">
-                                <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.6; font-weight: 500;">
-                                    Unable to establish a secure handshake with the executive database. Please verify your connection.
-                                </p>
-                                <p style="color: var(--danger); font-size: 0.75rem; margin-top: 10px; font-family: monospace;">Error: ${err.message || "Unknown fault"}</p>
-                            </div>
-                            <button class="back-btn" onclick="signOutUser()" style="margin: 0 auto; display: inline-flex;">Sign Out / Retry Session</button>
-                        </div>
-                    `;
-                }
             }
         }
 
@@ -354,11 +328,9 @@
                 });
 
                 if (error) throw error;
-
                 alert("Accreditation request submitted! Status is now pending executive approval.");
                 window.location.reload();
             } catch (err) {
-                console.error("Submission error:", err);
                 alert("Error submitting accreditation: " + err.message);
             }
         }
@@ -380,9 +352,8 @@
             }
         }
 
-        function renderExecutiveTerminal(user) {
+        function renderExecutiveTerminal(user, approvalRecord) {
             const container = document.getElementById('boardroomContent');
-            let shortEmail = user.email ? user.email.split('@')[0] : 'Executive';
 
             document.getElementById('navActionsArea').innerHTML = `
                 <button class="spectate-toggle-btn" id="spectateBtn" onclick="toggleSpectateMode()">
@@ -424,11 +395,11 @@
                         
                         <div class="metric-row">
                             <span class="metric-label">Active Executive</span>
-                            <span class="metric-val" style="color:#FFF;">${shortEmail}</span>
+                            <span class="metric-val" style="color:#FFF;">${approvalRecord.full_name}</span>
                         </div>
                         <div class="metric-row">
-                            <span class="metric-label">Vetted IP Pool</span>
-                            <span class="metric-val">28 Loglines</span>
+                            <span class="metric-label">Verified Studio</span>
+                            <span class="metric-val" style="color:var(--cyan-accent);">${approvalRecord.studio_name}</span>
                         </div>
                         <div class="metric-row">
                             <span class="metric-label">NDA Compliance</span>
@@ -436,7 +407,7 @@
                         </div>
                         <div class="metric-row">
                             <span class="metric-label">Platform Status</span>
-                            <span class="metric-val" style="color:var(--cyan-accent);">Jio-Tier Free Access</span>
+                            <span class="metric-val" style="color:var(--gold-accent);">Platinum Access</span>
                         </div>
 
                         <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(139, 92, 246, 0.05); border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 12px;">
@@ -447,95 +418,148 @@
                         </div>
                     </div>
 
-                    <!-- RIGHT: WORKWORKSPACE -->
+                    <!-- RIGHT: WORKSPACE -->
                     <div class="main-workspace">
                         
-                        <!-- 1. CURATED SCRIPT DEAL FLOW -->
-                        <div class="workspace-section">
-                            <div class="section-header">
-                                <div class="section-title"><i class="fa-solid fa-file-contract" style="color:var(--gold-accent)"></i> Curated Script Inflow (Zero Spam)</div>
-                                <span class="section-action">AI Vetted & Plagiarism Checked</span>
+                        <!-- STUDIO COMBINATION MATRIX -->
+                        <div class="workspace-section" style="padding-bottom: 1.2rem;">
+                            <div class="section-header" style="margin-bottom: 0; border: none; padding: 0;">
+                                <div class="section-title"><i class="fa-solid fa-chart-line" style="color:var(--cyan-accent)"></i> Talent ROI Matrix</div>
+                                <span class="section-action" style="cursor:pointer;" onclick="alert('Enterprise feature: Contact support for full matrix access.')">View Full Report <i class="fa-solid fa-arrow-right"></i></span>
                             </div>
-
-                            <!-- Script Card 1 -->
-                            <div class="script-card">
-                                <div class="script-top">
-                                    <div class="script-name">Project Vajra: Sci-Fi Action Epic</div>
-                                    <span style="background:rgba(56,189,248,0.1); color:var(--cyan-accent); padding:3px 8px; border-radius:6px; font-size:0.7rem; font-weight:800;">Action / Sci-Fi</span>
-                                </div>
-                                <div class="script-meta">
-                                    <span><i class="fa-regular fa-user"></i> Author: Anonymous Creator #4092</span>
-                                    <span><i class="fa-solid fa-coins"></i> Scale: ₹80 Cr+ (Pan-India)</span>
-                                </div>
-                                <div class="script-logline">
-                                    "When an ancient subterranean energy source is unearthed beneath the Singareni Collieries, a disgraced mine engineer must stop a rogue corporate syndicate from weaponizing seismic technology."
-                                </div>
-                                <div class="script-actions">
-                                    <div class="script-stats">
-                                        <span><i class="fa-solid fa-eye"></i> 142 Studio Views</span>
-                                        <span><i class="fa-solid fa-bookmark"></i> 18 Bookmarks</span>
-                                    </div>
-                                    <div class="action-btn-group">
-                                        <button class="btn-like" onclick="actionLike('Project Vajra')"><i class="fa-solid fa-heart" style="color:var(--danger)"></i> Like</button>
-                                        <button class="btn-lock" onclick="actionLockStory('Project Vajra')"><i class="fa-solid fa-lock"></i> Lock Story</button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Script Card 2 -->
-                            <div class="script-card">
-                                <div class="script-top">
-                                    <div class="script-name">The Godavari Heist: Rural Crime Thriller</div>
-                                    <span style="background:rgba(34,197,94,0.1); color:var(--success); padding:3px 8px; border-radius:6px; font-size:0.7rem; font-weight:800;">Crime / Thriller</span>
-                                </div>
-                                <div class="script-meta">
-                                    <span><i class="fa-regular fa-user"></i> Author: Anonymous Creator #1184</span>
-                                    <span><i class="fa-solid fa-coins"></i> Scale: ₹25 Cr (Tier-2 Masterpiece)</span>
-                                </div>
-                                <div class="script-logline">
-                                    "Set against the backdrop of a massive Godavari pushkaralu festival, three retired boatmen plan a meticulous heist of an antique gold shipment resting at the riverbed."
-                                </div>
-                                <div class="script-actions">
-                                    <div class="script-stats">
-                                        <span><i class="fa-solid fa-eye"></i> 98 Studio Views</span>
-                                        <span><i class="fa-solid fa-bookmark"></i> 12 Bookmarks</span>
-                                    </div>
-                                    <div class="action-btn-group">
-                                        <button class="btn-like" onclick="actionLike('The Godavari Heist')"><i class="fa-solid fa-heart" style="color:var(--danger)"></i> Like</button>
-                                        <button class="btn-lock" onclick="actionLockStory('The Godavari Heist')"><i class="fa-solid fa-lock"></i> Lock Story</button>
-                                    </div>
-                                </div>
-                            </div>
-
                         </div>
 
-                        <!-- 2. STUDIO COMBINATION MATRIX -->
-                        <div class="workspace-section">
-                            <div class="section-header">
-                                <div class="section-title"><i class="fa-solid fa-chart-line" style="color:var(--cyan-accent)"></i> Talent ROI & Combination Matrix</div>
-                                <span class="section-action">Verified Analytics</span>
+                        <!-- CURATED SCRIPT INFLOW (DYNAMIC) -->
+                        <div class="workspace-section" id="dynamicScriptFeed">
+                            <div style="text-align:center; padding: 3rem; color:var(--text-muted);">
+                                <i class="fa-solid fa-circle-notch fa-spin fa-2x"></i>
+                                <p style="margin-top:15px; font-weight:700;">Fetching Approved Submissions...</p>
                             </div>
-                            <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.4;">
-                                Historical data indicates director-composer pairings involving mass beats cross the 2.2x recovery threshold 74% more often in Nizam and Ceded territories. Full multi-variable matrix accessible via enterprise tier.
-                            </p>
                         </div>
 
                     </div>
                 </div>
             `;
+
+            // Trigger the dynamic database call to fill the right column
+            fetchApprovedPitches();
         }
 
-        function actionLike(title) {
-            alert(`"${title}" bookmarked and liked to your executive portfolio.`);
-        }
+        async function fetchApprovedPitches() {
+            const container = document.getElementById('dynamicScriptFeed');
+            try {
+                // Queries the database for pitches that have been approved by the Admin Gatekeeper
+                const { data, error } = await db.from('producer_pitches')
+                    .select('*')
+                    .eq('status', 'Approved')
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
 
-        function actionLockStory(title) {
-            const confirmLock = confirm(`⚡ LOCK OPTION: Are you sure you want to lock "${title}" for exclusive studio discussion? This will temporarily freeze the script in the public marketplace and alert the TeluguCineCraft escrow desk.`);
-            if (confirmLock) {
-                alert(`Success! "${title}" is now locked under your studio profile. The administration team will establish secure escrow channels.`);
+                if (!data || data.length === 0) {
+                    container.innerHTML = `
+                        <div class="section-header">
+                            <div class="section-title"><i class="fa-solid fa-file-contract" style="color:var(--gold-accent)"></i> Curated Script Inflow (Zero Spam)</div>
+                            <span class="section-action">AI Vetted & Plagiarism Checked</span>
+                        </div>
+                        <div style="text-align:center; padding:3rem; color:var(--text-muted); background:rgba(0,0,0,0.3); border-radius:12px; border:1px dashed var(--border-glass);">
+                            No new approved scripts currently in the vault. Check back later.
+                        </div>
+                    `;
+                    return;
+                }
+
+                let html = `
+                    <div class="section-header">
+                        <div class="section-title"><i class="fa-solid fa-file-contract" style="color:var(--gold-accent)"></i> Curated Script Inflow (Zero Spam)</div>
+                        <span class="section-action">AI Vetted & Plagiarism Checked</span>
+                    </div>
+                `;
+
+                data.forEach(p => {
+                    let genres = p.genres ? p.genres.join(', ') : 'Unspecified';
+                    
+                    html += `
+                        <div class="script-card">
+                            <div class="script-top">
+                                <div class="script-name">${p.title || 'Untitled Concept'}</div>
+                                <span style="background:rgba(56,189,248,0.1); color:var(--cyan-accent); padding:3px 8px; border-radius:6px; font-size:0.7rem; font-weight:800;">${p.format} • ${genres}</span>
+                            </div>
+                            <div class="script-meta">
+                                <span><i class="fa-regular fa-user"></i> Author: ${p.legal_name || 'Anonymous'}</span>
+                                <span><i class="fa-solid fa-coins"></i> Scale: ${p.scale || 'TBA'}</span>
+                            </div>
+                            <div class="script-logline">
+                                "${p.logline || 'No logline provided.'}"
+                            </div>
+                            
+                            <button class="expand-btn" onclick="toggleExpand('${p.id}')">
+                                Read Full 3-Act Structure <i class="fa-solid fa-chevron-down" style="margin-left:5px;"></i>
+                            </button>
+
+                            <div class="expanded-content" id="expand-${p.id}">
+                                <h4>One-Line Hook</h4>
+                                <p>${p.hook || 'N/A'}</p>
+                                
+                                <h4>Why This Story?</h4>
+                                <p>${p.special_factor || 'N/A'}</p>
+
+                                <h4>Act 1: The Setup</h4>
+                                <p>${p.act_1 || 'N/A'}</p>
+
+                                <h4>Act 2: The Journey / Interval</h4>
+                                <p>${p.act_2 || 'N/A'}</p>
+
+                                <h4>Act 3: Resolution</h4>
+                                <p>${p.act_3 || 'N/A'}</p>
+                                
+                                <div style="margin-top:15px; background:rgba(0,0,0,0.5); padding:12px; border-radius:8px; border:1px solid var(--border-glass);">
+                                    <h4 style="margin-top:0;">Writer Identity</h4>
+                                    <p style="color:var(--gold-accent); font-weight:700; font-size: 0.9rem;">${p.legal_name || 'Anonymous'} (${p.writer_type || 'Writer'})</p>
+                                    <p style="color:var(--text-muted); font-size: 0.8rem;"><i class="fa-solid fa-location-dot"></i> Base: ${p.location || 'N/A'} • <i class="fa-solid fa-phone"></i> Contact: ${p.contact || 'N/A'}</p>
+                                </div>
+                            </div>
+
+                            <div class="script-actions">
+                                <div class="script-stats">
+                                    <span><i class="fa-solid fa-eye"></i> Verified Industry Ready</span>
+                                </div>
+                                <div class="action-btn-group">
+                                    <button class="btn-like" onclick="actionLike('${p.title || 'Untitled'}')"><i class="fa-solid fa-heart" style="color:var(--danger)"></i> Shortlist</button>
+                                    <button class="btn-lock" onclick="actionLockStory('${p.title || 'Untitled'}')"><i class="fa-solid fa-lock"></i> Lock Story</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                container.innerHTML = html;
+            } catch (err) {
+                container.innerHTML = `<p style="color:var(--danger)">Access Denied: Cannot retrieve vault ledgers. (${err.message})</p>`;
             }
         }
 
+        function toggleExpand(id) {
+            let el = document.getElementById('expand-' + id);
+            if (el.style.display === 'block') {
+                el.style.display = 'none';
+            } else {
+                el.style.display = 'block';
+            }
+        }
+
+        function actionLike(title) {
+            alert(`"${title}" bookmarked and saved to your executive portfolio.`);
+        }
+
+        function actionLockStory(title) {
+            const confirmLock = confirm(`⚡ SECURE LOCK INITIATED\n\nAre you sure you want to lock "${title}" for exclusive studio discussion? This will temporarily freeze the script in the public marketplace and alert the TeluguCineCraft escrow desk.`);
+            if (confirmLock) {
+                alert(`Success! "${title}" is now locked under your studio profile. The administration team will establish secure communication channels with the writer.`);
+            }
+        }
+
+        // Initialize App
         verifyStudioAccess();
     </script>
 </body>
