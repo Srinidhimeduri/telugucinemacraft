@@ -66,8 +66,11 @@
         .btn-reject { background: rgba(239,68,68,0.15); color: var(--danger); border: 1px solid rgba(239,68,68,0.3); }
         .btn-reject:hover { background: var(--danger); color: #FFF; }
 
-        .lockdown-screen { text-align: center; padding: 6rem 2rem; max-width: 500px; margin: 4rem auto; background: var(--bg-card); border: 1px solid var(--danger); border-radius: 20px; }
+        .lockdown-screen { text-align: center; padding: 5rem 2rem; max-width: 500px; margin: 4rem auto; background: var(--bg-card); border: 1px solid var(--danger); border-radius: 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.8); }
         .lockdown-screen i { font-size: 3rem; color: var(--danger); margin-bottom: 15px; }
+        
+        .btn-admin-login { background: var(--gold-accent); color: #000; border: none; padding: 0.8rem 1.8rem; border-radius: 10px; font-weight: 900; font-size: 0.85rem; cursor: pointer; text-transform: uppercase; display: inline-flex; align-items: center; gap: 8px; margin-top: 15px; box-shadow: 0 4px 15px rgba(255,199,0,0.3); transition: transform 0.2s; }
+        .btn-admin-login:hover { transform: translateY(-1px); }
     </style>
 </head>
 <body>
@@ -88,13 +91,20 @@
                 const container = document.getElementById('adminContainer');
 
                 if (!user || user.email !== MASTER_ADMIN_EMAIL) {
-                    // BREACH DETECTED: Render absolute lockdown screen
+                    // BREACH DETECTED: Render absolute lockdown screen with quick re-auth
                     container.innerHTML = `
                         <div class="lockdown-screen">
                             <i class="fa-solid fa-triangle-exclamation"></i>
-                            <h2 style="color:#FFF; font-size:1.4rem; font-weight:900; margin-bottom:10px;">ACCESS DENIED</h2>
-                            <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:20px; line-height:1.5;">Unauthorized intrusion attempt detected. This cryptographic vault is monitored and restricted to master executive clearance only.</p>
-                            <a href="index.html" style="color:var(--cyan-accent); font-weight:800; font-size:0.8rem; text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Return to Public Terminal</a>
+                            <h2 style="color:#FFF; font-size:1.4rem; font-weight:900; margin-bottom:10px;">VAULT LOCKED</h2>
+                            <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:20px; line-height:1.5;">Session terminated or unauthorized clearance. Authenticate with master admin credentials to unlock.</p>
+                            
+                            <button class="btn-admin-login" onclick="handleAdminLogin()">
+                                <i class="fa-brands fa-google"></i> Authenticate Master Access
+                            </button>
+                            
+                            <div style="margin-top: 20px;">
+                                <a href="index.html" style="color:var(--cyan-accent); font-weight:800; font-size:0.75rem; text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Return to Public Terminal</a>
+                            </div>
                         </div>
                     `;
                     return;
@@ -108,6 +118,10 @@
             }
         }
 
+        async function handleAdminLogin() {
+            await db.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
+        }
+
         async function renderAdminDashboard(user) {
             const container = document.getElementById('adminContainer');
             
@@ -115,7 +129,7 @@
                 <div class="vault-header">
                     <div class="vault-title"><i class="fa-solid fa-vault"></i> Executive Command Vault</div>
                     <div style="display:flex; align-items:center; gap:15px;">
-                        <span style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">Admin: ${user.email}</span>
+                        <span style="font-size:0.80rem; color:var(--text-muted); font-weight:700;">Admin: ${user.email}</span>
                         <button onclick="signOutAdmin()" style="background:none; border:1px solid var(--border-glass); color:var(--text-muted); padding:5px 10px; border-radius:6px; font-size:0.7rem; font-weight:800; cursor:pointer;">Lock Vault</button>
                     </div>
                 </div>
