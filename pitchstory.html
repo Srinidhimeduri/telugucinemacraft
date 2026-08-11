@@ -8,6 +8,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js"></script>
+
     <style>
         :root {
             --bg-base: #06080C;
@@ -213,19 +216,19 @@
             <div class="step-section active" id="step1">
                 <div class="input-group">
                     <label class="input-label">Legal Name</label>
-                    <input type="text" class="premium-input" placeholder="Your full name">
+                    <input type="text" id="pName" class="premium-input" placeholder="Your full name">
                 </div>
                 <div class="input-group">
                     <label class="input-label">Location / Base</label>
-                    <input type="text" class="premium-input" placeholder="e.g., Hyderabad, Vizag, USA">
+                    <input type="text" id="pLoc" class="premium-input" placeholder="e.g., Hyderabad, Vizag, USA">
                 </div>
                 <div class="input-group">
                     <label class="input-label">Contact (Mobile or Email)</label>
-                    <input type="text" class="premium-input" placeholder="Secure contact for producer outreach">
+                    <input type="text" id="pContact" class="premium-input" placeholder="Secure contact for producer outreach">
                 </div>
                 <div class="input-group">
                     <label class="input-label">Writer Classification</label>
-                    <div class="checkbox-grid">
+                    <div class="checkbox-grid" id="groupWriterType">
                         <div class="checkbox-btn" onclick="toggleSelect(this, 'single')">First-Time Writer</div>
                         <div class="checkbox-btn" onclick="toggleSelect(this, 'single')">Experienced Writer</div>
                         <div class="checkbox-btn" onclick="toggleSelect(this, 'single')">Director / Writer</div>
@@ -234,7 +237,7 @@
                 </div>
                 <div class="input-group">
                     <label class="input-label">Primary Telugu Region / Dialect Strength</label>
-                    <input type="text" class="premium-input" placeholder="e.g., Telangana, Rayalaseema, Andhra">
+                    <input type="text" id="pDialect" class="premium-input" placeholder="e.g., Telangana, Rayalaseema, Andhra">
                 </div>
             </div>
 
@@ -242,12 +245,12 @@
             <div class="step-section" id="step2">
                 <div class="input-group">
                     <label class="input-label">Working Title (Max 5 Words)</label>
-                    <input type="text" class="premium-input word-tracked" data-max="5" placeholder="Enter title">
+                    <input type="text" id="pTitle" class="premium-input word-tracked" data-max="5" placeholder="Enter title">
                     <div class="word-counter">0 / 5 words</div>
                 </div>
                 <div class="input-group">
                     <label class="input-label">Primary Genres (Select up to 2)</label>
-                    <div class="checkbox-grid">
+                    <div class="checkbox-grid" id="groupGenres">
                         <div class="checkbox-btn" onclick="toggleSelect(this, 'multi', 2)">Action</div>
                         <div class="checkbox-btn" onclick="toggleSelect(this, 'multi', 2)">Family Drama</div>
                         <div class="checkbox-btn" onclick="toggleSelect(this, 'multi', 2)">Thriller</div>
@@ -258,12 +261,12 @@
                 </div>
                 <div class="input-group">
                     <label class="input-label">One-Line Hook (Max 20 Words)</label>
-                    <textarea class="premium-input word-tracked" data-max="20" placeholder="What makes people buy the ticket?"></textarea>
+                    <textarea id="pHook" class="premium-input word-tracked" data-max="20" placeholder="What makes people buy the ticket?"></textarea>
                     <div class="word-counter">0 / 20 words</div>
                 </div>
                 <div class="input-group">
                     <label class="input-label">Logline (Max 50 Words)</label>
-                    <textarea class="premium-input word-tracked" data-max="50" placeholder="When [INCITING INCIDENT] happens, a [PROTAGONIST] must [OBJECTIVE] before [STAKES]."></textarea>
+                    <textarea id="pLogline" class="premium-input word-tracked" data-max="50" placeholder="When [INCITING INCIDENT] happens, a [PROTAGONIST] must [OBJECTIVE] before [STAKES]."></textarea>
                     <div class="word-counter">0 / 50 words</div>
                 </div>
             </div>
@@ -272,27 +275,27 @@
             <div class="step-section" id="step3">
                 <div class="input-group">
                     <label class="input-label">Hero + Main Conflict (Max 75 Words)</label>
-                    <textarea class="premium-input word-tracked" data-max="75" placeholder="Describe the main character (Age/Occupation) and the central wall they must climb."></textarea>
+                    <textarea id="pHero" class="premium-input word-tracked" data-max="75" placeholder="Describe the main character (Age/Occupation) and the central wall they must climb."></textarea>
                     <div class="word-counter">0 / 75 words</div>
                 </div>
                 <div class="input-group">
                     <label class="input-label">Why is this story special? (Max 50 Words)</label>
-                    <textarea class="premium-input word-tracked" data-max="50" placeholder="The unique X-factor of your story."></textarea>
+                    <textarea id="pSpecial" class="premium-input word-tracked" data-max="50" placeholder="The unique X-factor of your story."></textarea>
                     <div class="word-counter">0 / 50 words</div>
                 </div>
                 <div class="input-group">
                     <label class="input-label">Act 1: The Setup (Max 100 Words)</label>
-                    <textarea class="premium-input word-tracked" data-max="100" placeholder="The beginning and inciting incident."></textarea>
+                    <textarea id="pAct1" class="premium-input word-tracked" data-max="100" placeholder="The beginning and inciting incident."></textarea>
                     <div class="word-counter">0 / 100 words</div>
                 </div>
                 <div class="input-group">
                     <label class="input-label">Act 2: The Journey / Interval Bang (Max 200 Words)</label>
-                    <textarea class="premium-input word-tracked" data-max="200" style="min-height:150px;" placeholder="The rising action, complications, and the critical interval twist."></textarea>
+                    <textarea id="pAct2" class="premium-input word-tracked" data-max="200" style="min-height:150px;" placeholder="The rising action, complications, and the critical interval twist."></textarea>
                     <div class="word-counter">0 / 200 words</div>
                 </div>
                 <div class="input-group">
                     <label class="input-label">Act 3: Climax / Resolution (Max 100 Words)</label>
-                    <textarea class="premium-input word-tracked" data-max="100" placeholder="The final battle and conclusion."></textarea>
+                    <textarea id="pAct3" class="premium-input word-tracked" data-max="100" placeholder="The final battle and conclusion."></textarea>
                     <div class="word-counter">0 / 100 words</div>
                 </div>
             </div>
@@ -301,11 +304,11 @@
             <div class="step-section" id="step4">
                 <div class="input-group">
                     <label class="input-label">Story Setting / Backdrop</label>
-                    <input type="text" class="premium-input" placeholder="e.g., 1980s Rayalaseema, Modern Hyderabad IT Sector">
+                    <input type="text" id="pSetting" class="premium-input" placeholder="e.g., 1980s Rayalaseema, Modern Hyderabad IT Sector">
                 </div>
                 <div class="input-group">
                     <label class="input-label">Expected Scale</label>
-                    <div class="checkbox-grid">
+                    <div class="checkbox-grid" id="groupScale">
                         <div class="checkbox-btn" onclick="toggleSelect(this, 'single')">Low (Concept Driven)</div>
                         <div class="checkbox-btn" onclick="toggleSelect(this, 'single')">Medium (Regional Tier 2)</div>
                         <div class="checkbox-btn" onclick="toggleSelect(this, 'single')">High (Star Hero Level)</div>
@@ -314,7 +317,7 @@
                 </div>
                 <div class="input-group">
                     <label class="input-label">Target Audience (Max 3)</label>
-                    <div class="checkbox-grid">
+                    <div class="checkbox-grid" id="groupAudience">
                         <div class="checkbox-btn" onclick="toggleSelect(this, 'multi', 3)">Youth</div>
                         <div class="checkbox-btn" onclick="toggleSelect(this, 'multi', 3)">Family</div>
                         <div class="checkbox-btn" onclick="toggleSelect(this, 'multi', 3)">Mass / B&C Centers</div>
@@ -382,6 +385,18 @@
     </div>
 
     <script>
+        let currentUser = null;
+
+        async function initPitch() {
+            const { data: { session } } = await db.auth.getSession();
+            if (!session) {
+                alert("Please log in to pitch a story.");
+                window.location.href = "index.html";
+                return;
+            }
+            currentUser = session.user;
+        }
+
         // WORD COUNTER LOGIC
         document.querySelectorAll('.word-tracked').forEach(input => {
             input.addEventListener('input', function() {
@@ -406,7 +421,6 @@
         // CUSTOM CHECKBOX / RADIO LOGIC
         function toggleSelect(element, type, max = 1) {
             let parent = element.parentElement;
-            
             if (type === 'single') {
                 let siblings = parent.querySelectorAll('.checkbox-btn');
                 siblings.forEach(sib => sib.classList.remove('selected'));
@@ -438,13 +452,7 @@
         let currentStep = 1;
         const totalSteps = 5;
 
-        const stepTitles = [
-            "Step 1: The Creator",
-            "Step 2: The Core Concept",
-            "Step 3: Narrative Depth",
-            "Step 4: Market & Delivery",
-            "Step 5: The Oath"
-        ];
+        const stepTitles = ["Step 1: The Creator", "Step 2: The Core Concept", "Step 3: Narrative Depth", "Step 4: Market & Delivery", "Step 5: The Oath"];
         const stepDescs = [
             "Industry professionals need to know who is behind the story.",
             "Keep it sharp. This is what the producer reads in the first 30 seconds.",
@@ -461,19 +469,13 @@
             document.getElementById('stepTitle').innerText = stepTitles[currentStep - 1];
             document.getElementById('stepDesc').innerText = stepDescs[currentStep - 1];
 
-            // Update Progress Bar
             for(let i=1; i<=totalSteps; i++) {
                 let pb = document.getElementById(`pb${i}`);
-                if (i < currentStep) {
-                    pb.className = 'progress-step completed';
-                } else if (i === currentStep) {
-                    pb.className = 'progress-step active';
-                } else {
-                    pb.className = 'progress-step';
-                }
+                if (i < currentStep) pb.className = 'progress-step completed';
+                else if (i === currentStep) pb.className = 'progress-step active';
+                else pb.className = 'progress-step';
             }
 
-            // Buttons
             document.getElementById('btnPrev').style.display = currentStep === 1 ? 'none' : 'block';
             
             if (currentStep === totalSteps) {
@@ -482,30 +484,67 @@
             } else {
                 document.getElementById('btnNext').style.display = 'block';
                 document.getElementById('btnSubmit').style.display = 'none';
-                
-                // Dynamic Next Button Text
                 let nextTexts = ["", "Continue to Concept", "Build Narrative", "Define Market", "Finalize Oath"];
                 document.getElementById('btnNext').innerText = nextTexts[currentStep];
             }
         }
 
-        function submitPitch() {
+        // THE DATABASE BRIDGE
+        async function submitPitch() {
             if(!document.getElementById('rightsCheckbox').checked) {
-                alert("You must check the legal rights declaration to proceed.");
-                return;
+                return alert("You must check the legal rights declaration to proceed.");
             }
-            
-            alert(`Submission Secured!\n\nFormat: ${selectedFormat}\n\nOur system will now analyze your submission for completeness, rights validation, and presentation. You will be notified when it becomes eligible for industry discovery.`);
-            window.location.href = "arena.html";
+
+            const btn = document.getElementById('btnSubmit');
+            btn.innerText = "Encrypting & Submitting...";
+            btn.disabled = true;
+
+            // Gathering Data from IDs
+            const getSingle = (id) => document.querySelector(`#${id} .selected`)?.innerText || "";
+            const getMulti = (id) => Array.from(document.querySelectorAll(`#${id} .selected`)).map(el => el.innerText);
+            const getVal = (id) => document.getElementById(id).value.trim();
+
+            const pitchData = {
+                user_id: currentUser.id,
+                format: selectedFormat,
+                legal_name: getVal('pName'),
+                location: getVal('pLoc'),
+                contact: getVal('pContact'),
+                writer_type: getSingle('groupWriterType'),
+                dialect: getVal('pDialect'),
+                title: getVal('pTitle'),
+                genres: getMulti('groupGenres'),
+                hook: getVal('pHook'),
+                logline: getVal('pLogline'),
+                hero_conflict: getVal('pHero'),
+                special_factor: getVal('pSpecial'),
+                act_1: getVal('pAct1'),
+                act_2: getVal('pAct2'),
+                act_3: getVal('pAct3'),
+                setting: getVal('pSetting'),
+                scale: getSingle('groupScale'),
+                audience: getMulti('groupAudience'),
+                status: 'Pending Review' // Forces it to the Admin Gatekeeper
+            };
+
+            try {
+                const { error } = await db.from('producer_pitches').insert([pitchData]);
+                if (error) throw error;
+                
+                alert(`Submission Secured!\n\nFormat: ${selectedFormat}\n\nYour pitch is now Pending Review by the Editorial Gatekeeper. Check your Arena dashboard for live status updates.`);
+                window.location.href = "arena.html";
+            } catch (err) {
+                alert("Error submitting pitch. Ensure Database is hooked up. " + err.message);
+                btn.innerText = "Seal the Vault & Submit";
+                btn.disabled = false;
+            }
         }
 
         // VIRAL LOOP LOGIC
         function openViralModal() { document.getElementById('viralModal').style.display = 'flex'; }
         function closeViralModal() { document.getElementById('viralModal').style.display = 'none'; }
         
-        function triggerUpload() {
-            document.getElementById('uploadSuccess').style.display = 'block';
-        }
+        function triggerUpload() { document.getElementById('uploadSuccess').style.display = 'block'; }
 
         function simulateVerification() {
             closeViralModal();
@@ -515,10 +554,12 @@
                     <p style="color:#FFF;">Passes valid for 3 months. The Vault is now open.</p>
                 </div>
             `;
-            // Unlock Phase 1
             document.getElementById('formatSelection').style.opacity = '1';
             document.getElementById('formatSelection').style.pointerEvents = 'auto';
         }
+
+        // Initialize Session on Load
+        window.addEventListener('DOMContentLoaded', initPitch);
     </script>
 </body>
 </html>
