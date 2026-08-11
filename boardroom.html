@@ -63,14 +63,11 @@
         .back-btn { color: var(--text-muted); text-decoration: none; font-weight: 700; font-size: 0.8rem; transition: color 0.2s; background: rgba(255,255,255,0.03); padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid var(--border-glass); text-transform: uppercase;}
         .back-btn:hover { color: #FFF; background: rgba(255,255,255,0.08); }
 
-        /* Spectate Fan Pulse Toggle Button */
         .spectate-toggle-btn { background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); color: var(--cyan-accent); padding: 0.5rem 1rem; border-radius: 8px; font-weight: 800; font-size: 0.75rem; cursor: pointer; display: flex; align-items: center; gap: 6px; text-transform: uppercase; transition: all 0.2s;}
         .spectate-toggle-btn:hover, .spectate-toggle-btn.active { background: var(--cyan-accent); color: #000; box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); }
 
-        /* Main Grid */
         .boardroom-grid { display: grid; grid-template-columns: 320px 1fr; gap: 1.5rem; align-items: start; }
 
-        /* Left Console */
         .studio-card {
             background: var(--bg-card); border: 1px solid var(--border-glass);
             border-radius: 18px; padding: 1.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
@@ -81,14 +78,12 @@
         .metric-label { font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
         .metric-val { font-size: 0.9rem; font-weight: 900; color: var(--gold-accent); }
 
-        /* Workspace Sections */
         .main-workspace { display: flex; flex-direction: column; gap: 1.5rem; }
         .workspace-section { background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 18px; padding: 1.5rem; box-shadow: 0 10px 25px rgba(0,0,0,0.4); }
         .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; border-bottom: 1px solid var(--border-glass); padding-bottom: 0.8rem;}
         .section-title { font-size: 1.1rem; font-weight: 900; color: #FFF; display: flex; align-items: center; gap: 8px;}
         .section-action { font-size: 0.75rem; color: var(--cyan-accent); font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;}
 
-        /* Fan Pulse Spectate Drawer (Hidden by default) */
         .fan-pulse-drawer { background: rgba(56, 189, 248, 0.05); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 14px; padding: 1.2rem; margin-bottom: 1.5rem; display: none; }
         .fan-pulse-drawer.visible { display: block; animation: fadeIn 0.3s ease; }
         .pulse-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 10px; }
@@ -96,7 +91,6 @@
         .pulse-title { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: 800; margin-bottom: 4px; }
         .pulse-val { font-size: 1rem; font-weight: 900; color: var(--cyan-accent); }
 
-        /* Script Cards */
         .script-card { background: rgba(0,0,0,0.4); border: 1px solid var(--border-glass); border-radius: 14px; padding: 1.2rem; margin-bottom: 1rem; transition: border-color 0.2s; }
         .script-card:hover { border-color: rgba(255, 199, 0, 0.3); }
         .script-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
@@ -114,9 +108,15 @@
         .btn-lock { background: linear-gradient(135deg, var(--gold-accent), #E6B300); color: #000; border: none; padding: 0.4rem 1rem; border-radius: 8px; font-weight: 900; font-size: 0.75rem; cursor: pointer; text-transform: uppercase; box-shadow: 0 4px 12px rgba(255,199,0,0.2);}
         .btn-lock:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(255,199,0,0.4); }
 
-        /* Access Gate */
-        .access-gate { text-align: center; padding: 5rem 2rem; background: var(--bg-card); border: 1px dashed var(--gold-accent); border-radius: 20px; max-width: 600px; margin: 4rem auto; }
+        /* Security Gate Styles */
+        .access-gate { text-align: center; padding: 4rem 2rem; background: var(--bg-card); border: 1px dashed var(--gold-accent); border-radius: 20px; max-width: 600px; margin: 3rem auto; box-shadow: 0 15px 40px rgba(0,0,0,0.7); }
         .access-gate i { font-size: 3rem; color: var(--gold-accent); margin-bottom: 15px; filter: drop-shadow(0 0 15px var(--gold-glow)); }
+
+        .accreditation-form { background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 20px; padding: 2.5rem; max-width: 550px; margin: 2rem auto; box-shadow: 0 15px 40px rgba(0,0,0,0.8); text-align: left; }
+        .form-group { margin-bottom: 1.2rem; }
+        .form-label { display: block; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 800; margin-bottom: 6px; letter-spacing: 0.5px;}
+        .form-input { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); border-radius: 10px; padding: 0.8rem 1rem; color: #FFF; font-family: inherit; font-size: 0.9rem; outline: none; transition: border-color 0.2s;}
+        .form-input:focus { border-color: var(--gold-accent); }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
         @media (max-width: 1024px) { .boardroom-grid { grid-template-columns: 1fr; } .pulse-grid { grid-template-columns: 1fr; } }
@@ -131,19 +131,16 @@
                 <a href="index.html" class="brand-title"><i class="fa-solid fa-briefcase"></i> Producer Board Room</a>
                 <span class="executive-badge">Secure Terminal v3.2</span>
             </div>
-            <div class="nav-actions">
-                <button class="spectate-toggle-btn" id="spectateBtn" onclick="toggleSpectateMode()">
-                    <i class="fa-solid fa-eye"></i> Spectate Fan Pulse
-                </button>
+            <div class="nav-actions" id="navActionsArea">
                 <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Exit</a>
             </div>
         </nav>
 
-        <!-- DYNAMIC CONTENT AREA (VERIFIED OR GATED) -->
+        <!-- DYNAMIC CONTENT AREA -->
         <div id="boardroomContent">
             <div style="text-align:center; padding: 4rem; color:var(--text-muted);">
                 <i class="fa-solid fa-circle-notch fa-spin fa-2x" style="color:var(--gold-accent)"></i>
-                <p style="margin-top:15px; font-weight:700;">Verifying Studio Accreditation Clearance...</p>
+                <p style="margin-top:15px; font-weight:700;">Verifying Secure Studio Clearance...</p>
             </div>
         </div>
 
@@ -160,23 +157,51 @@
                 const container = document.getElementById('boardroomContent');
 
                 if (!user) {
-                    // Not signed in
+                    // SECURITY WALL: Not signed in
                     container.innerHTML = `
                         <div class="access-gate">
-                            <i class="fa-solid fa-lock"></i>
-                            <h2 style="color:#FFF; font-size:1.5rem; font-weight:900; margin-bottom:10px;">Executive Clearance Required</h2>
-                            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:20px; line-height:1.4;">The Producer Board Room is restricted to verified studio heads, directors, and accredited acquisition executives.</p>
-                            <button class="btn-lock" style="padding: 0.8rem 2rem; font-size:0.85rem;" onclick="handleGoogleLogin()">
-                                <i class="fa-brands fa-google" style="margin-right:6px;"></i> Sign In with Studio Credentials
+                            <i class="fa-solid fa-shield-halved"></i>
+                            <h2 style="color:#FFF; font-size:1.6rem; font-weight:900; margin-bottom:10px;">Executive Clearance Required</h2>
+                            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:25px; line-height:1.5;">The Producer Board Room is protected against unauthorized access and bot infiltration. Secure Google / iCloud identity verification is required to proceed.</p>
+                            <button class="btn-lock" style="padding: 0.9rem 2.5rem; font-size:0.9rem;" onclick="handleGoogleLogin()">
+                                <i class="fa-brands fa-google" style="margin-right:8px;"></i> Authenticate & Request Access
                             </button>
                         </div>
                     `;
                     return;
                 }
 
-                // SECURITY CHECK: In production, verify user.id against a verified studio whitelist table.
-                // For demonstration, if user is signed in, we render the high-level Board Room terminal!
-                renderExecutiveTerminal(user);
+                // Check Supabase if this authenticated user has an approval record
+                const { data: approvalRecord, error } = await db
+                    .from('studio_approvals')
+                    .select('*')
+                    .eq('user_id', user.id)
+                    .single();
+
+                if (error || !approvalRecord) {
+                    // Authenticated via Google, but has not submitted the studio accreditation form yet
+                    renderAccreditationForm(user);
+                    return;
+                }
+
+                if (approvalRecord.status === 'pending') {
+                    // Submitted, but waiting for admin approval
+                    container.innerHTML = `
+                        <div class="access-gate" style="border-color: var(--cyan-accent);">
+                            <i class="fa-solid fa-hourglass-half" style="color: var(--cyan-accent);"></i>
+                            <h2 style="color:#FFF; font-size:1.4rem; font-weight:900; margin-bottom:10px;">Accreditation Under Review</h2>
+                            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:15px; line-height:1.4;">Your studio credentials for <strong>${approvalRecord.studio_name}</strong> have been securely logged and are awaiting manual review by the TeluguCineCraft Executive Committee.</p>
+                            <p style="font-size:0.75rem; color:var(--cyan-accent); margin-bottom:20px;">Once approved by our administration, your terminal access will unlock automatically.</p>
+                            <button class="back-btn" onclick="signOutUser()">Sign Out / Switch Account</button>
+                        </div>
+                    `;
+                    return;
+                }
+
+                if (approvalRecord.status === 'approved') {
+                    // APPROVED! Enter the boardroom.
+                    renderExecutiveTerminal(user);
+                }
 
             } catch (err) {
                 console.warn("Access verification error:", err);
@@ -185,6 +210,79 @@
 
         async function handleGoogleLogin() {
             await db.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
+        }
+
+        async function signOutUser() {
+            await db.auth.signOut();
+            window.location.reload();
+        }
+
+        function renderAccreditationForm(user) {
+            const container = document.getElementById('boardroomContent');
+            const defaultName = user.user_metadata.full_name || '';
+
+            container.innerHTML = `
+                <div class="accreditation-form">
+                    <div style="text-align:center; margin-bottom: 1.5rem;">
+                        <i class="fa-solid fa-id-card-clip fa-2x" style="color:var(--gold-accent); margin-bottom:8px;"></i>
+                        <h2 style="color:#FFF; font-size:1.3rem; font-weight:900;">Studio Accreditation Form</h2>
+                        <p style="color:var(--text-muted); font-size:0.8rem; margin-top:4px;">Verified via Google Identity (${user.email}). Complete your studio profile for manual vetting.</p>
+                    </div>
+
+                    <form id="accreditationForm" onsubmit="submitAccreditation(event)">
+                        <div class="form-group">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" id="accName" class="form-input" value="${defaultName}" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Studio / Banner / Production Firm Name</label>
+                            <input type="text" id="accStudio" class="form-input" placeholder="e.g., Annapurna Studios / Mythri" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Executive Role / Designation</label>
+                            <input type="text" id="accRole" class="form-input" placeholder="e.g., Producer / Head of Development" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Authenticated Google Email</label>
+                            <input type="email" class="form-input" value="${user.email}" disabled style="opacity: 0.7; cursor: not-allowed;">
+                        </div>
+                        <button type="submit" class="btn-lock" style="width:100%; padding: 0.9rem; font-size:0.85rem; margin-top:10px;">
+                            <i class="fa-solid fa-paper-plane" style="margin-right:6px;"></i> Submit for Admin Approval
+                        </button>
+                    </form>
+                    <div style="text-align:center; margin-top:15px;">
+                        <button onclick="signOutUser()" style="background:none; border:none; color:var(--text-muted); font-size:0.75rem; cursor:pointer; text-decoration:underline;">Sign Out</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function submitAccreditation(event) {
+            event.preventDefault();
+            const fullName = document.getElementById('accName').value.trim();
+            const studioName = document.getElementById('accStudio').value.trim();
+            const role = document.getElementById('accRole').value.trim();
+
+            if (!fullName || !studioName || !role) return;
+
+            try {
+                const { error } = await db.from('studio_approvals').insert({
+                    user_id: globalUser.id,
+                    email: globalUser.email,
+                    full_name: fullName,
+                    studio_name: studioName,
+                    role: role,
+                    status: 'pending'
+                });
+
+                if (error) throw error;
+
+                alert("Accreditation request submitted! Status is now pending executive approval.");
+                window.location.reload();
+            } catch (err) {
+                console.error("Submission error:", err);
+                alert("Error submitting accreditation: " + err.message);
+            }
         }
 
         function toggleSpectateMode() {
@@ -208,8 +306,15 @@
             const container = document.getElementById('boardroomContent');
             let shortEmail = user.email ? user.email.split('@')[0] : 'Executive';
 
+            document.getElementById('navActionsArea').innerHTML = `
+                <button class="spectate-toggle-btn" id="spectateBtn" onclick="toggleSpectateMode()">
+                    <i class="fa-solid fa-eye"></i> Spectate Fan Pulse
+                </button>
+                <button class="back-btn" onclick="signOutUser()" title="Sign Out"><i class="fa-solid fa-right-from-bracket"></i></button>
+            `;
+
             container.innerHTML = `
-                <!-- FAN PULSE SPECTATOR DRAWER (TOGGLEABLE) -->
+                <!-- FAN PULSE SPECTATOR DRAWER -->
                 <div class="fan-pulse-drawer" id="fanPulseDrawer">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                         <span style="font-size:0.8rem; font-weight:900; color:var(--cyan-accent); text-transform:uppercase; letter-spacing:1px;">
