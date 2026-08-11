@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+]\<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -258,7 +258,8 @@
             const techGrid = document.getElementById('techGrid');
             if (list && list.length > 0) {
                 techGrid.innerHTML = list.map(t => `
-                    <a href="technician.html?id=${t.id}" class="tech-card">
+                    <!-- DIRECTLY ROUTE TO THE UNIVERSAL PERSON PROFILE PAGE -->
+                    <a href="person.html?name=${encodeURIComponent(t.name)}" class="tech-card">
                         <div>
                             <div class="tech-name">${escapeHTML(t.name)}</div>
                             <span class="craft-tag">${escapeHTML(t.craft)}</span>
