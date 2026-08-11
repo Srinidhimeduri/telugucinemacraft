@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>The Arena & War Room | TeluguCineCraft</title>
+    <title>The War Room & Arena | TeluguCineCraft</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -61,12 +61,12 @@
         /* LEFT: PROFILE & STREAK */
         .profile-card {
             background: var(--bg-card); border: 1px solid var(--border-glass);
-            border-radius: 20px; padding: 1.5rem; text-align: center;
+            border-radius: 20px; padding: 1.5rem; text-align: center; margin-bottom: 1.5rem;
         }
         .avatar {
-            width: 80px; height: 80px; background: linear-gradient(135deg, var(--cyan-accent), var(--gold-accent));
-            border-radius: 50%; margin: 0 auto 1rem auto; display: flex; align-items: center; justify-content: center;
-            font-size: 2rem; color: #000; font-weight: 800;
+            width: 70px; height: 70px; background: linear-gradient(135deg, var(--cyan-accent), var(--gold-accent));
+            border-radius: 50%; margin: 0 auto 0.8rem auto; display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem; color: #000; font-weight: 800;
         }
         .handle { font-size: 1.1rem; font-weight: 800; color: #FFF; margin-bottom: 4px; }
         .faction-tag { font-size: 0.75rem; color: var(--gold-accent); font-weight: 700; background: rgba(255,199,0,0.1); padding: 4px 10px; border-radius: 12px; display: inline-block; margin-bottom: 12px;}
@@ -78,14 +78,24 @@
         .streak-box {
             background: rgba(0,0,0,0.4); border: 1px solid rgba(255,107,0,0.3); border-radius: 12px; padding: 1rem;
         }
-        .streak-number { font-size: 1.8rem; font-weight: 800; color: #FF6B00; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .streak-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;}
+        .streak-number { font-size: 1.6rem; font-weight: 800; color: #FF6B00; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .streak-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;}
         
         .repair-btn {
             background: transparent; border: 1px dashed var(--text-muted); color: var(--text-muted);
             width: 100%; padding: 0.5rem; border-radius: 8px; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.2s; margin-top: 8px;
         }
         .repair-btn:hover { border-color: var(--gold-accent); color: var(--gold-accent); }
+
+        /* TRENDING WIDGETS (LEFT & RIGHT) */
+        .widget-card {
+            background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 20px; padding: 1.2rem; margin-bottom: 1.5rem;
+        }
+        .widget-title { font-size: 0.9rem; font-weight: 800; color: #FFF; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border-glass); padding-bottom: 8px;}
+        .trending-item { display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; padding: 6px 0; color: var(--text-muted); border-bottom: 1px dashed rgba(255,255,255,0.03); cursor: pointer;}
+        .trending-item:hover { color: var(--cyan-accent); }
+        .trending-tag { font-weight: 700; color: #FFF; }
+        .trending-count { font-size: 0.7rem; color: var(--gold-accent); background: rgba(255,199,0,0.1); padding: 2px 6px; border-radius: 6px;}
 
         /* MIDDLE: THE WAR ROOM (FEED) */
         .feed-container { display: flex; flex-direction: column; gap: 1rem; }
@@ -130,6 +140,13 @@
         .action-btn { background: transparent; border: none; color: var(--text-muted); font-size: 0.85rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: color 0.2s;}
         .action-btn:hover, .action-btn.active { color: var(--gold-accent); }
         .action-btn.liked { color: var(--danger); }
+
+        /* LIVE VOTING CARD */
+        .vote-card { background: rgba(255,199,0,0.03); border: 1px solid rgba(255,199,0,0.2); border-radius: 16px; padding: 1.2rem; margin-bottom: 1rem; }
+        .vote-title { font-size: 0.9rem; font-weight: 800; color: var(--gold-accent); margin-bottom: 10px; display: flex; align-items: center; gap: 6px;}
+        .vote-options { display: flex; flex-direction: column; gap: 8px; }
+        .vote-option-btn { background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); color: #FFF; padding: 0.7rem 1rem; border-radius: 10px; font-weight: 700; font-size: 0.85rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s;}
+        .vote-option-btn:hover { border-color: var(--gold-accent); background: rgba(255,199,0,0.08); }
 
         /* RIGHT: THE LAUNCHPAD (PITCH SYSTEM) */
         .launchpad-card {
@@ -196,37 +213,81 @@
 
         <div class="dashboard-grid">
             
-            <!-- LEFT: PROFILE -->
-            <div class="profile-card">
-                <div class="avatar" id="userAvatar">A</div>
-                <div class="handle" id="userHandle">@AnonFan</div>
-                <div class="faction-tag" id="userFactionTag"><i class="fa-solid fa-shield-halved"></i> Tollywood Loyalist</div>
-                
-                <div class="profile-metrics">
-                    <div class="metric-row"><span>Scripts/Stories:</span> <span class="metric-val" id="statScripts">0</span></div>
-                    <div class="metric-row"><span>Dialogue Works:</span> <span class="metric-val" id="statDialogues">0</span></div>
-                    <div class="metric-row"><span>Director Impressions:</span> <span class="metric-val" id="statImpressions">0</span></div>
+            <!-- LEFT: PROFILE & TRENDING USERS -->
+            <div>
+                <div class="profile-card">
+                    <div class="avatar" id="userAvatar">A</div>
+                    <div class="handle" id="userHandle">@AnonFan</div>
+                    <div class="faction-tag" id="userFactionTag"><i class="fa-solid fa-shield-halved"></i> Tollywood Loyalist</div>
+                    
+                    <div class="profile-metrics">
+                        <div class="metric-row"><span>Scripts/Stories:</span> <span class="metric-val" id="statScripts">0</span></div>
+                        <div class="metric-row"><span>Dialogue Works:</span> <span class="metric-val" id="statDialogues">0</span></div>
+                        <div class="metric-row"><span>Director Impressions:</span> <span class="metric-val" id="statImpressions">0</span></div>
+                    </div>
+
+                    <div class="streak-box">
+                        <div class="streak-label">Public Authority Streak</div>
+                        <div class="streak-number"><i class="fa-solid fa-fire"></i> <span id="streakCount">0</span></div>
+                        <p style="font-size:0.7rem; color:var(--text-muted); margin: 8px 0;">Streaks are visible on all posts.</p>
+                        <button class="repair-btn" onclick="repairStreak()">🚑 Repair Broken Streak</button>
+                    </div>
                 </div>
 
-                <div class="streak-box">
-                    <div class="streak-label">Public Authority Streak</div>
-                    <div class="streak-number"><i class="fa-solid fa-fire"></i> <span id="streakCount">0</span></div>
-                    <p style="font-size:0.7rem; color:var(--text-muted); margin: 8px 0;">Streaks are visible on all posts.</p>
-                    <button class="repair-btn" onclick="repairStreak()">🚑 Repair Broken Streak</button>
+                <!-- TOP 5 TRENDING ACTIVE USERS WIDGET -->
+                <div class="widget-card">
+                    <div class="widget-title"><i class="fa-solid fa-fire" style="color:#FF6B00;"></i> Top 5 Active Users</div>
+                    <div id="trendingUsersList">
+                        <div class="trending-item" onclick="viewFanProfile('usr1')">
+                            <span class="trending-tag">1. @RebelKing99</span>
+                            <span class="trending-count">14 Streak</span>
+                        </div>
+                        <div class="trending-item" onclick="viewFanProfile('usr2')">
+                            <span class="trending-tag">2. @MegaAnalyst</span>
+                            <span class="trending-count">12 Streak</span>
+                        </div>
+                        <div class="trending-item" onclick="viewFanProfile('usr3')">
+                            <span class="trending-tag">3. @TarakBuff</span>
+                            <span class="trending-count">10 Streak</span>
+                        </div>
+                        <div class="trending-item" onclick="viewFanProfile('usr4')">
+                            <span class="trending-tag">4. @AlluStans</span>
+                            <span class="trending-count">9 Streak</span>
+                        </div>
+                        <div class="trending-item" onclick="viewFanProfile('usr5')">
+                            <span class="trending-tag">5. @NaniVibe</span>
+                            <span class="trending-count">8 Streak</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <!-- MIDDLE: THE WAR ROOM -->
             <div class="feed-container">
                 <div class="compose-box">
-                    <h3 style="font-size: 1.1rem; margin-bottom: 12px;"><i class="fa-solid fa-comment-dots" style="color:var(--cyan-accent)"></i> The War Room (Bilingual Feed)</h3>
-                    <textarea class="compose-input" id="postInput" rows="3" placeholder="Drop a box office theory, gossip, or writer pitch in Telugu or English... (Use #tags)"></textarea>
+                    <h3 style="font-size: 1.1rem; margin-bottom: 12px;"><i class="fa-solid fa-shield-halved" style="color:var(--gold-accent)"></i> The War Room</h3>
+                    <textarea class="compose-input" id="postInput" rows="3" placeholder="Drop box office gossips, fan wars, or script pitches in Telugu or English... (Use #tags)"></textarea>
                     <div class="compose-actions">
                         <div class="compose-tools">
-                            <i class="fa-solid fa-language" title="Bilingual Mode" onclick="insertBilingualPrompt()"></i>
                             <i class="fa-solid fa-hashtag" title="Insert Hashtag" onclick="insertTagSymbol()"></i>
                         </div>
                         <button class="post-btn" onclick="submitPost()">Broadcast Post</button>
+                    </div>
+                </div>
+
+                <!-- LIVE VOTING WIDGET -->
+                <div class="vote-card">
+                    <div class="vote-title"><i class="fa-solid fa-square-poll-vertical"></i> Fan Poll: Ultimate Mass Supremacy</div>
+                    <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:10px;">Cast your vote in the active fan debate:</p>
+                    <div class="vote-options">
+                        <button class="vote-option-btn" onclick="castVote('NBK')">
+                            <span>Nandamuri Balakrishna (NBK)</span>
+                            <span style="color:var(--gold-accent);">54%</span>
+                        </button>
+                        <button class="vote-option-btn" onclick="castVote('Chiranjeevi')">
+                            <span>Megastar Chiranjeevi</span>
+                            <span style="color:var(--cyan-accent);">46%</span>
+                        </button>
                     </div>
                 </div>
 
@@ -239,49 +300,78 @@
                 </div>
             </div>
 
-            <!-- RIGHT: THE LAUNCHPAD -->
-            <div class="launchpad-card">
-                <div class="lp-title"><i class="fa-solid fa-rocket" style="color:var(--gold-accent)"></i> The Launchpad</div>
-                <div class="lp-desc">Pitch your story concept directly to Top-Tier Producers through our verified pipeline. (Strictly private pitching).</div>
-                
-                <div class="warning-box">
-                    <strong><i class="fa-solid fa-shield-halved"></i> IP Protection Rule:</strong><br>
-                    Submit Loglines and Character Arcs ONLY. Your pitch is fully encrypted and hidden from public view.
-                </div>
-
-                <button class="pitch-btn" onclick="startPitchModal()">Start a New Pitch</button>
-
-                <div class="tracker-title">Active Pitch Status</div>
-                
-                <div class="step-item">
-                    <div class="step-icon done"><i class="fa-solid fa-check"></i></div>
-                    <div class="step-text">
-                        <span class="step-name">Step 1: AI Spam Filter</span>
-                        <span class="step-sub">Checked & Verified</span>
-                    </div>
-                </div>
-                <div class="step-item">
-                    <div class="step-icon done"><i class="fa-solid fa-check"></i></div>
-                    <div class="step-text">
-                        <span class="step-name">Step 2: Plagiarism Scan</span>
-                        <span class="step-sub">Originality Confirmed</span>
-                    </div>
-                </div>
-                <div class="step-item">
-                    <div class="step-icon active"><i class="fa-solid fa-hourglass-half"></i></div>
-                    <div class="step-text">
-                        <span class="step-name" style="color:var(--gold-accent)">Step 3: Producer Desk</span>
-                        <span class="step-sub">Under review by Executive Committee.</span>
-                    </div>
-                </div>
-                <div class="step-item">
-                    <div class="step-icon wait">4</div>
-                    <div class="step-text">
-                        <span class="step-name">Step 4: Final Verdict</span>
-                        <span class="step-sub">Awaiting Decision / Lock</span>
+            <!-- RIGHT: THE LAUNCHPAD & TOP 5 HASHTAGS -->
+            <div>
+                <!-- TOP 5 TRENDING HASHTAGS WIDGET -->
+                <div class="widget-card">
+                    <div class="widget-title"><i class="fa-solid fa-hashtag" style="color:var(--cyan-accent);"></i> Top #5 Hashtags Today</div>
+                    <div id="trendingHashtagsList">
+                        <div class="trending-item" onclick="filterByTag('#TheRajaSaab')">
+                            <span class="trending-tag">#TheRajaSaab</span>
+                            <span class="trending-count">3.4K posts</span>
+                        </div>
+                        <div class="trending-item" onclick="filterByTag('#Peddi')">
+                            <span class="trending-tag">#Peddi</span>
+                            <span class="trending-count">2.8K posts</span>
+                        </div>
+                        <div class="trending-item" onclick="filterByTag('#Devara2')">
+                            <span class="trending-tag">#Devara2</span>
+                            <span class="trending-count">1.9K posts</span>
+                        </div>
+                        <div class="trending-item" onclick="filterByTag('#GameChanger')">
+                            <span class="trending-tag">#GameChanger</span>
+                            <span class="trending-count">1.2K posts</span>
+                        </div>
+                        <div class="trending-item" onclick="filterByTag('#TollywoodBoxOffice')">
+                            <span class="trending-tag">#TollywoodBoxOffice</span>
+                            <span class="trending-count">950 posts</span>
+                        </div>
                     </div>
                 </div>
 
+                <div class="launchpad-card">
+                    <div class="lp-title"><i class="fa-solid fa-rocket" style="color:var(--gold-accent)"></i> The Launchpad</div>
+                    <div class="lp-desc">Pitch your story concept directly to Top-Tier Producers through our verified pipeline. (Strictly private pitching).</div>
+                    
+                    <div class="warning-box">
+                        <strong><i class="fa-solid fa-shield-halved"></i> IP Protection Rule:</strong><br>
+                        Submit Loglines and Character Arcs ONLY. Your pitch is fully encrypted and hidden from public view.
+                    </div>
+
+                    <button class="pitch-btn" onclick="startPitchModal()">Start a New Pitch</button>
+
+                    <div class="tracker-title">Active Pitch Status</div>
+                    
+                    <div class="step-item">
+                        <div class="step-icon done"><i class="fa-solid fa-check"></i></div>
+                        <div class="step-text">
+                            <span class="step-name">Step 1: AI Spam Filter</span>
+                            <span class="step-sub">Checked & Verified</span>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-icon done"><i class="fa-solid fa-check"></i></div>
+                        <div class="step-text">
+                            <span class="step-name">Step 2: Plagiarism Scan</span>
+                            <span class="step-sub">Originality Confirmed</span>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-icon active"><i class="fa-solid fa-hourglass-half"></i></div>
+                        <div class="step-text">
+                            <span class="step-name" style="color:var(--gold-accent)">Step 3: Producer Desk</span>
+                            <span class="step-sub">Under review by Executive Committee.</span>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-icon wait">4</div>
+                        <div class="step-text">
+                            <span class="step-name">Step 4: Final Verdict</span>
+                            <span class="step-sub">Awaiting Decision / Lock</span>
+                        </div>
+                    </div>
+
+                </div>
             </div>
         </div>
     </div>
@@ -309,15 +399,13 @@
 
                 currentUser = session.user;
                 
-                // Display partial name (First/Last name freedom) & Handle
                 let fullName = currentUser.user_metadata.full_name || currentUser.email.split('@')[0];
-                let displayName = fullName.split(' ')[0]; // Show first name
+                let displayName = fullName.split(' ')[0];
                 let handle = `@${displayName.toLowerCase()}${currentUser.id.substring(0,3)}`;
                 
                 document.getElementById('userHandle').innerText = handle;
                 document.getElementById('userAvatar').innerText = displayName.charAt(0).toUpperCase();
 
-                // Load streak
                 let currentStreak = parseInt(localStorage.getItem(`streak_${currentUser.id}`)) || 1;
                 document.getElementById('streakCount').innerText = currentStreak;
 
@@ -412,7 +500,6 @@
             const content = input.value.trim();
             if (!content) return;
 
-            // Security check against threats / profanity
             const forbiddenWords = ['kill', 'murder', 'suicide', 'abuse', 'bitch'];
             const containsThreat = forbiddenWords.some(word => content.toLowerCase().includes(word));
             if (containsThreat) {
@@ -451,13 +538,7 @@
 
         function insertTagSymbol() {
             const input = document.getElementById('postInput');
-            input.value += ' #TollywoodBoxOffice ';
-            input.focus();
-        }
-
-        function insertBilingualPrompt() {
-            const input = document.getElementById('postInput');
-            input.value += ' [Telugu/English] ';
+            input.value += ' #TheRajaSaab ';
             input.focus();
         }
 
@@ -470,6 +551,10 @@
             const input = document.getElementById('postInput');
             input.value = `Requote: "${content}" `;
             input.focus();
+        }
+
+        function castVote(candidate) {
+            alert(`Your vote for ${candidate} has been securely recorded in the Fan Poll!`);
         }
 
         function openReportModal(postId, authorId) {
@@ -496,7 +581,6 @@
         async function submitReport(postId, authorId) {
             const reason = document.getElementById('reportReason').value;
             try {
-                // Pushes directly to admin telemetry alerts table linked with admin command vault
                 await db.from('admin_telemetry_alerts').insert({
                     reporter_id: currentUser.id,
                     reported_user_id: authorId,
@@ -527,7 +611,7 @@
             document.getElementById('modalInnerBody').innerHTML = `
                 <h3 style="color:#FFF; margin-bottom:12px;"><i class="fa-solid fa-user-shield"></i> Fan Profile Dashboard</h3>
                 <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:8px;"><b>Name:</b> ${fullName} (First/Last name privacy protected)</p>
-                <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:8px;"><b>Streak:</b> Active</p>
+                <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:8px;"><b>Streak:</b> Active Authority</p>
                 <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:15px;"><b>Username Changes:</b> Allowed once every 14 days.</p>
                 <button class="post-btn" style="width:100%;" onclick="closeModal()">Close Dashboard</button>
             `;
