@@ -134,7 +134,7 @@
         .post-avatar { width: 40px; height: 40px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.9rem;}
         .post-meta { display: flex; flex-direction: column; }
         .post-author { font-weight: 700; color: #FFF; font-size: 0.95rem; display: flex; align-items: center; gap: 6px; cursor: pointer; }
-        .post-author:hover { color: var(--cyan-accent); }
+        .post-author:hover { color: var(--cyan-accent); text-decoration: underline; }
         .public-streak { font-size: 0.75rem; color: #FF6B00; background: rgba(255,107,0,0.1); padding: 2px 6px; border-radius: 8px;}
         .post-time { font-size: 0.75rem; color: var(--text-muted); }
         
@@ -170,12 +170,27 @@
         }
         .pitch-btn:active { transform: scale(0.97); }
 
+        /* 4-Step Tracker */
+        .tracker-title { font-size: 0.85rem; font-weight: 700; color: #FFF; margin-bottom: 15px; border-bottom: 1px solid var(--border-glass); padding-bottom: 5px;}
+        .step-item { display: flex; gap: 12px; margin-bottom: 15px; position: relative; }
+        .step-item:not(:last-child)::after {
+            content: ''; position: absolute; left: 11px; top: 24px; width: 2px; height: calc(100% - 10px); background: var(--border-glass);
+        }
+        .step-icon { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 800; z-index: 2;}
+        .step-icon.done { background: var(--success); color: #000; }
+        .step-icon.active { background: var(--gold-accent); color: #000; }
+        .step-icon.wait { background: var(--bg-base); border: 2px solid var(--border-glass); color: var(--text-muted); }
+        
+        .step-text { display: flex; flex-direction: column; }
+        .step-name { font-size: 0.85rem; font-weight: 700; color: #FFF; }
+        .step-sub { font-size: 0.7rem; color: var(--text-muted); }
+
         /* MODAL OVERLAY */
         .modal-overlay { position: fixed; inset: 0; background: rgba(4,6,9,0.85); backdrop-filter: blur(12px); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 1rem; }
         .modal-card { background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 20px; width: 100%; max-width: 500px; padding: 2rem; box-shadow: 0 20px 50px rgba(0,0,0,0.9); position: relative; max-height: 90vh; overflow-y: auto;}
         .modal-close { position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer; z-index: 10;}
 
-        .notification-item { border-bottom: 1px solid var(--border-glass); padding: 10px 0; font-size: 0.85rem;}
+        .notification-item { border-bottom: 1px solid var(--border-glass); padding: 12px 0; font-size: 0.85rem;}
         .notification-item:last-child { border-bottom: none; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
@@ -203,7 +218,7 @@
                     <i class="fa-solid fa-bell" style="color:var(--gold-accent);"></i> 
                     <span id="notifCount" class="notif-badge">0</span>
                 </button>
-                <button class="nav-btn" onclick="openProfileModal()"><i class="fa-solid fa-user-shield"></i> Profile</button>
+                <button class="nav-btn" onclick="openProfileModal()"><i class="fa-solid fa-user-shield"></i> My Profile</button>
                 <a href="index.html" class="nav-btn" style="border-color:var(--danger); color:var(--danger);">Exit</a>
             </div>
         </nav>
@@ -236,23 +251,23 @@
                 <div class="widget-card">
                     <div class="widget-title"><i class="fa-solid fa-fire" style="color:#FF6B00;"></i> Top 5 Active Users</div>
                     <div id="trendingUsersList">
-                        <div class="trending-item" onclick="viewFanProfile('usr1')">
+                        <div class="trending-item">
                             <span class="trending-tag">1. @RebelKing99</span>
                             <span class="trending-count">14 Streak</span>
                         </div>
-                        <div class="trending-item" onclick="viewFanProfile('usr2')">
+                        <div class="trending-item">
                             <span class="trending-tag">2. @MegaAnalyst</span>
                             <span class="trending-count">12 Streak</span>
                         </div>
-                        <div class="trending-item" onclick="viewFanProfile('usr3')">
+                        <div class="trending-item">
                             <span class="trending-tag">3. @TarakBuff</span>
                             <span class="trending-count">10 Streak</span>
                         </div>
-                        <div class="trending-item" onclick="viewFanProfile('usr4')">
+                        <div class="trending-item">
                             <span class="trending-tag">4. @AlluStans</span>
                             <span class="trending-count">9 Streak</span>
                         </div>
-                        <div class="trending-item" onclick="viewFanProfile('usr5')">
+                        <div class="trending-item">
                             <span class="trending-tag">5. @NaniVibe</span>
                             <span class="trending-count">8 Streak</span>
                         </div>
@@ -341,6 +356,7 @@
                             <span class="step-sub">Awaiting Decision / Lock</span>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -416,11 +432,14 @@
 
         async function sendNotification(receiverId, type, message) {
             if (receiverId === currentUser.id) return; // Don't notify yourself
-            let actorName = currentUser.user_metadata.custom_name || currentUser.user_metadata.full_name?.split(' ')[0] || 'A Fan';
+            
+            // To maintain privacy, we mask the actor name and focus entirely on the hype
+            let safeActorName = "Arena Activity"; 
+            
             try {
                 await db.from('notifications').insert({
                     user_id: receiverId,
-                    actor_name: actorName,
+                    actor_name: safeActorName,
                     type: type,
                     message: message
                 });
@@ -450,7 +469,7 @@
                         
                         html += `
                             <div class="notification-item" style="color:${n.is_read ? 'var(--text-muted)' : '#FFF'}">
-                                ${icon} <strong>${n.actor_name}</strong> ${n.message} 
+                                ${icon} <strong>${n.actor_name}</strong>: ${n.message} 
                                 <div style="font-size:0.6rem; color:var(--text-muted); margin-top:4px;">${formatRelativeTime(n.created_at)}</div>
                             </div>
                         `;
@@ -561,7 +580,7 @@
                             <div class="post-author-area">
                                 <div class="post-avatar">${displayName.charAt(0).toUpperCase()}</div>
                                 <div class="post-meta">
-                                    <div class="post-author" onclick="viewFanProfile('${post.user_id}')">
+                                    <div class="post-author" onclick="viewFanProfile('${post.id}')">
                                         ${displayName} <span class="public-streak"><i class="fa-solid fa-fire"></i> ${post.streak || 1}</span>
                                     </div>
                                     <div class="post-time">${timeAgo} • ${armyTag}</div>
@@ -587,7 +606,7 @@
                                     <i class="fa-solid fa-comment"></i> ${post.comments_count || 0}
                                 </button>
                                 <button class="action-btn" onclick="requotePost('${post.id}', '${post.user_id}')">
-                                    <i class="fa-solid fa-retweet"></i> ${post.requotes_count || 0} Requote
+                                    <i class="fa-solid fa-retweet"></i> ${post.requotes_count || 0}
                                 </button>
                             </div>
                         </div>
@@ -612,12 +631,13 @@
             } else {
                 likedBy.push(currentUser.id);
                 newLikesCount++;
-                sendNotification(authorId, 'like', 'liked your post in the War Room.');
+                // Send Anonymous Privacy-first Notification
+                sendNotification(authorId, 'like', `A fan liked your post! Total likes: ${newLikesCount}`);
             }
 
             try {
                 await db.from('fan_posts').update({ likes_count: newLikesCount, liked_by: likedBy }).eq('id', postId);
-                fetchFeedPosts(); // Refresh UI
+                fetchFeedPosts(); 
             } catch (err) { console.error("Like error", err); }
         }
 
@@ -630,7 +650,7 @@
 
             try {
                 await db.from('fan_posts').update({ comments_count: newCount }).eq('id', postId);
-                sendNotification(authorId, 'comment', `commented: "${commentText.substring(0, 30)}..."`);
+                sendNotification(authorId, 'comment', `Someone commented on your post! Total comments: ${newCount}`);
                 alert("Comment added!");
                 fetchFeedPosts();
             } catch (err) { console.error("Comment error", err); }
@@ -648,10 +668,44 @@
             // Increment original post requote count
             let newRequoteCount = (post.requotes_count || 0) + 1;
             await db.from('fan_posts').update({ requotes_count: newRequoteCount }).eq('id', postId);
-            sendNotification(authorId, 'requote', 'requoted your post.');
+            
+            sendNotification(authorId, 'requote', `Your post was requoted! Total requotes: ${newRequoteCount}`);
         }
 
-        /* --- EDIT PROFILE SYSTEM --- */
+        /* --- VIEW OTHER USERS PUBLIC PROFILE --- */
+        function viewFanProfile(postId) {
+            const post = globalPosts.find(p => p.id === postId);
+            if(!post) return;
+
+            // If they click their own post, open their editable dashboard instead
+            if(post.user_id === currentUser.id) {
+                openProfileModal();
+                return;
+            }
+
+            const modal = document.getElementById('modalOverlay');
+            document.getElementById('modalInnerBody').innerHTML = `
+                <div id="profileView">
+                    <h3 style="color:#FFF; margin-bottom:15px; text-align:center;"><i class="fa-solid fa-user-shield"></i> Fan Public Profile</h3>
+                    
+                    <div style="text-align:center; margin-bottom:20px; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 16px; border: 1px solid var(--border-glass);">
+                        <div class="avatar" style="width:80px; height:80px; font-size:2rem; margin: 0 auto 10px auto;">${post.author_name.charAt(0).toUpperCase()}</div>
+                        <h2 style="color:#FFF; font-weight:800; margin-bottom:5px;">${post.author_name}</h2>
+                        <div class="faction-tag" style="margin-bottom:15px;"><i class="fa-solid fa-shield-halved"></i> ${post.fan_army}</div>
+                        
+                        <div style="display:inline-flex; align-items:center; gap:8px; background:rgba(255,107,0,0.1); padding: 8px 16px; border-radius: 12px; border: 1px solid rgba(255,107,0,0.3);">
+                            <span style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase;">Authority Streak:</span>
+                            <span style="font-size:1.2rem; font-weight:800; color:#FF6B00;"><i class="fa-solid fa-fire"></i> ${post.streak || 1}</span>
+                        </div>
+                    </div>
+
+                    <button class="action-btn" style="width:100%; justify-content:center; border: 1px solid var(--border-glass); padding: 10px;" onclick="closeModal()">Close Profile</button>
+                </div>
+            `;
+            modal.style.display = 'flex';
+        }
+
+        /* --- EDIT MY PROFILE SYSTEM --- */
         function openProfileModal() {
             const modal = document.getElementById('modalOverlay');
             
@@ -690,7 +744,7 @@
                     <label style="font-size:0.7rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Your Fan Army / Faction</label>
                     <input type="text" id="editArmy" class="compose-input" style="padding:0.6rem; margin-bottom:15px;" placeholder="e.g., Rebel Star Force, Cult Nani, etc." value="${fanArmy}">
                     
-                    <button class="post-btn" style="width:100%; margin-bottom: 10px;" onclick="saveProfile()">Save Identity</button>
+                    <button class="post-btn" style="width:100%; margin-bottom: 10px;" onclick="saveProfile()">Save & Update Past Posts</button>
                     <button class="action-btn" style="width:100%; justify-content:center; border: 1px solid var(--border-glass);" onclick="toggleEditProfile()">Cancel</button>
                 </div>
             `;
@@ -721,22 +775,28 @@
             if (!newHandle.startsWith('@')) newHandle = '@' + newHandle;
 
             try {
+                // 1. Update Identity in Auth MetaData
                 const { data, error } = await db.auth.updateUser({
                     data: { custom_name: newName, handle: newHandle, location: newLocation, fan_army: newArmy }
                 });
-
                 if (error) throw error;
-                
                 currentUser = data.user; 
                 
+                // 2. RETROACTIVE PROPAGATION: Update all past posts by this user to reflect their new Identity!
+                await db.from('fan_posts').update({
+                    author_name: newName,
+                    fan_army: newArmy
+                }).eq('user_id', currentUser.id);
+
                 // Update Left Side UI
                 document.getElementById('userHandle').innerText = newHandle;
                 document.getElementById('userAvatar').innerText = newName.charAt(0).toUpperCase();
                 document.getElementById('userFactionTag').innerHTML = `<i class="fa-solid fa-shield-halved"></i> ${newArmy}`;
                 document.getElementById('userLocation').innerText = newLocation || 'Unknown Location';
                 
-                alert("Profile successfully updated!");
+                alert("Profile successfully updated. Past posts have been synchronized.");
                 closeModal();
+                fetchFeedPosts(); // Refresh feed to show new names on past posts
             } catch (err) {
                 alert("Error updating profile: " + err.message);
             }
@@ -819,22 +879,6 @@
 
         function filterByTag(tag) { currentFilterTag = tag; fetchFeedPosts(); }
         function insertTagSymbol() { document.getElementById('postInput').value += ' #TollywoodBoxOffice '; document.getElementById('postInput').focus(); }
-
-        function formatPostContent(text) {
-            if (!text) return '';
-            return text.replace(/(#[a-zA-Z0-9_-]+)/g, '<span class="hashtag" onclick="filterByTag(\'$1\')">$1</span>');
-        }
-
-        function formatRelativeTime(dateString) {
-            const now = new Date();
-            const postDate = new Date(dateString);
-            const diffHours = Math.abs(now - postDate) / 36e5;
-            if (diffHours < 24) {
-                if (diffHours < 1) return Math.floor(diffHours * 60) + 'm ago';
-                return Math.floor(diffHours) + 'h ago';
-            }
-            return postDate.toLocaleDateString() + ' ' + postDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        }
 
         /* --- TELEMETRY HOOK: DYNAMIC HASHTAGS --- */
         async function loadTrendingHashtags() {
