@@ -2,15 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeluguCineCraft | Individual Profile</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- Admitad Verification Code -->
+    <meta name="verify-admitad" content="3b27ad383c" />
+    
+    <title>TeluguCineCraft | Individual Profile & Intelligence</title>
 
     <!-- Google Fonts & Font Awesome Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Supabase JS Client v2 -->
+    <!-- Supabase JS Client v2 & Shared App Logic -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js"></script>
 
     <style>
         :root {
@@ -20,6 +25,7 @@
             --border-glass: rgba(255, 255, 255, 0.08);
             --border-hover: rgba(255, 199, 0, 0.4);
             --gold-accent: #FFC700;
+            --gold-glow: rgba(255, 199, 0, 0.15);
             --cyan-accent: #38BDF8;
             --text-main: #F8FAFC;
             --text-muted: #94A3B8;
@@ -28,7 +34,7 @@
             --purple-accent: #C084FC;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
         body {
             background-color: var(--bg-base);
@@ -39,27 +45,34 @@
             font-family: 'Plus Jakarta Sans', sans-serif;
             min-height: 100vh;
             padding: 1.2rem;
+            display: flex; flex-direction: column; align-items: center;
         }
 
-        .container { max-width: 1250px; margin: 0 auto; width: 100%; }
+        .container { max-width: 1350px; margin: 0 auto; width: 100%; }
 
+        /* Navigation */
         nav {
             display: flex; justify-content: space-between; align-items: center;
             padding: 0.85rem 1.6rem; background: var(--bg-glass);
             backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--border-glass);
-            border-radius: 16px; margin-bottom: 1.2rem;
+            border: 1px solid var(--border-glass); border-radius: 16px; margin-bottom: 1.5rem;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            width: 100%; max-width: 1350px;
         }
-        .brand-title { font-size: 1.4rem; font-weight: 800; color: #FFF; text-decoration: none; }
-        .brand-title i { color: var(--gold-accent); margin-right: 8px;}
-        .back-btn {
-            background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-glass);
-            color: var(--text-main); padding: 0.55rem 1.2rem; border-radius: 10px;
-            cursor: pointer; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
-            transition: all 0.2s ease;
-        }
-        .back-btn:hover { border-color: var(--gold-accent); color: var(--gold-accent); }
+        .brand-title { font-size: 1.4rem; font-weight: 900; color: #FFF; display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .brand-title i { color: var(--gold-accent); }
+
+        .auth-container { display: flex; align-items: center; gap: 12px; }
+        .user-identity { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 0.85rem; color: #FFF; background: rgba(255,255,255,0.05); padding: 0.4rem 0.8rem; border-radius: 8px; border: 1px solid var(--border-glass); }
+        .streak-fire { color: #FF6B00; font-weight: 800; display: flex; align-items: center; gap: 4px; margin-left: 5px; background: rgba(255, 107, 0, 0.1); padding: 2px 6px; border-radius: 6px; }
+
+        .auth-btn { background: rgba(255, 199, 0, 0.12); border: 1px solid var(--gold-accent); color: var(--gold-accent); padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 800; font-size: 0.8rem; transition: all 0.3s ease; display: flex; align-items: center; gap: 6px; text-transform: uppercase; text-decoration: none;}
+        .auth-btn:hover { background: var(--gold-accent); color: #000; box-shadow: 0 0 15px var(--gold-glow); }
+        .signout-btn { background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 0.4rem 0.6rem; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s ease; }
+        .signout-btn:hover { background: rgba(239, 68, 68, 0.1); color: #FFF; }
+        
+        .back-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-glass); color: var(--text-main); padding: 0.5rem 1rem; border-radius: 8px; font-weight: 700; font-size: 0.8rem; text-decoration: none; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease; text-transform: uppercase; letter-spacing: 0.5px;}
+        .back-btn:hover { border-color: var(--cyan-accent); color: var(--cyan-accent); }
 
         /* Profile Header */
         .profile-header {
@@ -80,8 +93,8 @@
             display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: var(--gold-accent);
             flex-shrink: 0;
         }
-        .profile-name { font-size: 2.5rem; font-weight: 800; line-height: 1.1; margin-bottom: 8px; }
-        .profile-role { font-size: 0.9rem; color: var(--cyan-accent); text-transform: uppercase; font-weight: 800; letter-spacing: 1px; display: inline-flex; align-items: center; gap: 6px; }
+        .profile-name { font-size: 2.5rem; font-weight: 900; line-height: 1.1; margin-bottom: 6px; letter-spacing: -0.5px;}
+        .profile-role { font-size: 0.85rem; color: var(--cyan-accent); text-transform: uppercase; font-weight: 800; letter-spacing: 1px; display: inline-flex; align-items: center; gap: 6px; }
 
         /* CEO Insight Badge */
         .ceo-insight-box {
@@ -89,7 +102,7 @@
             padding: 1rem 1.5rem; border-radius: 12px; text-align: right;
         }
         .ceo-insight-title { font-size: 0.7rem; color: var(--gold-accent); text-transform: uppercase; font-weight: 800; letter-spacing: 1px; margin-bottom: 4px; }
-        .ceo-insight-val { font-size: 1.15rem; font-weight: 800; color: #FFF; }
+        .ceo-insight-val { font-size: 1.15rem; font-weight: 900; color: #FFF; }
 
         /* Metrics Grid */
         .metrics-grid {
@@ -103,7 +116,7 @@
             display: flex; flex-direction: column; justify-content: center;
         }
         .metric-title { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; font-weight: 700; }
-        .metric-value { font-size: 1.8rem; font-weight: 800; color: #FFF; }
+        .metric-value { font-size: 1.8rem; font-weight: 900; color: #FFF; }
         .metric-value.gold { color: var(--gold-accent); }
         .metric-value.green { color: var(--success); }
         .metric-value.cyan { color: var(--cyan-accent); }
@@ -115,7 +128,7 @@
             border-radius: 18px; padding: 2rem;
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
         }
-        .timeline-header { font-size: 1.2rem; font-weight: 800; color: var(--cyan-accent); margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-glass); padding-bottom: 0.5rem; display: flex; align-items: center; gap: 8px;}
+        .timeline-header { font-size: 1.2rem; font-weight: 900; color: var(--cyan-accent); margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-glass); padding-bottom: 0.5rem; display: flex; align-items: center; gap: 8px;}
         
         .movie-table-header {
             display: grid; gap: 1rem; padding-bottom: 0.5rem; margin-bottom: 0.5rem; border-bottom: 1px solid var(--border-glass);
@@ -131,44 +144,26 @@
         .movie-row:hover { background: rgba(255, 255, 255, 0.03); border-radius: 10px; }
         
         .m-year { font-weight: 800; color: var(--text-muted); }
-        .m-title { font-size: 1.05rem; font-weight: 700; color: #FFF; text-decoration: none; transition: color 0.2s ease;}
+        .m-title { font-size: 1.05rem; font-weight: 800; color: #FFF; text-decoration: none; transition: color 0.2s ease;}
         .m-title:hover { color: var(--gold-accent); }
 
-        /* Genre Badge */
         .genre-badge {
-            background: rgba(56, 189, 248, 0.1);
-            color: var(--cyan-accent);
-            border: 1px solid rgba(56, 189, 248, 0.2);
-            padding: 0.2rem 0.6rem;
-            border-radius: 6px;
-            font-size: 0.65rem;
-            font-weight: 700;
-            display: inline-block;
-            margin-right: 4px;
-            margin-top: 4px;
-            text-transform: uppercase;
+            background: rgba(56, 189, 248, 0.1); color: var(--cyan-accent); border: 1px solid rgba(56, 189, 248, 0.2);
+            padding: 0.2rem 0.6rem; border-radius: 6px; font-size: 0.65rem; font-weight: 800;
+            display: inline-block; margin-right: 4px; margin-top: 4px; text-transform: uppercase;
         }
 
         .movie-award-badge {
-            background: rgba(255, 199, 0, 0.12);
-            color: var(--gold-accent);
-            border: 1px solid rgba(255, 199, 0, 0.4);
-            padding: 0.35rem 0.7rem;
-            border-radius: 8px;
-            font-size: 0.75rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            line-height: 1.3;
-            white-space: normal;
-            text-align: left;
+            background: rgba(255, 199, 0, 0.12); color: var(--gold-accent); border: 1px solid rgba(255, 199, 0, 0.4);
+            padding: 0.35rem 0.7rem; border-radius: 8px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase;
+            display: inline-flex; align-items: center; gap: 6px; line-height: 1.3;
         }
 
         .loading-view { text-align: center; padding: 5rem 0; color: var(--text-muted); font-size: 1.2rem; }
 
         @media (max-width: 768px) {
+            nav { flex-direction: column; gap: 1rem; padding: 1rem; text-align: center;}
+            .auth-container { flex-direction: column-reverse; width: 100%; align-items: stretch;}
             .profile-header { flex-direction: column; text-align: center; gap: 1rem; }
             .profile-left { flex-direction: column; }
             .profile-header::before { width: 100%; height: 4px; top: 0; left: 0; }
@@ -181,25 +176,79 @@
 </head>
 <body>
     <div class="container">
+        <!-- APP NAV BAR -->
         <nav>
             <a href="index.html" class="brand-title"><i class="fa-solid fa-film"></i> TeluguCineCraft</a>
-            <a href="javascript:history.back()" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Back</a>
+            <div id="userMenuArea" class="auth-container">
+                <!-- Populated via Supabase Auth -->
+            </div>
         </nav>
 
         <div id="profileArea" class="loading-view">
-            <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
-            <p style="margin-top: 12px;">Compiling Cinematic Journey...</p>
+            <i class="fa-solid fa-spinner fa-spin fa-2x" style="color:var(--gold-accent)"></i>
+            <p style="margin-top: 15px;">Compiling Cinematic Journey...</p>
         </div>
     </div>
 
     <script>
-        const db = window.supabase.createClient(
-            "https://eosgvjvpdwxmpxzerxit.supabase.co", 
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvc2d2anZwZHd4bXB4emVyeGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1Njk3MTMsImV4cCI6MjEwMTE0NTcxM30.fD14BdJBDPNqFUKGxS5DRgsDnN8CqYdWR4k8cuAbvcg"
-        );
+        let globalUser = null;
 
         function getPersonName() {
             return new URLSearchParams(window.location.search).get('name');
+        }
+
+        function calculateAndGetStreak(userId) {
+            const today = new Date().toDateString();
+            const yesterday = new Date(Date.now() - 86400000).toDateString();
+            let lastVisit = localStorage.getItem(`lastVisit_${userId}`);
+            let storedStreak = parseInt(localStorage.getItem(`streak_${userId}`)) || 0;
+            let newStreak = (lastVisit === yesterday) ? storedStreak + 1 : (lastVisit === today ? storedStreak || 1 : 1);
+            localStorage.setItem(`lastVisit_${userId}`, today);
+            localStorage.setItem(`streak_${userId}`, newStreak);
+            return newStreak;
+        }
+
+        async function updateAuthUI() {
+            try {
+                const { data: { user } } = await db.auth.getUser();
+                globalUser = user;
+                const area = document.getElementById('userMenuArea');
+                
+                if (user) {
+                    const streakCount = calculateAndGetStreak(user.id);
+                    let baseName = user.user_metadata.full_name || user.email.split('@')[0];
+                    let shortName = baseName.split(' ')[0].substring(0, 10);
+
+                    area.innerHTML = `
+                        <div class="user-identity">
+                            <i class="fa-solid fa-user-astronaut" style="color:var(--cyan-accent)"></i> ${shortName}
+                            <span class="streak-fire"><i class="fa-solid fa-fire"></i> ${streakCount}</span>
+                        </div>
+                        <a href="arena.html" class="auth-btn" style="background: rgba(239, 68, 68, 0.15); border-color: var(--danger); color: #FFF; padding:0.4rem 0.8rem; font-size:0.75rem;">
+                            <i class="fa-solid fa-khanda" style="color: var(--danger);"></i> Fan Arena
+                        </a>
+                        <button class="signout-btn" title="Sign Out" onclick="signOutUser()"><i class="fa-solid fa-right-from-bracket"></i></button>
+                    `;
+                } else {
+                    area.innerHTML = `
+                        <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Home</a>
+                        <button class="auth-btn" onclick="handleGoogleLogin()">
+                            <i class="fa-brands fa-google"></i> Sign In
+                        </button>
+                    `;
+                }
+            } catch (err) {
+                console.warn("Auth check warning:", err);
+            }
+        }
+
+        async function handleGoogleLogin() { 
+            await db.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } }); 
+        }
+        
+        async function signOutUser() { 
+            await db.auth.signOut(); 
+            window.location.reload(); 
         }
 
         function extractCrores(collectionString) {
@@ -209,6 +258,8 @@
         }
 
         async function loadProfile() {
+            await updateAuthUI();
+            
             const name = getPersonName();
             if (!name) {
                 document.getElementById('profileArea').innerHTML = `<h2 style="color:var(--danger)">No individual specified in URL.</h2>`;
@@ -244,7 +295,7 @@
             const moviesData = await fetchSafelyFromTable('movies');
             const boxOfficeData = await fetchSafelyFromTable('box_office');
 
-            [...moviesData, ...boxOfficeData].forEach(m => {
+            ([...moviesData, ...boxOfficeData]).forEach(m => {
                 const id = m.movie_id || m.id;
                 if (id) {
                     moviesMap.set(id, { ...(moviesMap.get(id) || {}), ...m });
@@ -287,7 +338,6 @@
                 choreographer:0, costume_designer:0, stunt_director:0
             };
 
-            // CEO Metric Trackers
             let peakMovie = null;
             let maxCollection = -1;
             let genreFrequency = {};
@@ -303,7 +353,6 @@
             const nameParts = searchName.split(' ').filter(n => n.length >= 3); 
 
             movies.forEach(m => {
-                // Role Mapping
                 const checkInStr = (str) => str && str.toLowerCase().includes(searchName);
                 if (checkInStr(m.hero) || checkInStr(m.lead_actor)) roleTally.hero++;
                 if (checkInStr(m.heroine) || checkInStr(m.female_lead)) roleTally.heroine++;
@@ -319,19 +368,16 @@
                 if (checkInStr(m.costume_designer) || checkInStr(m.costume_designers) || checkInStr(m.costume_design) || checkInStr(m.costumes) || checkInStr(m.costume) || checkInStr(m.styling)) roleTally.costume_designer++;
                 if (checkInStr(m.stunt_director) || checkInStr(m.stunts) || checkInStr(m.stunt_man) || checkInStr(m.stunt) || checkInStr(m.action)) roleTally.stunt_director++;
 
-                // Financial Sums
                 const gross = extractCrores(m.collection || m.worldwide_gross || m.trade_gross);
                 const budget = extractCrores(m.budget || m.cost);
                 totalGross += gross;
                 totalBudget += budget;
 
-                // CEO Feature: Track Peak Movie
                 if (gross > maxCollection) {
                     maxCollection = gross;
                     peakMovie = m;
                 }
 
-                // CEO Feature: Track Genres
                 if (m.genre && m.genre !== 'N/A') {
                     m.genre.split(',').forEach(g => {
                         const gen = g.trim();
@@ -339,7 +385,6 @@
                     });
                 }
 
-                // CEO Feature: Track Collaborators
                 if (m.director) {
                     m.director.split(/[,&]/).forEach(d => {
                         const dn = d.trim();
@@ -359,7 +404,6 @@
                     });
                 }
 
-                // Smart Award Scanner
                 let foundAward = null;
                 const roleKeywords = {
                     hero: ['actor', 'hero', 'male lead', 'best male'],
@@ -409,13 +453,8 @@
                 m.extracted_award = foundAward;
                 if (foundAward) calculatedAwardsCount++;
 
-                // TRUE FINANCIAL BUDGET VS COLLECTION RATIO FOR HITS AND FLOPS
                 if (gross > 0 && budget > 0) {
-                    if (gross >= budget) {
-                        hits++;
-                    } else {
-                        flops++;
-                    }
+                    if (gross >= budget) { hits++; } else { flops++; }
                 }
             });
 
@@ -436,7 +475,6 @@
             const isMusicDirector = primaryRoleKey === 'music_director';
             const isPlaybackSinger = primaryRoleKey === 'playback_singers';
 
-            // Extract CEO Dominance Metrics
             const topGenre = Object.keys(genreFrequency).sort((a, b) => genreFrequency[b] - genreFrequency[a])[0] || 'Versatile';
             
             let bestCollab = 'N/A';
@@ -475,7 +513,6 @@
                 }
             }
 
-            // Build Metrics Cards
             let metricsCardsHtml = `
                 <div class="metric-card">
                     <div class="metric-title">Total Movies</div>
@@ -525,9 +562,9 @@
                     </div>
                     <div class="metric-card" style="padding: 1.2rem 1.4rem;">
                         <div class="metric-title" style="margin-bottom: 6px;">Hit / Flop Ratio</div>
-                        <div style="display:flex; width: 100%; height: 10px; background: rgba(255, 255, 255, 0.08); border-radius: 6px; margin: 10px 0; overflow: hidden; padding: 2px; border: 1px solid rgba(255,255,255,0.05); box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);">
-                            <div style="width: ${successRate}%; background: linear-gradient(90deg, #16A34A, #22C55E); border-radius: 4px; box-shadow: 0 0 10px rgba(34,197,94,0.4);"></div>
-                            <div style="width: ${failRate}%; background: linear-gradient(90deg, #DC2626, #EF4444); border-radius: 4px; box-shadow: 0 0 10px rgba(239,68,68,0.4); margin-left: 2px;"></div>
+                        <div style="display:flex; width: 100%; height: 10px; background: rgba(255, 255, 255, 0.08); border-radius: 6px; margin: 10px 0; overflow: hidden; padding: 2px; border: 1px solid rgba(255,255,255,0.05);">
+                            <div style="width: ${successRate}%; background: linear-gradient(90deg, #16A34A, #22C55E); border-radius: 4px;"></div>
+                            <div style="width: ${failRate}%; background: linear-gradient(90deg, #DC2626, #EF4444); border-radius: 4px; margin-left: 2px;"></div>
                         </div>
                         <div style="display:flex; justify-content: space-between; font-size: 0.75rem; font-weight: 800;">
                             <span style="color: var(--success);"><i class="fa-solid fa-circle-check" style="font-size:0.65rem;"></i> ${hits} Hits</span>
@@ -586,7 +623,6 @@
                 `;
             }
 
-            // Append CEO Dynamic Insights seamlessly to the metrics grid
             if (isLeadStar || isDirector) {
                 metricsCardsHtml += `
                     <div class="metric-card" style="background: rgba(56, 189, 248, 0.05); border-color: rgba(56, 189, 248, 0.2);">
@@ -603,7 +639,6 @@
             const showGrossInTable = isLeadStar || isDirector || isProducer;
             const gridTemplate = showGrossInTable ? "80px 2.5fr 1fr 1.5fr" : "80px 2.5fr 1.5fr"; 
 
-            // CEO Feature: Pipeline Split (Upcoming vs Past)
             const upcomingMovies = [];
             const pastMovies = [];
 
@@ -612,7 +647,6 @@
                 const c = (m.collection || '').toString().toUpperCase();
                 const v = (m.verdict || '').toString().toUpperCase();
                 
-                // If it explicitly says TBA, Upcoming, or the year is in the future (> 2026)
                 if (y === 'TBA' || c === 'TBA' || v === 'UPCOMING' || parseInt(y) > 2026) {
                     upcomingMovies.push(m);
                 } else {
