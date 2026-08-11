@@ -181,9 +181,8 @@
             display: flex; justify-content: center; align-items: center; gap: 10px; box-shadow: 0 10px 20px rgba(255, 199, 0, 0.2);
         }
         .ph-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(255, 199, 0, 0.4); }
-        .ph-btn:active { transform: translateY(0); }
 
-        /* MINIMAL TRACKER */
+        /* DYNAMIC TRACKER */
         .mini-tracker { background: rgba(0,0,0,0.3); border: 1px solid var(--border-glass); border-radius: 16px; padding: 1.2rem; }
         .tracker-title { font-size: 0.85rem; font-weight: 800; color: #FFF; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;}
         .step-item { display: flex; gap: 12px; margin-bottom: 12px; position: relative; }
@@ -264,26 +263,11 @@
                 <div class="widget-card">
                     <div class="widget-title"><i class="fa-solid fa-fire" style="color:#FF6B00;"></i> Top 5 Active Users</div>
                     <div id="trendingUsersList">
-                        <div class="trending-item">
-                            <span class="trending-tag">1. @RebelKing99</span>
-                            <span class="trending-count">14 Streak</span>
-                        </div>
-                        <div class="trending-item">
-                            <span class="trending-tag">2. @MegaAnalyst</span>
-                            <span class="trending-count">12 Streak</span>
-                        </div>
-                        <div class="trending-item">
-                            <span class="trending-tag">3. @TarakBuff</span>
-                            <span class="trending-count">10 Streak</span>
-                        </div>
-                        <div class="trending-item">
-                            <span class="trending-tag">4. @AlluStans</span>
-                            <span class="trending-count">9 Streak</span>
-                        </div>
-                        <div class="trending-item">
-                            <span class="trending-tag">5. @NaniVibe</span>
-                            <span class="trending-count">8 Streak</span>
-                        </div>
+                        <div class="trending-item"><span class="trending-tag">1. @RebelKing99</span><span class="trending-count">14 Streak</span></div>
+                        <div class="trending-item"><span class="trending-tag">2. @MegaAnalyst</span><span class="trending-count">12 Streak</span></div>
+                        <div class="trending-item"><span class="trending-tag">3. @TarakBuff</span><span class="trending-count">10 Streak</span></div>
+                        <div class="trending-item"><span class="trending-tag">4. @AlluStans</span><span class="trending-count">9 Streak</span></div>
+                        <div class="trending-item"><span class="trending-tag">5. @NaniVibe</span><span class="trending-count">8 Streak</span></div>
                     </div>
                 </div>
             </div>
@@ -320,7 +304,7 @@
 
             <!-- RIGHT: THE HOOK & HASHTAGS -->
             <div>
-                <!-- PRODUCER HOOK (Replacing Old Launchpad) -->
+                <!-- PRODUCER HOOK -->
                 <div class="pitch-hook-card">
                     <div class="ph-badge">Verified Producer Pipeline</div>
                     <h3 class="ph-title">Got a Blockbuster Script? 🎬</h3>
@@ -335,26 +319,12 @@
                     <button class="ph-btn" onclick="window.location.href='pitchstory.html'">
                         <i class="fa-solid fa-rocket"></i> Pitch Your Story Now
                     </button>
-                    <div style="font-size:0.65rem; color:var(--text-muted); text-align:center; margin-top:15px; font-weight: 700;">
-                        JOIN 450+ WRITERS ALREADY IN THE PIPELINE
-                    </div>
                 </div>
 
-                <!-- MINI TRACKER -->
-                <div class="mini-tracker">
+                <!-- DYNAMIC TRACKER -->
+                <div class="mini-tracker" id="activePitchTracker">
                     <div class="tracker-title"><i class="fa-solid fa-satellite-dish" style="color:var(--cyan-accent);"></i> My Active Pitches</div>
-                    <div class="step-item">
-                        <div class="step-icon done"><i class="fa-solid fa-check"></i></div>
-                        <div class="step-text"><span class="step-name">Step 1: AI Filter</span><span class="step-sub">Verified</span></div>
-                    </div>
-                    <div class="step-item">
-                        <div class="step-icon done"><i class="fa-solid fa-check"></i></div>
-                        <div class="step-text"><span class="step-name">Step 2: Plagiarism</span><span class="step-sub">Originality Confirmed</span></div>
-                    </div>
-                    <div class="step-item">
-                        <div class="step-icon active"><i class="fa-solid fa-hourglass-half"></i></div>
-                        <div class="step-text"><span class="step-name" style="color:var(--gold-accent)">Step 3: Review</span><span class="step-sub">At Producer Desk</span></div>
-                    </div>
+                    <div style="font-size:0.75rem; color:var(--text-muted);">No active submissions found. Pitch a story to track producer status.</div>
                 </div>
 
                 <!-- TOP 5 TRENDING HASHTAGS WIDGET -->
@@ -415,11 +385,46 @@
                 fetchFeedPosts();
                 loadTrendingHashtags();
                 checkNotifications();
+                loadActivePitchTracker(); // Fetches live pitch data from DB
             } catch (err) {
                 console.error("Arena initialization error:", err);
             }
         }
 
+        /* --- DYNAMIC LIVE PITCH TRACKER --- */
+        async function loadActivePitchTracker() {
+            const container = document.getElementById('activePitchTracker');
+            try {
+                const { data: pitch, error } = await db.from('producer_pitches')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .order('created_at', { ascending: false })
+                    .limit(1)
+                    .maybeSingle();
+
+                if (pitch) {
+                    container.innerHTML = `
+                        <div class="tracker-title"><i class="fa-solid fa-satellite-dish" style="color:var(--cyan-accent);"></i> My Active Pitch</div>
+                        <div style="font-size:0.9rem; font-weight:900; color:var(--gold-accent); margin-bottom:12px; text-transform:uppercase;">${pitch.title || 'Untitled Pitch'}</div>
+                        
+                        <div class="step-item">
+                            <div class="step-icon done"><i class="fa-solid fa-check"></i></div>
+                            <div class="step-text"><span class="step-name">Step 1: Format Validation</span><span class="step-sub">${pitch.format} Format Secured</span></div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-icon done"><i class="fa-solid fa-check"></i></div>
+                            <div class="step-text"><span class="step-name">Step 2: IP Protection</span><span class="step-sub">Encrypted & Confidential</span></div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-icon active"><i class="fa-solid fa-hourglass-half"></i></div>
+                            <div class="step-text"><span class="step-name" style="color:var(--gold-accent)">Step 3: Producer Desk</span><span class="step-sub">Status: ${pitch.status || 'Industry Ready'}</span></div>
+                        </div>
+                    `;
+                }
+            } catch(e) { console.warn("Pitch tracker fetch error:", e); }
+        }
+
+        /* --- HYBRID NOTIFICATION SYSTEM (Anonymous vs Identified) --- */
         async function checkNotifications() {
             try {
                 const { data, error } = await db.from('notifications').select('*').eq('user_id', currentUser.id).eq('is_read', false);
@@ -431,6 +436,7 @@
             } catch(e) {}
         }
 
+        // isAnonymous Flag: True for Likes, False for Comments/Requotes
         async function sendNotification(receiverId, type, message, isAnonymous = false) {
             if (receiverId === currentUser.id) return; 
             
@@ -818,71 +824,6 @@
                 saveBtn.innerText = "Save & Update Past Posts";
                 saveBtn.disabled = false;
             }
-        }
-
-        async function submitPost() {
-            const input = document.getElementById('postInput');
-            const content = input.value.trim();
-            if (!content && !isPollActive) return;
-
-            let pollDataPayload = null;
-            if (isPollActive) {
-                const opt1 = document.getElementById('pollOption1').value.trim();
-                const opt2 = document.getElementById('pollOption2').value.trim();
-                if (opt1 && opt2) {
-                    pollDataPayload = { option1: opt1, option2: opt2, votes1: 0, votes2: 0 };
-                } else {
-                    return alert("Please fill in both poll options before broadcasting.");
-                }
-            }
-
-            try {
-                let meta = currentUser.user_metadata || {};
-                let currentStreak = parseInt(localStorage.getItem(`streak_${currentUser.id}`)) || 1;
-                let fullName = meta.full_name || 'Fan';
-                let displayName = meta.custom_name || fullName.split(' ')[0];
-                let armyTag = meta.fan_army || 'Fan';
-
-                const { error } = await db.from('fan_posts').insert({
-                    user_id: currentUser.id,
-                    author_name: displayName,
-                    fan_army: armyTag,
-                    content: content,
-                    likes_count: 0,
-                    comments_count: 0,
-                    requotes_count: 0,
-                    liked_by: [],
-                    streak: currentStreak,
-                    is_poll: isPollActive,
-                    poll_data: pollDataPayload
-                });
-
-                if (error) throw error;
-                
-                input.value = '';
-                if(isPollActive) {
-                    document.getElementById('pollOption1').value = '';
-                    document.getElementById('pollOption2').value = '';
-                    togglePollCreator();
-                }
-                fetchFeedPosts();
-            } catch (err) {
-                alert("Error broadcasting post: " + err.message);
-            }
-        }
-
-        async function deletePost(postId) {
-            if (confirm("Permanently delete this post?")) {
-                try {
-                    await db.from('fan_posts').delete().eq('id', postId);
-                    fetchFeedPosts();
-                } catch (err) { alert("Deletion failed: " + err.message); }
-            }
-        }
-
-        function togglePollCreator() {
-            isPollActive = !isPollActive;
-            document.getElementById('pollCreatorBox').style.display = isPollActive ? 'flex' : 'none';
         }
 
         function filterByTag(tag) { currentFilterTag = tag; fetchFeedPosts(); }
