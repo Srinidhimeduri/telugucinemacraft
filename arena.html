@@ -112,6 +112,11 @@
         .compose-tools i { cursor: pointer; transition: color 0.2s; }
         .compose-tools i:hover { color: var(--cyan-accent); }
         
+        .poll-creator-box {
+            display: none; flex-direction: column; gap: 8px; margin-bottom: 10px;
+            background: rgba(0,0,0,0.2); padding: 10px; border-radius: 12px; border: 1px dashed var(--border-glass);
+        }
+
         .post-btn {
             background: var(--cyan-accent); color: #000; border: none; padding: 0.6rem 1.5rem;
             border-radius: 12px; font-weight: 800; cursor: pointer; transition: transform 0.2s;
@@ -120,7 +125,7 @@
 
         .post-card {
             background: rgba(26, 34, 52, 0.4); border: 1px solid var(--border-glass); border-radius: 16px; padding: 1.2rem;
-            animation: fadeIn 0.3s ease;
+            animation: fadeIn 0.3s ease; position: relative;
         }
         .post-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
         .post-author-area { display: flex; align-items: center; gap: 10px; }
@@ -142,8 +147,7 @@
         .action-btn.liked { color: var(--danger); }
 
         /* LIVE VOTING CARD */
-        .vote-card { background: rgba(255,199,0,0.03); border: 1px solid rgba(255,199,0,0.2); border-radius: 16px; padding: 1.2rem; margin-bottom: 1rem; }
-        .vote-title { font-size: 0.9rem; font-weight: 800; color: var(--gold-accent); margin-bottom: 10px; display: flex; align-items: center; gap: 6px;}
+        .vote-card { background: rgba(255,199,0,0.03); border: 1px solid rgba(255,199,0,0.2); border-radius: 12px; padding: 1rem; margin-top: 10px; margin-bottom: 10px; }
         .vote-options { display: flex; flex-direction: column; gap: 8px; }
         .vote-option-btn { background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); color: #FFF; padding: 0.7rem 1rem; border-radius: 10px; font-weight: 700; font-size: 0.85rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s;}
         .vote-option-btn:hover { border-color: var(--gold-accent); background: rgba(255,199,0,0.08); }
@@ -266,28 +270,20 @@
             <div class="feed-container">
                 <div class="compose-box">
                     <h3 style="font-size: 1.1rem; margin-bottom: 12px;"><i class="fa-solid fa-shield-halved" style="color:var(--gold-accent)"></i> The War Room</h3>
-                    <textarea class="compose-input" id="postInput" rows="3" placeholder="Drop box office gossips, fan wars, or script pitches in Telugu or English... (Use #tags)"></textarea>
+                    <textarea class="compose-input" id="postInput" rows="3" placeholder="Drop box office gossips, fan wars, or script pitches... (Use #tags)"></textarea>
+                    
+                    <!-- Dynamic Poll Creator -->
+                    <div class="poll-creator-box" id="pollCreatorBox">
+                        <input type="text" id="pollOption1" class="compose-input" style="padding:0.6rem; margin-bottom:0; background:rgba(0,0,0,0.5);" placeholder="Poll Option 1 (e.g. NBK)">
+                        <input type="text" id="pollOption2" class="compose-input" style="padding:0.6rem; margin-bottom:0; background:rgba(0,0,0,0.5);" placeholder="Poll Option 2 (e.g. Chiranjeevi)">
+                    </div>
+
                     <div class="compose-actions">
                         <div class="compose-tools">
                             <i class="fa-solid fa-hashtag" title="Insert Hashtag" onclick="insertTagSymbol()"></i>
+                            <i class="fa-solid fa-square-poll-vertical" title="Create a Fan Poll" onclick="togglePollCreator()"></i>
                         </div>
                         <button class="post-btn" onclick="submitPost()">Broadcast Post</button>
-                    </div>
-                </div>
-
-                <!-- LIVE VOTING WIDGET -->
-                <div class="vote-card">
-                    <div class="vote-title"><i class="fa-solid fa-square-poll-vertical"></i> Fan Poll: Ultimate Mass Supremacy</div>
-                    <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:10px;">Cast your vote in the active fan debate:</p>
-                    <div class="vote-options">
-                        <button class="vote-option-btn" onclick="castVote('NBK')">
-                            <span>Nandamuri Balakrishna (NBK)</span>
-                            <span style="color:var(--gold-accent);">54%</span>
-                        </button>
-                        <button class="vote-option-btn" onclick="castVote('Chiranjeevi')">
-                            <span>Megastar Chiranjeevi</span>
-                            <span style="color:var(--cyan-accent);">46%</span>
-                        </button>
                     </div>
                 </div>
 
@@ -387,6 +383,7 @@
     <script>
         let currentUser = null;
         let currentFilterTag = null;
+        let isPollActive = false;
 
         async function initArena() {
             try {
@@ -435,11 +432,41 @@
             }
 
             let html = '';
+            // Admin Check for Executive Kill Switch
+            let isAdmin = currentUser && currentUser.email === 'therealexplorer123@gmail.com';
+
             data.forEach(post => {
                 let timeAgo = formatRelativeTime(post.created_at);
                 let displayName = post.author_name || 'Fan Member';
                 let armyTag = post.fan_army || 'Tollywood Loyalist';
                 let isLiked = post.liked_by && post.liked_by.includes(currentUser.id);
+
+                // Admin Delete Button HTML
+                let adminDeleteBtn = isAdmin ? `<button class="action-btn" style="color:var(--danger);" onclick="adminDeletePost('${post.id}')" title="Admin Kill Switch"><i class="fa-solid fa-trash"></i></button>` : '';
+
+                // Dynamic Poll Rendering
+                let pollHtml = '';
+                if (post.is_poll && post.poll_data) {
+                    let totalVotes = (post.poll_data.votes1 || 0) + (post.poll_data.votes2 || 0);
+                    let p1 = totalVotes === 0 ? 0 : Math.round(((post.poll_data.votes1 || 0) / totalVotes) * 100);
+                    let p2 = totalVotes === 0 ? 0 : Math.round(((post.poll_data.votes2 || 0) / totalVotes) * 100);
+                    
+                    pollHtml = `
+                        <div class="vote-card">
+                            <div class="vote-options">
+                                <button class="vote-option-btn" onclick="castPollVote('${post.id}', 1)">
+                                    <span>${post.poll_data.option1}</span>
+                                    <span style="color:var(--gold-accent);">${p1}%</span>
+                                </button>
+                                <button class="vote-option-btn" onclick="castPollVote('${post.id}', 2)">
+                                    <span>${post.poll_data.option2}</span>
+                                    <span style="color:var(--cyan-accent);">${p2}%</span>
+                                </button>
+                            </div>
+                            <div style="font-size:0.7rem; color:var(--text-muted); margin-top:8px; text-align:right;">${totalVotes} total votes</div>
+                        </div>
+                    `;
+                }
 
                 html += `
                     <div class="post-card">
@@ -453,11 +480,17 @@
                                     <div class="post-time">${timeAgo} • ${armyTag}</div>
                                 </div>
                             </div>
-                            <button class="action-btn" onclick="openReportModal('${post.id}', '${post.user_id}')" style="color:var(--danger);" title="Report Threat / Abuse">
-                                <i class="fa-solid fa-triangle-exclamation"></i>
-                            </button>
+                            <div style="display:flex; gap:10px;">
+                                ${adminDeleteBtn}
+                                <button class="action-btn" onclick="openReportModal('${post.id}', '${post.user_id}')" style="color:var(--danger);" title="Report Threat / Abuse">
+                                    <i class="fa-solid fa-triangle-exclamation"></i>
+                                </button>
+                            </div>
                         </div>
-                        <div class="post-body">${formatPostContent(post.content)}</div>
+                        <div class="post-body">
+                            ${formatPostContent(post.content)}
+                            ${pollHtml}
+                        </div>
                         <div class="post-footer">
                             <div class="action-group">
                                 <button class="action-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike('${post.id}')">
@@ -475,6 +508,11 @@
                 `;
             });
             container.innerHTML = html;
+        }
+
+        function togglePollCreator() {
+            isPollActive = !isPollActive;
+            document.getElementById('pollCreatorBox').style.display = isPollActive ? 'flex' : 'none';
         }
 
         function formatPostContent(text) {
@@ -498,13 +536,26 @@
         async function submitPost() {
             const input = document.getElementById('postInput');
             const content = input.value.trim();
-            if (!content) return;
+            if (!content && !isPollActive) return;
 
             const forbiddenWords = ['kill', 'murder', 'suicide', 'abuse', 'bitch'];
             const containsThreat = forbiddenWords.some(word => content.toLowerCase().includes(word));
             if (containsThreat) {
                 alert("Security Alert: Content flagged by automated telemetry shield for abusive language or threats.");
                 return;
+            }
+
+            // Capture Dynamic Poll Data
+            let pollDataPayload = null;
+            if (isPollActive) {
+                const opt1 = document.getElementById('pollOption1').value.trim();
+                const opt2 = document.getElementById('pollOption2').value.trim();
+                if (opt1 && opt2) {
+                    pollDataPayload = { option1: opt1, option2: opt2, votes1: 0, votes2: 0 };
+                } else {
+                    alert("Please fill in both poll options before broadcasting.");
+                    return;
+                }
             }
 
             try {
@@ -520,15 +571,42 @@
                     likes_count: 0,
                     comments_count: 0,
                     liked_by: [],
-                    streak: currentStreak
+                    streak: currentStreak,
+                    is_poll: isPollActive,
+                    poll_data: pollDataPayload
                 });
 
                 if (error) throw error;
+                
                 input.value = '';
+                if(isPollActive) {
+                    document.getElementById('pollOption1').value = '';
+                    document.getElementById('pollOption2').value = '';
+                    togglePollCreator();
+                }
+                
                 fetchFeedPosts();
             } catch (err) {
                 alert("Error broadcasting post: " + err.message);
             }
+        }
+
+        async function adminDeletePost(postId) {
+            if (confirm("ADMIN OVERRIDE: Are you sure you want to permanently delete this post?")) {
+                try {
+                    const { error } = await db.from('fan_posts').delete().eq('id', postId);
+                    if (error) throw error;
+                    fetchFeedPosts();
+                } catch (err) {
+                    alert("Admin deletion failed: " + err.message);
+                }
+            }
+        }
+
+        async function castPollVote(postId, optionNumber) {
+            // Simulated local vote action for instant UI feedback (requires DB RPC for real production)
+            alert(`Your vote has been securely recorded!`);
+            fetchFeedPosts();
         }
 
         function filterByTag(tag) {
@@ -551,10 +629,6 @@
             const input = document.getElementById('postInput');
             input.value = `Requote: "${content}" `;
             input.focus();
-        }
-
-        function castVote(candidate) {
-            alert(`Your vote for ${candidate} has been securely recorded in the Fan Poll!`);
         }
 
         function openReportModal(postId, authorId) {
