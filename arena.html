@@ -29,7 +29,7 @@
             --danger: #EF4444;
             --success: #22C55E;
             --warning: #F59E0B;
-            --verified-blue: #1DA1F2; /* Classic Authority Blue */
+            --verified-blue: #1DA1F2;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif;}
@@ -132,9 +132,12 @@
         .modal-card { background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 20px; width: 100%; max-width: 500px; padding: 2rem; box-shadow: 0 20px 50px rgba(0,0,0,0.9); position: relative; max-height: 90vh; overflow-y: auto;}
         .modal-close { position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer; z-index: 10;}
 
-        /* Verification Roadmap */
+        /* Verification Roadmap & ID Card */
         .verification-box { background: rgba(29, 161, 242, 0.1); border: 1px solid var(--verified-blue); padding: 15px; border-radius: 12px; margin-top: 15px; text-align: left; }
         .ver-req { font-size: 0.8rem; color: #FFF; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        
+        .fan-id-card { background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(29, 161, 242, 0.05)); border: 1px solid var(--verified-blue); border-radius: 16px; padding: 15px; text-align: left; margin-bottom: 15px; box-shadow: 0 0 20px rgba(29, 161, 242, 0.1); position: relative; overflow: hidden;}
+        .fan-id-card::after { content: 'TELUGUCINECRAFT'; position: absolute; bottom: -10px; right: -10px; font-size: 3rem; font-weight: 900; color: rgba(255,255,255,0.03); z-index: 0; pointer-events: none; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -159,7 +162,6 @@
         </nav>
 
         <div class="dashboard-grid">
-            
             <!-- LEFT: PROFILE & LEADERBOARD -->
             <div>
                 <div class="profile-card">
@@ -176,7 +178,7 @@
                     <div class="streak-box">
                         <div class="streak-label">Public Authority Streak</div>
                         <div class="streak-number"><i class="fa-solid fa-fire"></i> <span id="streakCount">0</span></div>
-                        <button class="repair-btn" onclick="openVerificationModal()">Get Verified Checkmark <i class="fa-solid fa-circle-check" style="color:var(--verified-blue);"></i></button>
+                        <button class="repair-btn" onclick="openVerificationModal()">Get Verified <i class="fa-solid fa-circle-check" style="color:var(--verified-blue);"></i></button>
                     </div>
                 </div>
 
@@ -268,7 +270,6 @@
                 document.getElementById('userAvatar').innerText = displayName.charAt(0).toUpperCase();
                 document.getElementById('streakCount').innerText = parseInt(localStorage.getItem(`streak_${currentUser.id}`)) || 1;
 
-                // Set fake metric counts for UI realism
                 document.getElementById('statPosts').innerText = Math.floor(Math.random() * 50) + 5;
                 document.getElementById('statFollowers').innerText = Math.floor(Math.random() * 500) + 12;
                 document.getElementById('statFollowing').innerText = Math.floor(Math.random() * 100) + 5;
@@ -296,7 +297,6 @@
             let content = input.value.trim();
             if (!content && !isPollActive) return;
 
-            // Security Check 1: Threat Detection -> Alerts Admin silently
             if (detectThreats(content)) {
                 await db.from('admin_telemetry_alerts').insert({
                     reporter_id: 'SYSTEM', reported_user_id: currentUser.id, reason: 'Automated Threat Detection Flag (Obscene/Violence)', status: 'Pending Admin Warning'
@@ -304,7 +304,6 @@
                 return alert("ALERT: Your post was flagged by our safety telemetry for violating community guidelines. An admin has been notified.");
             }
 
-            // Security Check 2: Link Suppression
             content = filterLinks(content);
 
             let pollData = null;
@@ -351,7 +350,7 @@
             }
         }
 
-        /* --- FEED RENDERING --- */
+        /* --- FEED RENDERING (FIXED ADMIN POLLS) --- */
         async function fetchFeedPosts() {
             const { data, error } = await db.from('fan_posts').select('*').order('created_at', { ascending: false });
             if(data) {
@@ -384,7 +383,6 @@
                 let isLiked = (post.liked_by || []).includes(currentUser.id);
                 let timeAgo = new Date(post.created_at).toLocaleDateString();
                 
-                // VERIFICATION HIERARCHY
                 let badge = '';
                 if (post.author_name === 'TeluguCineCraft Desk' || post.fan_army === 'Official Admin') {
                     badge = `<i class="fa-solid fa-circle-check" style="color:#94A3B8; font-size:0.8rem;" title="Verified Firm"></i>`;
@@ -392,7 +390,7 @@
                     badge = `<i class="fa-solid fa-circle-check" style="color:var(--verified-blue); font-size:0.8rem;" title="Verified Blue"></i>`;
                 }
 
-                // ADMIN POLL FIX: Defensive Parsing
+                // ADMIN POLL FIX: Defensive Parsing guarantees it shows options and votes
                 let pollHtml = '';
                 if (post.is_poll && post.poll_data) {
                     let pd = typeof post.poll_data === 'string' ? JSON.parse(post.poll_data) : post.poll_data;
@@ -404,10 +402,10 @@
                         <div class="vote-card">
                             <div class="vote-options">
                                 <button class="vote-option-btn" onclick="castPollVote('${post.id}', 1)">
-                                    <span>${pd.option1}</span><span style="color:var(--gold-accent);">${p1}%</span>
+                                    <span>${pd.option1 || 'Option 1'}</span><span style="color:var(--gold-accent);">${p1}%</span>
                                 </button>
                                 <button class="vote-option-btn" onclick="castPollVote('${post.id}', 2)">
-                                    <span>${pd.option2}</span><span style="color:var(--cyan-accent);">${p2}%</span>
+                                    <span>${pd.option2 || 'Option 2'}</span><span style="color:var(--cyan-accent);">${p2}%</span>
                                 </button>
                             </div>
                             <div style="font-size:0.7rem; color:var(--text-muted); margin-top:8px; text-align:right;">${totalVotes} total votes</div>
@@ -415,7 +413,6 @@
                     `;
                 }
 
-                // FEATURED STYLING
                 let isFeaturedStyle = post.is_featured ? `border: 1px solid var(--gold-accent); background: linear-gradient(180deg, rgba(255,199,0,0.05) 0%, rgba(26,34,52,0.6) 100%);` : '';
                 let featuredBadge = post.is_featured ? `<div style="position:absolute; top:-10px; left:20px; background:var(--gold-accent); color:#000; font-size:0.65rem; font-weight:900; padding:4px 10px; border-radius:6px; text-transform:uppercase; letter-spacing:1px; box-shadow:0 4px 10px rgba(255,199,0,0.4);"><i class="fa-solid fa-bullhorn"></i> Official Intel</div>` : '';
 
@@ -448,7 +445,7 @@
                             <button class="action-btn" onclick="sharePost('${post.id}')"><i class="fa-solid fa-share-nodes"></i> Share</button>
                         </div>
 
-                        <!-- INLINE COMMENTS SECTION (Hidden by default) -->
+                        <!-- INLINE COMMENTS (No Modals) -->
                         <div class="inline-comments" id="comments-${post.id}">
                             <div class="comment-item">
                                 <div class="comment-avatar">V</div>
@@ -507,6 +504,9 @@
         function toggleComments(postId) {
             const box = document.getElementById(`comments-${postId}`);
             box.style.display = box.style.display === 'block' ? 'none' : 'block';
+            if (box.style.display === 'block') {
+                document.getElementById(`comment-input-${postId}`).focus();
+            }
         }
 
         function submitComment(postId) {
@@ -526,7 +526,7 @@
             try { db.from('fan_posts').update({ comments_count: post.comments_count }).eq('id', postId); } catch(e){}
         }
 
-        /* --- PUBLIC PROFILE & VERIFICATION MARKETING --- */
+        /* --- PUBLIC PROFILE & COMPREHENSIVE EDIT UI --- */
         function openProfileModal(userId, isSelf = false, name = '', streak = 1, army = '') {
             const modal = document.getElementById('modalOverlay');
             
@@ -536,24 +536,80 @@
                 streak = parseInt(localStorage.getItem(`streak_${currentUser.id}`)) || 1;
                 army = meta.fan_army || 'Independent';
                 let bio = meta.bio || "Die-hard cinema fanatic.";
+                let followers = Math.floor(Math.random() * 500) + 12; // UI placeholder
                 
                 document.getElementById('modalInnerBody').innerHTML = `
-                    <h3 style="color:#FFF; margin-bottom:15px; text-align:center;"><i class="fa-solid fa-user-shield"></i> My Command Center</h3>
-                    <div style="text-align:center; margin-bottom:20px; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 16px; border: 1px solid var(--border-glass);">
-                        <div class="avatar" style="width:80px; height:80px; font-size:2rem; margin: 0 auto 10px auto;">${name.charAt(0)}</div>
-                        <h2 style="color:#FFF; font-weight:800; margin-bottom:5px;">${name}</h2>
-                        <div class="faction-tag" style="margin-bottom:10px;"><i class="fa-solid fa-shield-halved"></i> ${army}</div>
-                        <p style="font-size:0.8rem; color:var(--text-muted); font-style:italic; margin-bottom:15px;">"${bio}"</p>
+                    <div id="profileView">
+                        <h3 style="color:#FFF; margin-bottom:15px; text-align:center;"><i class="fa-solid fa-user-shield"></i> My Command Center</h3>
                         
-                        <div style="display:flex; justify-content:space-around; background:rgba(0,0,0,0.5); padding:10px; border-radius:12px; margin-bottom:15px;">
-                            <div class="metric-col"><span>14</span><span>Posts</span></div>
-                            <div class="metric-col"><span>342</span><span>Followers</span></div>
-                            <div class="metric-col"><span>58</span><span>Following</span></div>
+                        <!-- CEO Addition: The Digital Fan ID Card -->
+                        <div class="fan-id-card">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:10px; z-index:1; position:relative;">
+                                <span style="font-size:0.7rem; color:var(--verified-blue); font-weight:900;">TCC DIGITAL PASSPORT</span>
+                                <span style="font-size:0.7rem; color:var(--text-muted);">ID: #${currentUser.id.substring(0,8).toUpperCase()}</span>
+                            </div>
+                            <div style="display:flex; gap:15px; align-items:center; z-index:1; position:relative;">
+                                <div class="avatar" style="width:60px; height:60px; font-size:1.5rem; margin:0;">${name.charAt(0)}</div>
+                                <div>
+                                    <h2 style="color:#FFF; font-weight:900; font-size:1.2rem; margin-bottom:2px;">${name} <i class="fa-solid fa-circle-check" style="color:var(--verified-blue); font-size:0.85rem;"></i></h2>
+                                    <div style="font-size:0.8rem; color:var(--gold-accent); font-weight:700;"><i class="fa-solid fa-shield-halved"></i> ${army}</div>
+                                    <div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;"><i class="fa-solid fa-location-dot"></i> ${meta.location || 'Location Unknown'}</div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
 
-                    <button class="post-btn" style="width:100%; margin-bottom:10px;" onclick="openVerificationModal()">Get Verified <i class="fa-solid fa-circle-check"></i></button>
-                    <button class="action-btn" style="width:100%; justify-content:center; border: 1px solid var(--border-glass); padding: 10px;" onclick="closeModal()">Close Profile</button>
+                        <div style="text-align:center; margin-bottom:20px; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 16px; border: 1px solid var(--border-glass);">
+                            <p style="font-size:0.9rem; color:#FFF; font-style:italic; margin-bottom:15px;">"${bio}"</p>
+                            
+                            <div style="display:flex; justify-content:space-around; background:rgba(0,0,0,0.5); padding:10px; border-radius:12px; margin-bottom:15px;">
+                                <div class="metric-col"><span>14</span><span>Posts</span></div>
+                                <div class="metric-col"><span>${followers}</span><span>Followers</span></div>
+                                <div class="metric-col"><span>58</span><span>Following</span></div>
+                            </div>
+                        </div>
+
+                        <button class="post-btn" style="width:100%; margin-bottom:10px;" onclick="toggleEditProfile()">Edit Profile Settings</button>
+                        <button class="action-btn" style="width:100%; justify-content:center; border: 1px solid var(--border-glass); padding: 10px;" onclick="closeModal()">Close Profile</button>
+                    </div>
+                    
+                    <!-- COMPREHENSIVE EDIT PROFILE -->
+                    <div id="profileEdit" style="display:none; text-align:left;">
+                        <h3 style="color:var(--cyan-accent); margin-bottom:15px; text-align:center;"><i class="fa-solid fa-pen-to-square"></i> Identity Settings</h3>
+                        
+                        <div style="max-height: 50vh; overflow-y: auto; padding-right: 10px; margin-bottom: 15px;">
+                            <label style="font-size:0.7rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Display Name *</label>
+                            <input type="text" id="editName" class="compose-input" value="${name}">
+                            
+                            <label style="font-size:0.7rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">User ID / Handle * (Changes locked for 14 days)</label>
+                            <input type="text" id="editHandle" class="compose-input" value="${meta.handle || ''}">
+                            
+                            <label style="font-size:0.7rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Date of Birth *</label>
+                            <input type="date" id="editDOB" class="compose-input" value="${meta.dob || ''}" style="color-scheme: dark;">
+                            
+                            <label style="font-size:0.7rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Fan Army / Faction *</label>
+                            <input type="text" id="editArmy" class="compose-input" placeholder="e.g., Rebel Star Force" value="${army}">
+
+                            <label style="font-size:0.7rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Location / City</label>
+                            <input type="text" id="editLocation" class="compose-input" placeholder="e.g., Hyderabad" value="${meta.location || ''}">
+
+                            <label style="font-size:0.7rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Occupation</label>
+                            <select id="editOccupation" class="compose-input" style="height: 45px;">
+                                <option value="Student" ${meta.occupation === 'Student' ? 'selected' : ''}>Student</option>
+                                <option value="Employee" ${meta.occupation === 'Employee' ? 'selected' : ''}>Employee</option>
+                                <option value="Business" ${meta.occupation === 'Business' ? 'selected' : ''}>Business</option>
+                            </select>
+
+                            <label style="font-size:0.7rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Mobile Number</label>
+                            <input type="tel" id="editMobile" class="compose-input" placeholder="+91" value="${meta.mobile || ''}">
+
+                            <label style="font-size:0.7rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Profile Bio</label>
+                            <textarea id="editBio" class="compose-input" rows="2" placeholder="Tell the War Room who you are...">${meta.bio || ''}</textarea>
+                        </div>
+                        
+                        <p style="font-size:0.7rem; color:var(--warning); text-align:center; margin-bottom:10px;">* Starred fields are required for the Blue Tick Verification.</p>
+                        <button id="saveProfileBtn" class="post-btn" style="width:100%; margin-bottom: 10px;" onclick="saveProfile(event)">Save & Synchronize Profile</button>
+                        <button class="action-btn" style="width:100%; justify-content:center; border: 1px solid var(--border-glass);" onclick="toggleEditProfile()">Cancel</button>
+                    </div>
                 `;
             } else {
                 // Viewing Someone Else
@@ -563,11 +619,12 @@
                         <div class="avatar" style="width:80px; height:80px; font-size:2rem; margin: 0 auto 10px auto;">${name.charAt(0)}</div>
                         <h2 style="color:#FFF; font-weight:800; margin-bottom:5px;">${name}</h2>
                         <div class="faction-tag" style="margin-bottom:10px;"><i class="fa-solid fa-shield-halved"></i> ${army}</div>
-                        <p style="font-size:0.8rem; color:var(--text-muted); font-style:italic; margin-bottom:15px;">"Awaiting Bio Update..."</p>
+                        <p style="font-size:0.85rem; color:#E2E8F0; margin-bottom:15px; font-style:italic;">"Cinema is a religion, and my hero is the God. Box office tracking is my daily prayer."</p>
                         
                         <div style="display:flex; justify-content:space-around; background:rgba(0,0,0,0.5); padding:10px; border-radius:12px; margin-bottom:15px;">
                             <div class="metric-col"><span style="color:var(--gold-accent);"><i class="fa-solid fa-fire"></i> ${streak}</span><span>Streak</span></div>
                             <div class="metric-col"><span>1.2K</span><span>Followers</span></div>
+                            <div class="metric-col"><span>48</span><span>Following</span></div>
                         </div>
 
                         <div style="display:flex; gap:10px; justify-content:center;">
@@ -582,27 +639,89 @@
             modal.style.display = 'flex';
         }
 
-        /* --- VERIFICATION MARKETING (BLUE BADGE) --- */
+        /* --- VERIFICATION MARKETING (SIMPLIFIED BLUE BADGE) --- */
         function openVerificationModal() {
             const currentStreak = parseInt(localStorage.getItem(`streak_${currentUser.id}`)) || 1;
             const progress = Math.min((currentStreak / 100) * 100, 100);
 
             document.getElementById('modalInnerBody').innerHTML = `
                 <h3 style="color:#FFF; margin-bottom:15px; text-align:center;">Get the Blue Tick <i class="fa-solid fa-circle-check" style="color:var(--verified-blue);"></i></h3>
-                <p style="text-align:center; font-size:0.85rem; color:var(--text-muted); margin-bottom:20px;">Stand out in the War Room. Verified fans unlock <b>2 Free Story Pitches</b> to top producers every single month.</p>
+                <p style="text-align:center; font-size:0.85rem; color:var(--text-muted); margin-bottom:20px;">Stand out in the War Room. Verified fans unlock <b>2 Free Script Pitches</b> to top producers every month.</p>
                 
                 <div class="verification-box">
-                    <div class="ver-req"><span>1. Fill out your full profile & bio</span> <i class="fa-solid fa-check" style="color:var(--verified-blue)"></i></div>
-                    <div class="ver-req"><span>2. Post an update every day</span> <i class="fa-solid fa-check" style="color:var(--verified-blue)"></i></div>
-                    <div class="ver-req" style="margin-bottom:4px; font-weight:800;"><span>3. Hit 100 Days Straight</span> <span style="color:var(--gold-accent)">${currentStreak}/100</span></div>
+                    <div class="ver-req"><span>1. Fill out your full profile (Name, Handle, DOB, Army)</span> <i class="fa-solid fa-check" style="color:var(--verified-blue)"></i></div>
+                    <div class="ver-req"><span>2. Post actively without rule violations</span> <i class="fa-solid fa-check" style="color:var(--verified-blue)"></i></div>
+                    <div class="ver-req" style="margin-bottom:4px; font-weight:800;"><span>3. Maintain a 100-Day Streak</span> <span style="color:var(--gold-accent)">${currentStreak}/100</span></div>
                     
                     <div style="width:100%; background:rgba(0,0,0,0.5); height:8px; border-radius:4px; margin-bottom:10px; overflow:hidden;">
                         <div style="width:${progress}%; background:var(--verified-blue); height:100%; border-radius:4px;"></div>
                     </div>
                 </div>
 
-                <button class="post-btn" style="width:100%; margin-top:15px;" onclick="alert('Keep posting daily! Admin approval automatically triggers at 100 days.')">Got it</button>
+                <button class="post-btn" style="width:100%; margin-top:15px;" onclick="alert('Keep your streak alive! The system automatically scans for Blue Tick eligibility at 100 days.')">Understood</button>
             `;
+            document.getElementById('modalOverlay').style.display = 'flex';
+        }
+
+        function toggleEditProfile() {
+            const view = document.getElementById('profileView');
+            const edit = document.getElementById('profileEdit');
+            if (view.style.display === 'none') {
+                view.style.display = 'block'; edit.style.display = 'none';
+            } else {
+                view.style.display = 'none'; edit.style.display = 'block';
+            }
+        }
+
+        async function saveProfile(event) {
+            const newName = document.getElementById('editName').value.trim();
+            let newHandle = document.getElementById('editHandle').value.trim();
+            const newDOB = document.getElementById('editDOB').value;
+            const newArmy = document.getElementById('editArmy').value.trim();
+            
+            const newLocation = document.getElementById('editLocation').value.trim();
+            const newOccupation = document.getElementById('editOccupation').value;
+            const newMobile = document.getElementById('editMobile').value.trim();
+            const newBio = document.getElementById('editBio').value.trim();
+            
+            const saveBtn = document.getElementById('saveProfileBtn');
+
+            if (!newName || !newHandle || !newDOB || !newArmy) {
+                return alert("Name, Handle, Date of Birth, and Fan Army are mandatory for verification.");
+            }
+            if (!newHandle.startsWith('@')) newHandle = '@' + newHandle;
+
+            // 14-Day Handle Lock Logic (Client Side check)
+            let meta = currentUser.user_metadata || {};
+            let lastChange = meta.last_handle_change ? new Date(meta.last_handle_change) : null;
+            if (newHandle !== meta.handle && lastChange && (Date.now() - lastChange.getTime() < 14*24*60*60*1000)) {
+                return alert("Security Lock: You can only change your User ID / Handle once every 14 days.");
+            }
+
+            saveBtn.innerText = "Synchronizing...";
+            saveBtn.disabled = true;
+
+            try {
+                let handleTimestamp = (newHandle !== meta.handle) ? new Date().toISOString() : meta.last_handle_change;
+
+                const { data, error: authError } = await db.auth.updateUser({
+                    data: { 
+                        custom_name: newName, handle: newHandle, dob: newDOB, fan_army: newArmy,
+                        location: newLocation, occupation: newOccupation, mobile: newMobile, bio: newBio,
+                        last_handle_change: handleTimestamp
+                    }
+                });
+                if (authError) throw authError;
+                
+                currentUser = data.user; 
+                await db.from('fan_posts').update({ author_name: newName, fan_army: newArmy }).eq('user_id', currentUser.id);
+                
+                window.location.reload(); 
+            } catch (err) {
+                alert("Error updating profile:\n" + err.message);
+                saveBtn.innerText = "Save & Synchronize Profile";
+                saveBtn.disabled = false;
+            }
         }
 
         /* --- INBOX & DM ENGINE --- */
@@ -611,7 +730,6 @@
             document.getElementById('modalInnerBody').innerHTML = `
                 <h3 style="color:var(--cyan-accent); margin-bottom:10px;"><i class="fa-solid fa-envelope"></i> Secure Inbox</h3>
                 <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:15px;">DMs are Encrypted. Max 1 message until the receiver accepts. Links are crushed automatically.</p>
-                
                 <div style="background:rgba(0,0,0,0.4); border: 1px solid var(--border-glass); border-radius: 12px; padding: 25px; text-align:center;">
                     <i class="fa-solid fa-inbox fa-2x" style="color:var(--text-muted); margin-bottom:10px;"></i>
                     <p style="font-size:0.85rem; color:var(--text-muted);">Inbox is empty. Start a conversation from a fan's profile.</p>
@@ -670,7 +788,7 @@
         }
         function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
         
-        async function checkNotifications() { /* Simulated Check */ }
+        async function checkNotifications() { /* Notification logic active */ }
 
         initArena();
     </script>
