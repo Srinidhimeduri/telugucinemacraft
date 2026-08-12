@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Executive Command Vault | TeluguCineCraft Admin</title>
+    <title>Executive Command Vault | TeluguCineCraft</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -22,18 +22,27 @@
             --text-muted: #94A3B8;
             --danger: #EF4444;
             --success: #22C55E;
+            --verified-blue: #1DA1F2;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
 
         body {
             background-color: var(--bg-base);
             color: var(--text-main);
-            font-family: 'Plus Jakarta Sans', sans-serif;
             min-height: 100vh;
             padding: 2rem;
             background-image: radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.03) 0%, transparent 60%);
+            transition: background-color 0.3s ease;
         }
+
+        /* LIVE THREAT SIREN ANIMATION */
+        @keyframes sirenFlash {
+            0% { background-color: rgba(239, 68, 68, 0.15); }
+            50% { background-color: var(--bg-base); }
+            100% { background-color: rgba(239, 68, 68, 0.15); }
+        }
+        body.alert-mode { animation: sirenFlash 1s infinite; }
 
         .container { max-width: 1400px; margin: 0 auto; }
 
@@ -47,7 +56,7 @@
         .vault-title { font-size: 1.2rem; font-weight: 900; color: #FFF; display: flex; align-items: center; gap: 10px; }
         .vault-title i { color: var(--gold-accent); filter: drop-shadow(0 0 10px rgba(255,199,0,0.3));}
 
-        /* BROADCASTER MODULE (FULL WIDTH) */
+        /* BROADCASTER MODULE */
         .broadcaster-module {
             background: linear-gradient(145deg, var(--bg-card) 0%, rgba(6,8,12,0.9) 100%);
             border: 1px solid var(--gold-accent); border-radius: 16px; padding: 2rem; margin-bottom: 2rem;
@@ -55,56 +64,54 @@
         }
         .broadcaster-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; align-items: start; }
 
-        /* DUAL PANEL LAYOUT (BOTTOM) */
+        /* DASHBOARD LAYOUT */
         .dashboard-layout { display: grid; grid-template-columns: 1fr 380px; gap: 2rem; align-items: start; }
+        .queues-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
 
         .admin-section-container {
             background: var(--bg-card); border: 1px solid var(--border-glass);
             border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-            margin-bottom: 2rem; padding: 1.5rem;
+            padding: 1.5rem; display: flex; flex-direction: column; max-height: 500px;
         }
-        .section-header { color: #FFF; margin-bottom: 15px; font-size: 1.1rem; display: flex; align-items: center; gap: 10px; }
+        .section-header { color: #FFF; margin-bottom: 15px; font-size: 1rem; display: flex; justify-content: space-between; align-items: center; }
+        .queue-list { overflow-y: auto; flex: 1; padding-right: 5px; }
 
-        /* TABLE STYLES */
-        .table-wrapper { margin: -1.5rem; margin-top: 0; border-bottom-left-radius: 16px; border-bottom-right-radius: 16px; overflow: hidden;}
-        table { width: 100%; border-collapse: collapse; text-align: left; }
-        th { background: rgba(0,0,0,0.4); padding: 1rem 1.2rem; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 800; border-bottom: 1px solid var(--border-glass); border-top: 1px solid var(--border-glass);}
-        td { padding: 1rem 1.2rem; font-size: 0.85rem; border-bottom: 1px solid rgba(255,255,255,0.03); font-weight: 500; }
-        tr:hover td { background: rgba(255,255,255,0.02); }
+        /* QUEUE CARDS */
+        .queue-card { background: rgba(0,0,0,0.4); border: 1px solid var(--border-glass); border-radius: 12px; padding: 15px; margin-bottom: 10px; transition: transform 0.2s; }
+        .queue-card.alert { border-left: 3px solid var(--danger); background: rgba(239,68,68,0.05); }
+        .queue-card.verify { border-left: 3px solid var(--verified-blue); }
+        .queue-card.pitch { border-left: 3px solid var(--success); }
+        .queue-card.studio { border-left: 3px solid var(--gold-accent); }
 
-        .badge-status { padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; }
-        .badge-pending { background: rgba(56,189,248,0.1); color: var(--cyan-accent); border: 1px solid rgba(56,189,248,0.3); }
-        .badge-approved { background: rgba(34,197,94,0.1); color: var(--success); border: 1px solid rgba(34,197,94,0.3); }
-        .badge-rejected { background: rgba(239,68,68,0.1); color: var(--danger); border: 1px solid rgba(239,68,68,0.3); }
+        .q-title { font-size: 0.95rem; font-weight: 800; color: #FFF; margin-bottom: 5px; }
+        .q-meta { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px; }
+        .q-body { font-size: 0.85rem; color: #E2E8F0; line-height: 1.4; margin-bottom: 15px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px;}
 
-        .action-btn { padding: 6px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 800; cursor: pointer; border: none; text-transform: uppercase; margin-right: 6px; transition: all 0.2s; }
+        .action-group { display: flex; gap: 10px; }
+        .action-btn { flex: 1; padding: 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; cursor: pointer; border: none; text-transform: uppercase; text-align: center; }
         .btn-approve { background: var(--success); color: #000; }
         .btn-reject { background: rgba(239,68,68,0.15); color: var(--danger); border: 1px solid rgba(239,68,68,0.3); }
+        .btn-resolve { background: var(--cyan-accent); color: #000; }
+        .btn-blue { background: var(--verified-blue); color: #FFF; }
 
-        /* PITCH REVIEW CARD STYLES */
-        .pitch-card { background: rgba(0,0,0,0.3); border: 1px solid var(--border-glass); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; transition: transform 0.2s; }
-        .p-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
-        .p-title { font-size: 1.2rem; font-weight: 900; color: #FFF; text-transform: uppercase; }
-        .p-meta { font-size: 0.8rem; color: var(--cyan-accent); font-weight: 700; }
-        .p-logline { font-size: 0.9rem; color: #E2E8F0; line-height: 1.6; margin-bottom: 15px; font-weight: 500; background: rgba(0,0,0,0.4); padding: 12px; border-radius: 8px; border-left: 3px solid var(--gold-accent);}
-        .section-title { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 800; margin-bottom: 5px; margin-top: 15px; }
-        .section-content { font-size: 0.85rem; line-height: 1.5; color: #FFF; }
-        .pitch-actions { display: flex; gap: 10px; margin-top: 20px; border-top: 1px solid var(--border-glass); padding-top: 15px;}
-
-        /* RIGHT OVERRIDE CARD STYLES */
+        /* OVERRIDE CARD */
         .admin-card { background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 16px; padding: 1.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
         .admin-input { background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); color: #FFF; border-radius: 8px; font-family: inherit; outline: none; transition: border-color 0.2s; width: 100%; padding: 12px; margin-top: 5px; }
         .admin-input:focus { border-color: var(--gold-accent); }
-        .btn-lock { background: linear-gradient(135deg, var(--gold-accent), #E6B300); color: #000; border: none; padding: 1rem; border-radius: 8px; font-weight: 900; font-size: 0.9rem; cursor: pointer; text-transform: uppercase; box-shadow: 0 4px 12px rgba(255,199,0,0.2); transition: transform 0.2s; width: 100%;}
+        .btn-lock { background: linear-gradient(135deg, var(--gold-accent), #E6B300); color: #000; border: none; padding: 1rem; border-radius: 8px; font-weight: 900; font-size: 0.9rem; cursor: pointer; text-transform: uppercase; width: 100%; transition: transform 0.2s;}
         .btn-lock:hover { transform: translateY(-2px); }
 
-        /* SECURITY LOCKDOWN */
+        /* SCROLLBARS */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+
         .lockdown-screen { text-align: center; padding: 5rem 2rem; max-width: 500px; margin: 4rem auto; background: var(--bg-card); border: 1px solid var(--danger); border-radius: 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.8); }
-        .lockdown-screen i { font-size: 3rem; color: var(--danger); margin-bottom: 15px; }
-        .btn-admin-login { background: var(--gold-accent); color: #000; border: none; padding: 0.8rem 1.8rem; border-radius: 10px; font-weight: 900; font-size: 0.85rem; cursor: pointer; text-transform: uppercase; display: inline-flex; align-items: center; gap: 8px; margin-top: 15px; box-shadow: 0 4px 15px rgba(255,199,0,0.3); transition: transform 0.2s; }
-        
+        .btn-admin-login { background: var(--gold-accent); color: #000; border: none; padding: 0.8rem 1.8rem; border-radius: 10px; font-weight: 900; cursor: pointer; text-transform: uppercase; display: inline-flex; align-items: center; gap: 8px; margin-top: 15px; }
+
         @media (max-width: 1024px) {
             .dashboard-layout { grid-template-columns: 1fr; }
+            .queues-grid { grid-template-columns: 1fr; }
             .broadcaster-grid { grid-template-columns: 1fr; }
         }
     </style>
@@ -118,8 +125,8 @@
     </div>
 
     <script>
-        // Mapped to your Master Admin Email
         const MASTER_ADMIN_EMAIL = "therealexplorer123@gmail.com";
+        let liveSyncActive = false;
 
         async function verifyAdminVault() {
             try {
@@ -129,21 +136,19 @@
                 if (sessionError || !session || !session.user || session.user.email !== MASTER_ADMIN_EMAIL) {
                     container.innerHTML = `
                         <div class="lockdown-screen">
-                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <i class="fa-solid fa-triangle-exclamation" style="font-size: 3rem; color: var(--danger); margin-bottom: 15px;"></i>
                             <h2 style="color:#FFF; font-size:1.4rem; font-weight:900; margin-bottom:10px;">VAULT LOCKED</h2>
-                            <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:20px; line-height:1.5;">Session terminated or unauthorized clearance. Authenticate with master admin credentials to unlock.</p>
+                            <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:20px; line-height:1.5;">Authenticate with master admin credentials to unlock.</p>
                             <button class="btn-admin-login" onclick="handleAdminLogin()">
                                 <i class="fa-brands fa-google"></i> Authenticate Master Access
                             </button>
-                            <div style="margin-top: 20px;">
-                                <a href="index.html" style="color:var(--cyan-accent); font-weight:800; font-size:0.75rem; text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Return to Public Terminal</a>
-                            </div>
                         </div>
                     `;
                     return;
                 }
 
                 renderAdminDashboard(session.user);
+                initRealtimeSync(); // IGNITE WEBSOCKETS
             } catch (err) { console.error("Vault verification error:", err); }
         }
 
@@ -156,68 +161,71 @@
                 <div class="vault-header">
                     <div class="vault-title"><i class="fa-solid fa-server"></i> Executive Command Vault</div>
                     <div style="display:flex; align-items:center; gap:15px;">
-                        <span style="font-size:0.80rem; color:var(--text-muted); font-weight:700;">Admin: ${user.email}</span>
+                        <span id="syncStatus" style="font-size:0.75rem; color:var(--success); font-weight:800; background:rgba(34,197,94,0.1); padding:4px 8px; border-radius:6px; border:1px solid var(--success);">
+                            <i class="fa-solid fa-satellite-dish"></i> SYNC ACTIVE
+                        </span>
                         <button onclick="signOutAdmin()" style="background:none; border:1px solid var(--border-glass); color:var(--text-muted); padding:5px 10px; border-radius:6px; font-size:0.7rem; font-weight:800; cursor:pointer;">Lock Vault</button>
                     </div>
                 </div>
 
-                <!-- GLOBAL BROADCASTING HUB (TOP FULL WIDTH) -->
+                <!-- GLOBAL BROADCASTING HUB -->
                 <div class="broadcaster-module">
                     <h3 style="color:var(--gold-accent); margin-bottom: 8px; font-size: 1.4rem;"><i class="fa-solid fa-bullhorn"></i> Global Broadcasting Hub</h3>
-                    <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:20px; line-height:1.5;">Pin an "Official Intel" post or poll to the top of the Arena to drive daily active engagement. Valid for 24 hours.</p>
+                    <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:20px;">Pin an "Official Intel" post or poll to the top of the Arena to drive daily active engagement.</p>
                     
                     <div class="broadcaster-grid">
-                        <!-- Left side: The Text Content -->
                         <div>
-                            <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; text-transform:uppercase;">Broadcast Message / Question / News</label>
-                            <textarea id="adminPostContent" class="admin-input" rows="4" placeholder="Drop exclusive news, a highly debated box office question, or a script-pitching tip..."></textarea>
+                            <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; text-transform:uppercase;">Broadcast Message</label>
+                            <textarea id="adminPostContent" class="admin-input" rows="4" placeholder="Drop exclusive news..."></textarea>
                         </div>
-                        
-                        <!-- Right side: The Poll & Button -->
                         <div>
                             <div style="padding: 15px; background:rgba(0,0,0,0.4); border:1px dashed var(--gold-accent); border-radius:8px; margin-bottom: 15px;">
-                                <label style="font-size:0.7rem; color:var(--gold-accent); font-weight:800; text-transform:uppercase; display:block; margin-bottom:10px;"><i class="fa-solid fa-square-poll-vertical"></i> Attach an Engagement Poll (Optional)</label>
-                                <input type="text" id="adminPoll1" class="admin-input" placeholder="Option 1 (e.g., Devara)" style="margin-bottom:8px;">
-                                <input type="text" id="adminPoll2" class="admin-input" placeholder="Option 2 (e.g., Game Changer)">
+                                <label style="font-size:0.7rem; color:var(--gold-accent); font-weight:800; text-transform:uppercase; display:block; margin-bottom:10px;"><i class="fa-solid fa-square-poll-vertical"></i> Optional Poll</label>
+                                <input type="text" id="adminPoll1" class="admin-input" placeholder="Option 1" style="margin-bottom:8px;">
+                                <input type="text" id="adminPoll2" class="admin-input" placeholder="Option 2">
                             </div>
-                            
-                            <button class="btn-lock" onclick="broadcastAdminPost('${user.id}')"><i class="fa-solid fa-paper-plane"></i> Broadcast & Pin to Top</button>
+                            <button class="btn-lock" onclick="broadcastAdminPost('${user.id}')"><i class="fa-solid fa-paper-plane"></i> Broadcast</button>
                         </div>
                     </div>
                 </div>
 
                 <div class="dashboard-layout">
-                    <!-- LEFT PANEL: APPROVAL QUEUES -->
-                    <div>
-                        <!-- SECTION 1: STUDIO ACCREDITATIONS -->
+                    <!-- LEFT PANEL: 4-QUADRANT QUEUES -->
+                    <div class="queues-grid">
+                        <!-- Q1: ALERTS & SUPPORT -->
                         <div class="admin-section-container">
-                            <h3 class="section-header"><i class="fa-solid fa-building" style="color:var(--gold-accent);"></i> Studio Accreditations</h3>
-                            <div class="table-wrapper">
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Applicant Name</th>
-                                            <th>Studio / Banner</th>
-                                            <th>Role</th>
-                                            <th>Status</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="approvalsTableBody">
-                                        <tr><td colspan="5" style="text-align:center; padding:2rem; color:var(--text-muted);">Decrypting secure applicant records...</td></tr>
-                                    </tbody>
-                                </table>
+                            <div class="section-header">
+                                <span><i class="fa-solid fa-triangle-exclamation" style="color:var(--danger);"></i> Threat & Support Telemetry</span>
+                                <span style="font-size:0.7rem; color:var(--text-muted);" id="alertCount">0 Pending</span>
                             </div>
+                            <div class="queue-list" id="alertsQueue"><div style="text-align:center; padding:2rem; color:var(--text-muted);">Scanning for alerts...</div></div>
                         </div>
 
-                        <!-- SECTION 2: EDITORIAL GATEKEEPER (PITCHES) -->
+                        <!-- Q2: VERIFICATION REQUESTS -->
                         <div class="admin-section-container">
-                            <h3 class="section-header"><i class="fa-solid fa-book-open" style="color:var(--success);"></i> Editorial Gatekeeper (Pitches)</h3>
-                            <div id="pendingPitchesFeed">
-                                <div style="text-align:center; padding: 2rem; color:var(--text-muted);">
-                                    <i class="fa-solid fa-circle-notch fa-spin"></i> Fetching pending submissions...
-                                </div>
+                            <div class="section-header">
+                                <span><i class="fa-solid fa-certificate" style="color:var(--verified-blue);"></i> Blue Tick Verifications</span>
+                                <span style="font-size:0.7rem; color:var(--text-muted);" id="verifyCount">0 Pending</span>
                             </div>
+                            <div class="queue-list" id="verificationQueue"><div style="text-align:center; padding:2rem; color:var(--text-muted);">Scanning for requests...</div></div>
+                        </div>
+
+                        <!-- Q3: EDITORIAL PITCHES -->
+                        <div class="admin-section-container">
+                            <div class="section-header">
+                                <span><i class="fa-solid fa-book-open" style="color:var(--success);"></i> Editorial Gatekeeper</span>
+                                <span style="font-size:0.7rem; color:var(--text-muted);" id="pitchCount">0 Pending</span>
+                            </div>
+                            <div class="queue-list" id="pendingPitchesFeed"><div style="text-align:center; padding:2rem; color:var(--text-muted);">Scanning for pitches...</div></div>
+                        </div>
+
+                        <!-- Q4: STUDIO ACCREDITATIONS -->
+                        <div class="admin-section-container">
+                            <div class="section-header">
+                                <span><i class="fa-solid fa-building" style="color:var(--gold-accent);"></i> Studio Accreditations</span>
+                                <span style="font-size:0.7rem; color:var(--text-muted);" id="studioCount">0 Pending</span>
+                            </div>
+                            <div class="queue-list" id="approvalsTableBody"><div style="text-align:center; padding:2rem; color:var(--text-muted);">Scanning applications...</div></div>
                         </div>
                     </div>
 
@@ -225,7 +233,7 @@
                     <div>
                         <div class="admin-card" style="border-top: 3px solid var(--cyan-accent); position:sticky; top: 2rem;">
                             <h3 style="color:var(--cyan-accent); margin-bottom: 8px;"><i class="fa-solid fa-satellite-dish"></i> Algorithmic Override</h3>
-                            <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:20px; line-height:1.5;">Stealth Marketing Engine: Force a movie to #1 trending or inject custom platform metrics instantly.</p>
+                            <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:20px; line-height:1.5;">Force a movie to #1 trending or inject custom platform metrics instantly.</p>
                             
                             <div style="margin-bottom:15px;">
                                 <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; text-transform:uppercase;">Campaign Target Zone</label>
@@ -238,12 +246,12 @@
                             
                             <div style="margin-bottom:15px;">
                                 <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; text-transform:uppercase;">Target Keyword / Movie Name</label>
-                                <input type="text" id="promoTarget" class="admin-input" placeholder="e.g., #Devara2 or The Raja Saab">
+                                <input type="text" id="promoTarget" class="admin-input" placeholder="e.g., #Devara2">
                             </div>
                             
                             <div style="margin-bottom:20px;">
                                 <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; text-transform:uppercase;">Artificial Metric / Subtitle</label>
-                                <input type="text" id="promoMetrics" class="admin-input" placeholder="e.g., '142K posts' or '₹150 Cr Advance'">
+                                <input type="text" id="promoMetrics" class="admin-input" placeholder="e.g., '142K posts'">
                             </div>
                             
                             <button class="btn-lock" style="background:linear-gradient(135deg, var(--cyan-accent), #0284c7); color:#FFF;" onclick="engagePromoOverride()"><i class="fa-solid fa-bolt"></i> Engage Global Override</button>
@@ -259,9 +267,175 @@
                 </div>
             `;
 
-            fetchApprovals();
-            fetchPendingPitches();
+            fetchAllQueues();
             fetchActiveOverrides();
+        }
+
+        /* -----------------------------------------------------
+           REALTIME WEBSOCKET ENGINE
+        ----------------------------------------------------- */
+        function initRealtimeSync() {
+            if(liveSyncActive) return;
+            
+            const adminChannel = db.channel('executive_vault_sync');
+            
+            // Listen for Telemetry Alerts (Threats/Support)
+            adminChannel.on('postgres_changes', { event: '*', schema: 'public', table: 'admin_telemetry_alerts' }, payload => {
+                if(payload.eventType === 'INSERT') triggerSiren();
+                fetchAlertsQueue();
+            });
+            // Listen for Blue Tick Requests
+            adminChannel.on('postgres_changes', { event: '*', schema: 'public', table: 'verification_requests' }, payload => { fetchVerificationQueue(); });
+            // Listen for Script Pitches
+            adminChannel.on('postgres_changes', { event: '*', schema: 'public', table: 'producer_pitches' }, payload => { fetchPendingPitches(); });
+            // Listen for Studio Approvals
+            adminChannel.on('postgres_changes', { event: '*', schema: 'public', table: 'studio_approvals' }, payload => { fetchApprovals(); });
+
+            adminChannel.subscribe(status => {
+                if(status === 'SUBSCRIBED') {
+                    liveSyncActive = true;
+                    console.log("WebSocket Sync Established.");
+                }
+            });
+        }
+
+        function triggerSiren() {
+            document.body.classList.add('alert-mode');
+            setTimeout(() => { document.body.classList.remove('alert-mode'); }, 2000);
+        }
+
+        function fetchAllQueues() {
+            fetchAlertsQueue();
+            fetchVerificationQueue();
+            fetchPendingPitches();
+            fetchApprovals();
+        }
+
+        /* -----------------------------------------------------
+           Q1: TELEMETRY ALERTS & SUPPORT QUEUE
+        ----------------------------------------------------- */
+        async function fetchAlertsQueue() {
+            const { data } = await db.from('admin_telemetry_alerts').select('*').eq('status', 'Pending Admin Warning').order('created_at', { ascending: false });
+            const container = document.getElementById('alertsQueue');
+            document.getElementById('alertCount').innerText = `${data ? data.length : 0} Pending`;
+            
+            if (!data || data.length === 0) return container.innerHTML = `<div style="text-align:center; padding:2rem; color:var(--text-muted);">Clear. No active alerts.</div>`;
+
+            let html = '';
+            data.forEach(item => {
+                let isSupport = item.reason.includes('Support');
+                html += `
+                    <div class="queue-card ${isSupport ? '' : 'alert'}">
+                        <div class="q-title">${isSupport ? '<i class="fa-solid fa-envelope"></i> Support Request' : '<i class="fa-solid fa-triangle-exclamation"></i> Security Violation'}</div>
+                        <div class="q-meta">User ID: ${item.reporter_id.substring(0,8)} • ${new Date(item.created_at).toLocaleDateString()}</div>
+                        <div class="q-body"><b>Category:</b> ${item.reason}<br><br><b>Message/Context:</b> ${item.post_id || 'N/A'}</div>
+                        <div class="action-group">
+                            <button class="action-btn btn-resolve" onclick="resolveAlert('${item.id}', 'Resolved')">Mark Resolved</button>
+                            ${!isSupport ? `<button class="action-btn btn-reject" onclick="resolveAlert('${item.id}', 'User Banned')">Ban User</button>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        async function resolveAlert(id, status) {
+            await db.from('admin_telemetry_alerts').update({ status: status }).eq('id', id);
+            fetchAlertsQueue();
+        }
+
+        /* -----------------------------------------------------
+           Q2: BLUE TICK VERIFICATIONS
+        ----------------------------------------------------- */
+        async function fetchVerificationQueue() {
+            const { data } = await db.from('verification_requests').select('*').eq('status', 'Pending').order('created_at', { ascending: true });
+            const container = document.getElementById('verificationQueue');
+            document.getElementById('verifyCount').innerText = `${data ? data.length : 0} Pending`;
+            
+            if (!data || data.length === 0) return container.innerHTML = `<div style="text-align:center; padding:2rem; color:var(--text-muted);">Queue is empty.</div>`;
+
+            let html = '';
+            data.forEach(item => {
+                html += `
+                    <div class="queue-card verify">
+                        <div class="q-title">${item.full_name || 'User'}</div>
+                        <div class="q-meta">Handle: ${item.handle} • Target: Blue Tick</div>
+                        <div class="action-group">
+                            <button class="action-btn btn-blue" onclick="updateVerification('${item.id}', 'Approved')">Approve Blue Tick</button>
+                            <button class="action-btn btn-reject" onclick="updateVerification('${item.id}', 'Rejected')">Reject</button>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        async function updateVerification(id, status) {
+            await db.from('verification_requests').update({ status: status }).eq('id', id);
+            fetchVerificationQueue();
+        }
+
+        /* -----------------------------------------------------
+           Q3: EDITORIAL PITCHES
+        ----------------------------------------------------- */
+        async function fetchPendingPitches() {
+            const container = document.getElementById('pendingPitchesFeed');
+            const { data, error } = await db.from('producer_pitches').select('*').eq('status', 'Pending Review').order('created_at', { ascending: true });
+            document.getElementById('pitchCount').innerText = `${data ? data.length : 0} Pending`;
+
+            if (error || !data || data.length === 0) return container.innerHTML = `<div style="text-align:center; padding:2rem; color:var(--text-muted);">The queue is clean.</div>`;
+
+            let html = '';
+            data.forEach(p => {
+                html += `
+                    <div class="queue-card pitch">
+                        <div class="q-title">${p.title || 'Untitled'}</div>
+                        <div class="q-meta">Format: ${p.format} • Author: ${p.legal_name}</div>
+                        <div class="q-body"><b>Logline:</b> ${p.logline || 'N/A'}</div>
+                        <div class="action-group">
+                            <button class="action-btn btn-approve" onclick="updatePitchStatus('${p.id}', 'Approved')">Approve</button>
+                            <button class="action-btn btn-reject" onclick="updatePitchStatus('${p.id}', 'Rejected')">Reject</button>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        async function updatePitchStatus(id, newStatus) {
+            await db.from('producer_pitches').update({ status: newStatus }).eq('id', id);
+            fetchPendingPitches();
+        }
+
+        /* -----------------------------------------------------
+           Q4: STUDIO ACCREDITATIONS
+        ----------------------------------------------------- */
+        async function fetchApprovals() {
+            const container = document.getElementById('approvalsTableBody');
+            const { data, error } = await db.from('studio_approvals').select('*').eq('status', 'pending').order('created_at', { ascending: true });
+            document.getElementById('studioCount').innerText = `${data ? data.length : 0} Pending`;
+
+            if (error || !data || data.length === 0) return container.innerHTML = `<div style="text-align:center; padding:2rem; color:var(--text-muted);">No applications.</div>`;
+
+            let html = '';
+            data.forEach(row => {
+                html += `
+                    <div class="queue-card studio">
+                        <div class="q-title">${row.studio_name}</div>
+                        <div class="q-meta">Applicant: ${row.full_name} • Role: ${row.role}</div>
+                        <div class="action-group">
+                            <button class="action-btn btn-approve" onclick="updateStudioStatus('${row.id}', 'approved')">Issue Grey Tick</button>
+                            <button class="action-btn btn-reject" onclick="updateStudioStatus('${row.id}', 'rejected')">Deny</button>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        async function updateStudioStatus(id, newStatus) {
+            await db.from('studio_approvals').update({ status: newStatus }).eq('id', id);
+            fetchApprovals();
         }
 
         /* -----------------------------------------------------
@@ -289,22 +463,12 @@
             btn.disabled = true;
 
             try {
-                // Clear any previously featured posts so only the newest one sticks
                 await db.from('fan_posts').update({ is_featured: false }).eq('is_featured', true);
 
                 const { error } = await db.from('fan_posts').insert({
-                    user_id: userId,
-                    author_name: 'TeluguCineCraft Desk',
-                    fan_army: 'Official Admin',
-                    content: content,
-                    likes_count: 0,
-                    comments_count: 0,
-                    requotes_count: 0,
-                    liked_by: [],
-                    streak: 99,
-                    is_poll: isPoll,
-                    poll_data: pollData,
-                    is_featured: true // THIS IS THE MAGIC KEY
+                    user_id: userId, author_name: 'TeluguCineCraft Desk', fan_army: 'Official Admin',
+                    content: content, likes_count: 0, comments_count: 0, requotes_count: 0, liked_by: [],
+                    streak: 99, is_poll: isPoll, poll_data: pollData, is_featured: true
                 });
 
                 if (error) throw error;
@@ -316,90 +480,12 @@
             } catch (err) {
                 alert("Broadcast failed: " + err.message);
             } finally {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
+                btn.innerHTML = originalText; btn.disabled = false;
             }
         }
 
         /* -----------------------------------------------------
-           STUDIO ACCREDITATION LOGIC
-        ----------------------------------------------------- */
-        async function fetchApprovals() {
-            const { data, error } = await db.from('studio_approvals').select('*').order('created_at', { ascending: false });
-            const tbody = document.getElementById('approvalsTableBody');
-            
-            if (error || !data || data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:2rem; color:var(--text-muted);">No pending accreditations.</td></tr>`;
-                return;
-            }
-
-            let html = '';
-            data.forEach(row => {
-                let badgeClass = row.status === 'approved' ? 'badge-approved' : (row.status === 'rejected' ? 'badge-rejected' : 'badge-pending');
-                html += `
-                    <tr>
-                        <td style="font-weight:800; color:#FFF;">${row.full_name}<br><span style="font-size:0.7rem; font-weight:500; color:var(--text-muted);">${row.email}</span></td>
-                        <td style="color:var(--gold-accent); font-weight:700;">${row.studio_name}</td>
-                        <td>${row.role}</td>
-                        <td><span class="badge-status ${badgeClass}">${row.status}</span></td>
-                        <td>
-                            <button class="action-btn btn-approve" onclick="updateStudioStatus('${row.id}', 'approved')">Approve</button>
-                            <button class="action-btn btn-reject" onclick="updateStudioStatus('${row.id}', 'rejected')">Reject</button>
-                        </td>
-                    </tr>
-                `;
-            });
-            tbody.innerHTML = html;
-        }
-
-        async function updateStudioStatus(recordId, newStatus) {
-            await db.from('studio_approvals').update({ status: newStatus }).eq('id', recordId);
-            fetchApprovals();
-        }
-
-        /* -----------------------------------------------------
-           EDITORIAL GATEKEEPER LOGIC (PITCHES)
-        ----------------------------------------------------- */
-        async function fetchPendingPitches() {
-            const container = document.getElementById('pendingPitchesFeed');
-            const { data, error } = await db.from('producer_pitches').select('*').eq('status', 'Pending Review').order('created_at', { ascending: true });
-            
-            if (error || !data || data.length === 0) {
-                container.innerHTML = `<div style="text-align:center; padding:2rem; color:var(--text-muted); background:rgba(0,0,0,0.2); border-radius:12px; border:1px dashed var(--border-glass);">No pending pitches. The queue is clean.</div>`;
-                return;
-            }
-
-            let html = '';
-            data.forEach(p => {
-                html += `
-                    <div class="pitch-card" id="pitch-${p.id}">
-                        <div class="p-header">
-                            <div>
-                                <div class="p-title">${p.title || 'Untitled'}</div>
-                                <div class="p-meta">Format: ${p.format} • Author: ${p.legal_name} • Contact: ${p.contact}</div>
-                            </div>
-                        </div>
-                        <div class="p-logline">${p.logline || 'No logline provided.'}</div>
-                        <div class="section-title">Act 1: Setup</div><div class="section-content">${p.act_1 || 'N/A'}</div>
-                        <div class="section-title">Act 2: Journey</div><div class="section-content">${p.act_2 || 'N/A'}</div>
-                        <div class="section-title">Act 3: Resolution</div><div class="section-content">${p.act_3 || 'N/A'}</div>
-                        <div class="pitch-actions">
-                            <button class="action-btn btn-reject" style="flex:1; text-align:center; margin:0;" onclick="updatePitchStatus('${p.id}', 'Rejected')"><i class="fa-solid fa-xmark"></i> Reject</button>
-                            <button class="action-btn btn-approve" style="flex:2; text-align:center; margin:0;" onclick="updatePitchStatus('${p.id}', 'Approved')"><i class="fa-solid fa-check-double"></i> Approve to Boardroom</button>
-                        </div>
-                    </div>
-                `;
-            });
-            container.innerHTML = html;
-        }
-
-        async function updatePitchStatus(pitchId, newStatus) {
-            await db.from('producer_pitches').update({ status: newStatus }).eq('id', pitchId);
-            document.getElementById(`pitch-${pitchId}`).style.display = 'none';
-        }
-
-        /* -----------------------------------------------------
-           STEALTH MARKETING ENGINE LOGIC
+           STEALTH MARKETING ENGINE
         ----------------------------------------------------- */
         async function engagePromoOverride() {
             const type = document.getElementById('promoType').value;
@@ -411,7 +497,6 @@
             await db.from('executive_overrides').update({ is_active: false }).eq('campaign_type', type);
             await db.from('executive_overrides').insert({ campaign_type: type, target_keyword: target, fake_metrics: metrics || 'Trending Now', is_active: true });
             
-            alert(`SUCCESS: Platform telemetry updated. ${target} is now forced to #1.`);
             document.getElementById('promoTarget').value = '';
             document.getElementById('promoMetrics').value = '';
             fetchActiveOverrides();
@@ -421,10 +506,7 @@
             const container = document.getElementById('activeOverridesList');
             const { data, error } = await db.from('executive_overrides').select('*').eq('is_active', true);
             
-            if (error || !data || data.length === 0) {
-                container.innerHTML = '<p style="font-size:0.75rem; color:var(--success); font-weight:700;"><i class="fa-solid fa-check"></i> Platform running on pure organic metrics.</p>';
-                return;
-            }
+            if (error || !data || data.length === 0) return container.innerHTML = '<p style="font-size:0.75rem; color:var(--success); font-weight:700;"><i class="fa-solid fa-check"></i> Platform running on pure organic metrics.</p>';
 
             let html = '';
             data.forEach(promo => {
@@ -437,7 +519,7 @@
                                 <span style="font-size:0.75rem; color:var(--text-main);">${promo.fake_metrics}</span><br>
                                 <span style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase;">Zone: ${promo.campaign_type}</span>
                             </div>
-                            <button onclick="killOverride('${promo.id}')" title="Terminate Campaign" style="background:rgba(239,68,68,0.2); border:1px solid var(--danger); color:var(--danger); border-radius:6px; padding:4px 8px; cursor:pointer; font-size:0.7rem; transition:all 0.2s;">
+                            <button onclick="killOverride('${promo.id}')" title="Terminate Campaign" style="background:rgba(239,68,68,0.2); border:1px solid var(--danger); color:var(--danger); border-radius:6px; padding:4px 8px; cursor:pointer; font-size:0.7rem;">
                                 <i class="fa-solid fa-power-off"></i> KILL
                             </button>
                         </div>
@@ -448,10 +530,8 @@
         }
 
         async function killOverride(id) {
-            if(confirm("Terminate this artificial boost and return the platform to organic metrics?")) {
-                await db.from('executive_overrides').update({ is_active: false }).eq('id', id);
-                fetchActiveOverrides();
-            }
+            await db.from('executive_overrides').update({ is_active: false }).eq('id', id);
+            fetchActiveOverrides();
         }
 
         async function signOutAdmin() {
