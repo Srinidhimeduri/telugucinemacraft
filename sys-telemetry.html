@@ -55,6 +55,7 @@
         .admin-input { background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); color: #FFF; border-radius: 8px; outline: none; width: 100%; padding: 12px; margin-top: 5px; font-size: 0.85rem;}
         .admin-input:focus { border-color: var(--gold-accent); }
         .btn-lock { background: linear-gradient(135deg, var(--gold-accent), #E6B300); color: #000; border: none; padding: 1rem; border-radius: 8px; font-weight: 900; cursor: pointer; text-transform: uppercase; width: 100%; transition: transform 0.2s;}
+        .btn-lock:active { transform: scale(0.98); }
 
         /* DASHBOARD LAYOUT */
         .dashboard-layout { display: grid; grid-template-columns: 380px 1fr; gap: 2rem; align-items: start; }
@@ -97,6 +98,9 @@
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+
+        .lockdown-screen { text-align: center; padding: 5rem 2rem; max-width: 500px; margin: 4rem auto; background: var(--bg-card); border: 1px solid var(--danger); border-radius: 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.8); }
+        .btn-admin-login { background: var(--gold-accent); color: #000; border: none; padding: 0.8rem 1.8rem; border-radius: 10px; font-weight: 900; cursor: pointer; text-transform: uppercase; display: inline-flex; align-items: center; gap: 8px; margin-top: 15px; }
     </style>
 </head>
 <body>
@@ -249,19 +253,31 @@
                     <!-- RIGHT: QUEUES -->
                     <div class="queues-grid">
                         <div class="queue-container">
-                            <div class="queue-header"><span><i class="fa-solid fa-certificate" style="color:var(--verified-blue);"></i> Blue Tick Apps</span></div>
+                            <div class="queue-header">
+                                <span><i class="fa-solid fa-certificate" style="color:var(--verified-blue);"></i> Blue Tick Apps</span>
+                                <span style="font-size:0.7rem; color:var(--text-muted);" id="verifyCount">0 Pending</span>
+                            </div>
                             <div class="queue-list" id="verificationQueue"><div style="color:var(--text-muted); font-size:0.8rem; text-align:center; padding:2rem;">Scanning...</div></div>
                         </div>
                         <div class="queue-container">
-                            <div class="queue-header"><span><i class="fa-solid fa-book-open" style="color:var(--success);"></i> Script Pitches</span></div>
+                            <div class="queue-header">
+                                <span><i class="fa-solid fa-book-open" style="color:var(--success);"></i> Script Pitches</span>
+                                <span style="font-size:0.7rem; color:var(--text-muted);" id="pitchCount">0 Pending</span>
+                            </div>
                             <div class="queue-list" id="pitchQueue"><div style="color:var(--text-muted); font-size:0.8rem; text-align:center; padding:2rem;">Scanning...</div></div>
                         </div>
                         <div class="queue-container">
-                            <div class="queue-header"><span><i class="fa-solid fa-triangle-exclamation" style="color:var(--danger);"></i> Security Threats</span></div>
+                            <div class="queue-header">
+                                <span><i class="fa-solid fa-triangle-exclamation" style="color:var(--danger);"></i> Security Threats</span>
+                                <span style="font-size:0.7rem; color:var(--text-muted);" id="alertCount">0 Pending</span>
+                            </div>
                             <div class="queue-list" id="alertsQueue"><div style="color:var(--text-muted); font-size:0.8rem; text-align:center; padding:2rem;">Scanning...</div></div>
                         </div>
                         <div class="queue-container">
-                            <div class="queue-header"><span><i class="fa-solid fa-building" style="color:var(--gold-accent);"></i> Studio Accreditations</span></div>
+                            <div class="queue-header">
+                                <span><i class="fa-solid fa-building" style="color:var(--gold-accent);"></i> Accreditations</span>
+                                <span style="font-size:0.7rem; color:var(--text-muted);" id="studioCount">0 Pending</span>
+                            </div>
                             <div class="queue-list" id="studioQueue"><div style="color:var(--text-muted); font-size:0.8rem; text-align:center; padding:2rem;">Scanning...</div></div>
                         </div>
                     </div>
@@ -279,7 +295,10 @@
             const adminChannel = db.channel('executive_vault_sync');
             
             adminChannel.on('postgres_changes', { event: '*', schema: 'public', table: 'admin_telemetry_alerts' }, payload => {
-                if(payload.eventType === 'INSERT' && !payload.new.reason.includes('Support')) document.body.classList.add('alert-mode'); setTimeout(() => document.body.classList.remove('alert-mode'), 2000);
+                if(payload.eventType === 'INSERT' && payload.new && !payload.new.reason.includes('Support')) {
+                    document.body.classList.add('alert-mode'); 
+                    setTimeout(() => document.body.classList.remove('alert-mode'), 2000);
+                }
                 fetchInboxAndThreats();
             });
             adminChannel.on('postgres_changes', { event: '*', schema: 'public', table: 'verification_requests' }, () => fetchVerificationQueue());
@@ -312,7 +331,7 @@
                 } catch(e) { return alert("Failed to inject likes. Check Post ID."); }
             }
 
-            // Standard Platform Overrides (Hero, Movie, Wall of Fame)
+            // Standard Platform Overrides
             await db.from('executive_overrides').update({ is_active: false }).eq('campaign_type', type);
             await db.from('executive_overrides').insert({ campaign_type: type, target_keyword: target, fake_metrics: metrics || 'Trending', is_active: true });
             
@@ -368,7 +387,7 @@
         }
 
         /* -----------------------------------------------------
-           INBOX (SUPPORT) & THREAT QUEUES
+           INBOX (SUPPORT) & THREAT QUEUES (DEFENSIVE PROGRAMMING)
         ----------------------------------------------------- */
         async function fetchInboxAndThreats() {
             const { data } = await db.from('admin_telemetry_alerts').select('*').eq('status', 'Pending Admin Warning').order('created_at', { ascending: false });
@@ -381,39 +400,97 @@
                 else threats.push(item);
             });
 
-            // Update Threat Queue UI
+            // Update Threat Queue UI Safely
             const tQueue = document.getElementById('alertsQueue');
-            if (threats.length === 0) {
-                tQueue.innerHTML = `<div style="text-align:center; padding:2rem; color:var(--text-muted);">No active threats.</div>`;
-            } else {
-                let thtml = '';
-                threats.forEach(t => {
-                    thtml += `
-                        <div class="q-card alert">
-                            <div class="q-title"><i class="fa-solid fa-triangle-exclamation"></i> Security Violation</div>
-                            <div class="q-meta">User ID: ${t.reporter_id.substring(0,8)}</div>
-                            <div class="q-body">${t.reason}</div>
-                            <div class="action-group">
-                                <button class="action-btn btn-resolve" onclick="resolveAlert('${t.id}')">Dismiss</button>
-                                <button class="action-btn btn-reject" onclick="resolveAlert('${t.id}')">Ban</button>
+            const tCount = document.getElementById('alertCount');
+            if(tCount) tCount.innerText = `${threats.length} Pending`;
+
+            if (tQueue) {
+                if (threats.length === 0) {
+                    tQueue.innerHTML = `<div style="text-align:center; padding:2rem; color:var(--text-muted);">No active threats.</div>`;
+                } else {
+                    let thtml = '';
+                    threats.forEach(t => {
+                        thtml += `
+                            <div class="q-card alert">
+                                <div class="q-title"><i class="fa-solid fa-triangle-exclamation"></i> Security Violation</div>
+                                <div class="q-meta">User ID: ${(t.reporter_id || '').substring(0,8)}</div>
+                                <div class="q-body">${t.reason}</div>
+                                <div class="action-group">
+                                    <button class="action-btn btn-resolve" onclick="resolveAlert('${t.id}')">Dismiss</button>
+                                    <button class="action-btn btn-reject" onclick="resolveAlert('${t.id}')">Ban</button>
+                                </div>
                             </div>
-                        </div>
-                    `;
-                });
-                tQueue.innerHTML = thtml;
+                        `;
+                    });
+                    tQueue.innerHTML = thtml;
+                }
             }
 
             // Update Inbox Badge
             const badge = document.getElementById('inboxBadge');
-            if (globalSupportTickets.length > 0) {
-                badge.innerText = globalSupportTickets.length;
-                badge.style.display = 'block';
-            } else { badge.style.display = 'none'; }
+            if (badge) {
+                if (globalSupportTickets.length > 0) {
+                    badge.innerText = globalSupportTickets.length;
+                    badge.style.display = 'block';
+                } else { badge.style.display = 'none'; }
+            }
         }
 
         async function resolveAlert(id) {
             await db.from('admin_telemetry_alerts').update({ status: 'Resolved' }).eq('id', id);
             fetchInboxAndThreats();
+        }
+
+        /* -----------------------------------------------------
+           REMAINING QUEUES (Verify, Pitches, Studio) - WITH SAFE CHECKS
+        ----------------------------------------------------- */
+        async function fetchVerificationQueue() {
+            const { data } = await db.from('verification_requests').select('*').eq('status', 'Pending');
+            const c = document.getElementById('verificationQueue');
+            const countEl = document.getElementById('verifyCount');
+            if(countEl) countEl.innerText = `${data ? data.length : 0} Pending`;
+            
+            if(c) {
+                if(!data || data.length===0) return c.innerHTML = '<div style="text-align:center; padding:2rem; color:var(--text-muted);">Clean</div>';
+                let html = '';
+                data.forEach(i => {
+                    html += `<div class="q-card verify"><div class="q-title">${i.full_name}</div><div class="action-group"><button class="action-btn btn-blue" onclick="db.from('verification_requests').update({status:'Approved'}).eq('id','${i.id}'); fetchVerificationQueue();">Approve</button></div></div>`;
+                });
+                c.innerHTML = html;
+            }
+        }
+
+        async function fetchPitchQueue() {
+            const { data } = await db.from('producer_pitches').select('*').eq('status', 'Pending Review');
+            const c = document.getElementById('pitchQueue');
+            const countEl = document.getElementById('pitchCount');
+            if(countEl) countEl.innerText = `${data ? data.length : 0} Pending`;
+            
+            if(c) {
+                if(!data || data.length===0) return c.innerHTML = '<div style="text-align:center; padding:2rem; color:var(--text-muted);">Clean</div>';
+                let html = '';
+                data.forEach(p => {
+                    html += `<div class="q-card pitch"><div class="q-title">${p.title || 'Pitch'}</div><div class="action-group"><button class="action-btn btn-approve" onclick="db.from('producer_pitches').update({status:'Approved'}).eq('id','${p.id}'); fetchPitchQueue();">Approve</button></div></div>`;
+                });
+                c.innerHTML = html;
+            }
+        }
+
+        async function fetchStudioQueue() {
+            const { data } = await db.from('studio_approvals').select('*').eq('status', 'pending');
+            const c = document.getElementById('studioQueue');
+            const countEl = document.getElementById('studioCount');
+            if(countEl) countEl.innerText = `${data ? data.length : 0} Pending`;
+            
+            if(c) {
+                if(!data || data.length===0) return c.innerHTML = '<div style="text-align:center; padding:2rem; color:var(--text-muted);">Clean</div>';
+                let html = '';
+                data.forEach(s => {
+                    html += `<div class="q-card studio"><div class="q-title">${s.studio_name}</div><div class="action-group"><button class="action-btn btn-approve" onclick="db.from('studio_approvals').update({status:'approved'}).eq('id','${s.id}'); fetchStudioQueue();">Approve</button></div></div>`;
+                });
+                c.innerHTML = html;
+            }
         }
 
         /* -----------------------------------------------------
@@ -440,7 +517,7 @@
                 let preview = (msg.post_id || '').substring(0, 30);
                 html += `
                     <div class="inbox-item" onclick="readMessage('${msg.id}')">
-                        <div class="inbox-item-title">From: User ${msg.reporter_id.substring(0,6)}</div>
+                        <div class="inbox-item-title">From: User ${(msg.reporter_id || '').substring(0,6)}</div>
                         <div class="inbox-item-preview">${preview}...</div>
                         <div style="font-size:0.65rem; color:var(--cyan-accent); margin-top:5px;">${new Date(msg.created_at).toLocaleDateString()}</div>
                     </div>
@@ -487,12 +564,10 @@
             area.innerHTML = '<div style="color:var(--cyan-accent); font-size:0.8rem; text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> Searching Fan Database...</div>';
             
             try {
-                // We query fan_posts to extract unique user references matching the search
                 const { data } = await db.from('fan_posts').select('user_id, author_name, fan_army').ilike('author_name', `%${q}%`).limit(10);
                 
                 if(!data || data.length === 0) return area.innerHTML = '<div style="color:var(--text-muted); font-size:0.8rem; text-align:center;">No users found.</div>';
 
-                // Filter unique users
                 const uniqueUsers = Array.from(new Map(data.map(item => [item['user_id'], item])).values());
                 
                 let html = '';
@@ -517,7 +592,6 @@
             if(!target || !msg) return alert("Both Target ID and Message Body are required.");
 
             try {
-                // Send system notification to user's arena inbox
                 await db.from('notifications').insert({
                     user_id: target, actor_name: 'TeluguCineCraft Admin', type: 'system',
                     message: `Official Dispatch: ${msg}`
@@ -526,48 +600,6 @@
                 document.getElementById('dmTargetId').value = '';
                 document.getElementById('dmMessageBody').value = '';
             } catch(e) { alert("Transmission failed."); }
-        }
-
-        /* -----------------------------------------------------
-           REMAINING QUEUES (Verify, Pitches, Studio)
-        ----------------------------------------------------- */
-        async function fetchVerificationQueue() {
-            const { data } = await db.from('verification_requests').select('*').eq('status', 'Pending');
-            const c = document.getElementById('verificationQueue');
-            document.getElementById('verifyCount').innerText = `${data ? data.length : 0} Pending`;
-            if(!data || data.length===0) return c.innerHTML = '<div style="text-align:center; padding:2rem; color:var(--text-muted);">Clean</div>';
-            
-            let html = '';
-            data.forEach(i => {
-                html += `<div class="q-card verify"><div class="q-title">${i.full_name}</div><div class="action-group"><button class="action-btn btn-blue" onclick="db.from('verification_requests').update({status:'Approved'}).eq('id','${i.id}'); fetchVerificationQueue();">Approve</button></div></div>`;
-            });
-            c.innerHTML = html;
-        }
-
-        async function fetchPitchQueue() {
-            const { data } = await db.from('producer_pitches').select('*').eq('status', 'Pending Review');
-            const c = document.getElementById('pitchQueue');
-            document.getElementById('pitchCount').innerText = `${data ? data.length : 0} Pending`;
-            if(!data || data.length===0) return c.innerHTML = '<div style="text-align:center; padding:2rem; color:var(--text-muted);">Clean</div>';
-            
-            let html = '';
-            data.forEach(p => {
-                html += `<div class="q-card pitch"><div class="q-title">${p.title || 'Pitch'}</div><div class="action-group"><button class="action-btn btn-approve" onclick="db.from('producer_pitches').update({status:'Approved'}).eq('id','${p.id}'); fetchPitchQueue();">Approve</button></div></div>`;
-            });
-            c.innerHTML = html;
-        }
-
-        async function fetchStudioQueue() {
-            const { data } = await db.from('studio_approvals').select('*').eq('status', 'pending');
-            const c = document.getElementById('studioQueue');
-            document.getElementById('studioCount').innerText = `${data ? data.length : 0} Pending`;
-            if(!data || data.length===0) return c.innerHTML = '<div style="text-align:center; padding:2rem; color:var(--text-muted);">Clean</div>';
-            
-            let html = '';
-            data.forEach(s => {
-                html += `<div class="q-card studio"><div class="q-title">${s.studio_name}</div><div class="action-group"><button class="action-btn btn-approve" onclick="db.from('studio_approvals').update({status:'approved'}).eq('id','${s.id}'); fetchStudioQueue();">Approve</button></div></div>`;
-            });
-            c.innerHTML = html;
         }
 
         function closeModals() {
