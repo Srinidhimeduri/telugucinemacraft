@@ -436,7 +436,6 @@
             } catch(e) {}
         }
 
-        // isAnonymous Flag: True for Likes, False for Comments/Requotes
         async function sendNotification(receiverId, type, message, isAnonymous = false) {
             if (receiverId === currentUser.id) return; 
             
@@ -492,7 +491,9 @@
             }
         }
 
+        /* --- THE WAR ROOM FEED & DYNAMIC SORTING --- */
         async function fetchFeedPosts() {
+            // Fetch organically by newest first
             let query = db.from('fan_posts').select('*').order('created_at', { ascending: false });
             if (currentFilterTag) {
                 query = query.ilike('content', `%${currentFilterTag}%`);
@@ -504,14 +505,35 @@
                 return;
             }
 
-            globalPosts = data || []; 
+            // 24-HOUR TIME-TO-LIVE (TTL) PINNING LOGIC
+            const now = new Date();
+            const twentyFourHours = 24 * 60 * 60 * 1000;
+
+            let activeFeatured = [];
+            let regularTimeline = [];
+
+            (data || []).forEach(post => {
+                let postAge = now - new Date(post.created_at);
+                
+                // Pin if featured AND under 24 hours old
+                if (post.is_featured && postAge < twentyFourHours) {
+                    activeFeatured.push(post);
+                } else {
+                    // Otherwise, organically drops into normal timeline
+                    regularTimeline.push(post);
+                }
+            });
+
+            // Recombine arrays to ensure active featured are physically at the top
+            globalPosts = [...activeFeatured, ...regularTimeline]; 
+            
             renderFeedPosts();
         }
 
         async function renderFeedPosts() {
             const container = document.getElementById('arenaFeedContainer');
-            
             let injectedPostHTML = '';
+            
             try {
                 const { data: botPromo } = await db.from('executive_overrides').select('*').eq('campaign_type', 'bot_post').eq('is_active', true).maybeSingle();
                 if (botPromo) {
@@ -521,7 +543,10 @@
                                 <div class="post-author-area">
                                     <div class="post-avatar" style="background:var(--gold-accent); color:#000;"><i class="fa-solid fa-bolt"></i></div>
                                     <div class="post-meta">
-                                        <div class="post-author" style="color:var(--gold-accent);">@BoxOfficeInsider <span class="public-streak"><i class="fa-solid fa-fire"></i> 99</span></div>
+                                        <div class="post-author" style="color:var(--gold-accent);">
+                                            @BoxOfficeInsider 
+                                            <i class="fa-solid fa-circle-check" style="color:#94A3B8; font-size:0.8rem; margin-left:4px;" title="Verified Firm"></i>
+                                        </div>
                                         <div class="post-time" style="color:var(--gold-accent);">Just now • Verified Analyst</div>
                                     </div>
                                 </div>
@@ -549,6 +574,9 @@
 
             let html = '';
             let isAdmin = currentUser && currentUser.email === 'therealexplorer123@gmail.com';
+            
+            const now = new Date();
+            const twentyFourHours = 24 * 60 * 60 * 1000;
 
             globalPosts.forEach(post => {
                 let timeAgo = formatRelativeTime(post.created_at);
@@ -583,16 +611,42 @@
                     `;
                 }
 
+                // 24-HOUR PIN & VISUALS EVALUATION
+                let postAge = now - new Date(post.created_at);
+                let isActiveFeatured = post.is_featured && (postAge < twentyFourHours);
+
+                let cardStyle = isActiveFeatured 
+                    ? `border: 1px solid var(--gold-accent); background: linear-gradient(180deg, rgba(255,199,0,0.05) 0%, rgba(26,34,52,0.6) 100%);` 
+                    : ``;
+                
+                let featuredBadge = isActiveFeatured 
+                    ? `<div style="position:absolute; top:-10px; left:20px; background:var(--gold-accent); color:#000; font-size:0.65rem; font-weight:900; padding:4px 10px; border-radius:6px; text-transform:uppercase; letter-spacing:1px; box-shadow:0 4px 10px rgba(255,199,0,0.4);"><i class="fa-solid fa-bullhorn"></i> Official Intel</div>`
+                    : ``;
+
+                let avatarBg = isActiveFeatured ? `background:var(--gold-accent); color:#000;` : ``;
+
+                // HIERARCHICAL VERIFICATION BADGE LOGIC
+                let verificationBadge = '';
+                if (post.fan_army === 'Official Admin' || post.author_name === 'TeluguCineCraft Desk') {
+                    // Firm / Corporate Entity = Grey Tick
+                    verificationBadge = `<i class="fa-solid fa-circle-check" style="color:#94A3B8; font-size:0.8rem; margin-left:4px;" title="Verified Firm"></i>`;
+                } else if (post.streak >= 100) {
+                    // Dedicated Viewer = Green Tick
+                    verificationBadge = `<i class="fa-solid fa-circle-check" style="color:var(--success); font-size:0.8rem; margin-left:4px;" title="Verified Viewer"></i>`;
+                }
+
                 html += `
-                    <div class="post-card">
-                        <div class="post-header">
+                    <div class="post-card" style="${cardStyle}">
+                        ${featuredBadge}
+                        <div class="post-header" style="${isActiveFeatured ? 'margin-top:10px;' : ''}">
                             <div class="post-author-area">
-                                <div class="post-avatar">${displayName.charAt(0).toUpperCase()}</div>
+                                <div class="post-avatar" style="${avatarBg}">${displayName.charAt(0).toUpperCase()}</div>
                                 <div class="post-meta">
                                     <div class="post-author" onclick="viewFanProfile('${post.id}')">
-                                        ${displayName} <span class="public-streak"><i class="fa-solid fa-fire"></i> ${post.streak || 1}</span>
+                                        ${displayName} 
+                                        ${verificationBadge}
                                     </div>
-                                    <div class="post-time">${timeAgo} • ${armyTag}</div>
+                                    <div class="post-time">${timeAgo} • ${armyTag} • <span class="public-streak"><i class="fa-solid fa-fire"></i> ${post.streak || 1}</span></div>
                                 </div>
                             </div>
                             <div style="display:flex; gap:10px;">
@@ -824,6 +878,71 @@
                 saveBtn.innerText = "Save & Update Past Posts";
                 saveBtn.disabled = false;
             }
+        }
+
+        async function submitPost() {
+            const input = document.getElementById('postInput');
+            const content = input.value.trim();
+            if (!content && !isPollActive) return;
+
+            let pollDataPayload = null;
+            if (isPollActive) {
+                const opt1 = document.getElementById('pollOption1').value.trim();
+                const opt2 = document.getElementById('pollOption2').value.trim();
+                if (opt1 && opt2) {
+                    pollDataPayload = { option1: opt1, option2: opt2, votes1: 0, votes2: 0 };
+                } else {
+                    return alert("Please fill in both poll options before broadcasting.");
+                }
+            }
+
+            try {
+                let meta = currentUser.user_metadata || {};
+                let currentStreak = parseInt(localStorage.getItem(`streak_${currentUser.id}`)) || 1;
+                let fullName = meta.full_name || 'Fan';
+                let displayName = meta.custom_name || fullName.split(' ')[0];
+                let armyTag = meta.fan_army || 'Fan';
+
+                const { error } = await db.from('fan_posts').insert({
+                    user_id: currentUser.id,
+                    author_name: displayName,
+                    fan_army: armyTag,
+                    content: content,
+                    likes_count: 0,
+                    comments_count: 0,
+                    requotes_count: 0,
+                    liked_by: [],
+                    streak: currentStreak,
+                    is_poll: isPollActive,
+                    poll_data: pollDataPayload
+                });
+
+                if (error) throw error;
+                
+                input.value = '';
+                if(isPollActive) {
+                    document.getElementById('pollOption1').value = '';
+                    document.getElementById('pollOption2').value = '';
+                    togglePollCreator();
+                }
+                fetchFeedPosts();
+            } catch (err) {
+                alert("Error broadcasting post: " + err.message);
+            }
+        }
+
+        async function deletePost(postId) {
+            if (confirm("Permanently delete this post?")) {
+                try {
+                    await db.from('fan_posts').delete().eq('id', postId);
+                    fetchFeedPosts();
+                } catch (err) { alert("Deletion failed: " + err.message); }
+            }
+        }
+
+        function togglePollCreator() {
+            isPollActive = !isPollActive;
+            document.getElementById('pollCreatorBox').style.display = isPollActive ? 'flex' : 'none';
         }
 
         function filterByTag(tag) { currentFilterTag = tag; fetchFeedPosts(); }
