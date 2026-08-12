@@ -47,27 +47,28 @@
         .vault-title { font-size: 1.2rem; font-weight: 900; color: #FFF; display: flex; align-items: center; gap: 10px; }
         .vault-title i { color: var(--gold-accent); filter: drop-shadow(0 0 10px rgba(255,199,0,0.3));}
 
-        /* DUAL PANEL LAYOUT */
-        .dashboard-layout {
-            display: grid;
-            grid-template-columns: 1fr 380px;
-            gap: 2rem;
-            align-items: start;
+        /* BROADCASTER MODULE (FULL WIDTH) */
+        .broadcaster-module {
+            background: linear-gradient(145deg, var(--bg-card) 0%, rgba(6,8,12,0.9) 100%);
+            border: 1px solid var(--gold-accent); border-radius: 16px; padding: 2rem; margin-bottom: 2rem;
+            box-shadow: 0 10px 40px rgba(255,199,0,0.1);
         }
+        .broadcaster-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; align-items: start; }
 
-        /* LEFT PANEL CONTAINERS */
+        /* DUAL PANEL LAYOUT (BOTTOM) */
+        .dashboard-layout { display: grid; grid-template-columns: 1fr 380px; gap: 2rem; align-items: start; }
+
         .admin-section-container {
             background: var(--bg-card); border: 1px solid var(--border-glass);
             border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.6);
             margin-bottom: 2rem; padding: 1.5rem;
         }
-        
         .section-header { color: #FFF; margin-bottom: 15px; font-size: 1.1rem; display: flex; align-items: center; gap: 10px; }
 
         /* TABLE STYLES */
         .table-wrapper { margin: -1.5rem; margin-top: 0; border-bottom-left-radius: 16px; border-bottom-right-radius: 16px; overflow: hidden;}
         table { width: 100%; border-collapse: collapse; text-align: left; }
-        th { background: rgba(0,0,0,0.4); padding: 1rem 1.2rem; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 800; letter-spacing: 1px; border-bottom: 1px solid var(--border-glass); border-top: 1px solid var(--border-glass);}
+        th { background: rgba(0,0,0,0.4); padding: 1rem 1.2rem; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 800; border-bottom: 1px solid var(--border-glass); border-top: 1px solid var(--border-glass);}
         td { padding: 1rem 1.2rem; font-size: 0.85rem; border-bottom: 1px solid rgba(255,255,255,0.03); font-weight: 500; }
         tr:hover td { background: rgba(255,255,255,0.02); }
 
@@ -78,13 +79,10 @@
 
         .action-btn { padding: 6px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 800; cursor: pointer; border: none; text-transform: uppercase; margin-right: 6px; transition: all 0.2s; }
         .btn-approve { background: var(--success); color: #000; }
-        .btn-approve:hover { filter: brightness(1.1); }
         .btn-reject { background: rgba(239,68,68,0.15); color: var(--danger); border: 1px solid rgba(239,68,68,0.3); }
-        .btn-reject:hover { background: var(--danger); color: #FFF; }
 
         /* PITCH REVIEW CARD STYLES */
         .pitch-card { background: rgba(0,0,0,0.3); border: 1px solid var(--border-glass); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; transition: transform 0.2s; }
-        .pitch-card:hover { border-color: rgba(255,255,255,0.15); }
         .p-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
         .p-title { font-size: 1.2rem; font-weight: 900; color: #FFF; text-transform: uppercase; }
         .p-meta { font-size: 0.8rem; color: var(--cyan-accent); font-weight: 700; }
@@ -94,17 +92,11 @@
         .pitch-actions { display: flex; gap: 10px; margin-top: 20px; border-top: 1px solid var(--border-glass); padding-top: 15px;}
 
         /* RIGHT OVERRIDE CARD STYLES */
-        .admin-card {
-            background: var(--bg-card); border: 1px solid var(--border-glass);
-            border-radius: 16px; padding: 1.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-        }
-        .admin-input {
-            background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass);
-            color: #FFF; border-radius: 8px; font-family: inherit; outline: none; transition: border-color 0.2s;
-        }
-        .admin-input:focus { border-color: var(--cyan-accent); }
-        .btn-lock { background: linear-gradient(135deg, var(--gold-accent), #E6B300); color: #000; border: none; padding: 0.8rem; border-radius: 8px; font-weight: 900; font-size: 0.85rem; cursor: pointer; text-transform: uppercase; box-shadow: 0 4px 12px rgba(255,199,0,0.2); transition: transform 0.2s;}
-        .btn-lock:hover { transform: translateY(-1px); }
+        .admin-card { background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 16px; padding: 1.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
+        .admin-input { background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); color: #FFF; border-radius: 8px; font-family: inherit; outline: none; transition: border-color 0.2s; width: 100%; padding: 12px; margin-top: 5px; }
+        .admin-input:focus { border-color: var(--gold-accent); }
+        .btn-lock { background: linear-gradient(135deg, var(--gold-accent), #E6B300); color: #000; border: none; padding: 1rem; border-radius: 8px; font-weight: 900; font-size: 0.9rem; cursor: pointer; text-transform: uppercase; box-shadow: 0 4px 12px rgba(255,199,0,0.2); transition: transform 0.2s; width: 100%;}
+        .btn-lock:hover { transform: translateY(-2px); }
 
         /* SECURITY LOCKDOWN */
         .lockdown-screen { text-align: center; padding: 5rem 2rem; max-width: 500px; margin: 4rem auto; background: var(--bg-card); border: 1px solid var(--danger); border-radius: 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.8); }
@@ -113,6 +105,7 @@
         
         @media (max-width: 1024px) {
             .dashboard-layout { grid-template-columns: 1fr; }
+            .broadcaster-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -134,17 +127,14 @@
                 const container = document.getElementById('adminContainer');
 
                 if (sessionError || !session || !session.user || session.user.email !== MASTER_ADMIN_EMAIL) {
-                    // BREACH DETECTED: Render absolute lockdown screen
                     container.innerHTML = `
                         <div class="lockdown-screen">
                             <i class="fa-solid fa-triangle-exclamation"></i>
                             <h2 style="color:#FFF; font-size:1.4rem; font-weight:900; margin-bottom:10px;">VAULT LOCKED</h2>
                             <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:20px; line-height:1.5;">Session terminated or unauthorized clearance. Authenticate with master admin credentials to unlock.</p>
-                            
                             <button class="btn-admin-login" onclick="handleAdminLogin()">
                                 <i class="fa-brands fa-google"></i> Authenticate Master Access
                             </button>
-                            
                             <div style="margin-top: 20px;">
                                 <a href="index.html" style="color:var(--cyan-accent); font-weight:800; font-size:0.75rem; text-decoration:none;"><i class="fa-solid fa-arrow-left"></i> Return to Public Terminal</a>
                             </div>
@@ -153,17 +143,11 @@
                     return;
                 }
 
-                // Authorized! Load executive applications
                 renderAdminDashboard(session.user);
-
-            } catch (err) {
-                console.error("Vault verification error:", err);
-            }
+            } catch (err) { console.error("Vault verification error:", err); }
         }
 
-        async function handleAdminLogin() {
-            await db.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
-        }
+        async function handleAdminLogin() { await db.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } }); }
 
         function renderAdminDashboard(user) {
             const container = document.getElementById('adminContainer');
@@ -174,6 +158,31 @@
                     <div style="display:flex; align-items:center; gap:15px;">
                         <span style="font-size:0.80rem; color:var(--text-muted); font-weight:700;">Admin: ${user.email}</span>
                         <button onclick="signOutAdmin()" style="background:none; border:1px solid var(--border-glass); color:var(--text-muted); padding:5px 10px; border-radius:6px; font-size:0.7rem; font-weight:800; cursor:pointer;">Lock Vault</button>
+                    </div>
+                </div>
+
+                <!-- GLOBAL BROADCASTING HUB (TOP FULL WIDTH) -->
+                <div class="broadcaster-module">
+                    <h3 style="color:var(--gold-accent); margin-bottom: 8px; font-size: 1.4rem;"><i class="fa-solid fa-bullhorn"></i> Global Broadcasting Hub</h3>
+                    <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:20px; line-height:1.5;">Pin an "Official Intel" post or poll to the top of the Arena to drive daily active engagement. Valid for 24 hours.</p>
+                    
+                    <div class="broadcaster-grid">
+                        <!-- Left side: The Text Content -->
+                        <div>
+                            <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; text-transform:uppercase;">Broadcast Message / Question / News</label>
+                            <textarea id="adminPostContent" class="admin-input" rows="4" placeholder="Drop exclusive news, a highly debated box office question, or a script-pitching tip..."></textarea>
+                        </div>
+                        
+                        <!-- Right side: The Poll & Button -->
+                        <div>
+                            <div style="padding: 15px; background:rgba(0,0,0,0.4); border:1px dashed var(--gold-accent); border-radius:8px; margin-bottom: 15px;">
+                                <label style="font-size:0.7rem; color:var(--gold-accent); font-weight:800; text-transform:uppercase; display:block; margin-bottom:10px;"><i class="fa-solid fa-square-poll-vertical"></i> Attach an Engagement Poll (Optional)</label>
+                                <input type="text" id="adminPoll1" class="admin-input" placeholder="Option 1 (e.g., Devara)" style="margin-bottom:8px;">
+                                <input type="text" id="adminPoll2" class="admin-input" placeholder="Option 2 (e.g., Game Changer)">
+                            </div>
+                            
+                            <button class="btn-lock" onclick="broadcastAdminPost('${user.id}')"><i class="fa-solid fa-paper-plane"></i> Broadcast & Pin to Top</button>
+                        </div>
                     </div>
                 </div>
 
@@ -212,35 +221,15 @@
                         </div>
                     </div>
 
-                    <!-- RIGHT PANEL: BROADCASTER & ALGORITHMIC INJECTOR -->
+                    <!-- RIGHT PANEL: ALGORITHMIC INJECTOR -->
                     <div>
-                        <!-- GLOBAL BROADCASTING HUB -->
-                        <div class="admin-card" style="border-top: 3px solid var(--gold-accent); margin-bottom: 1.5rem;">
-                            <h3 style="color:var(--gold-accent); margin-bottom: 8px;"><i class="fa-solid fa-bullhorn"></i> Global Broadcasting Hub</h3>
-                            <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:20px; line-height:1.5;">Pin an "Official Intel" post or poll to the top of the Arena (valid for 24 hours).</p>
-                            
-                            <div style="margin-bottom:15px;">
-                                <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; text-transform:uppercase;">Broadcast Message / Question</label>
-                                <textarea id="adminPostContent" class="admin-input" rows="3" placeholder="Drop exclusive news, a question, or a script-pitching tip..." style="width:100%; padding:10px; margin-top:5px;"></textarea>
-                            </div>
-
-                            <div style="margin-bottom:15px; padding: 15px; background:rgba(0,0,0,0.3); border:1px dashed var(--border-glass); border-radius:8px;">
-                                <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; text-transform:uppercase; display:block; margin-bottom:10px;">Optional: Attach a Poll</label>
-                                <input type="text" id="adminPoll1" class="admin-input" placeholder="Option 1 (e.g., Devara)" style="width:100%; padding:10px; margin-bottom:8px;">
-                                <input type="text" id="adminPoll2" class="admin-input" placeholder="Option 2 (e.g., Game Changer)" style="width:100%; padding:10px;">
-                            </div>
-                            
-                            <button class="btn-lock" onclick="broadcastAdminPost('${user.id}')" style="width:100%;"><i class="fa-solid fa-thumbtack"></i> Push as Featured Post</button>
-                        </div>
-
-                        <!-- ALGORITHMIC OVERRIDE -->
                         <div class="admin-card" style="border-top: 3px solid var(--cyan-accent); position:sticky; top: 2rem;">
                             <h3 style="color:var(--cyan-accent); margin-bottom: 8px;"><i class="fa-solid fa-satellite-dish"></i> Algorithmic Override</h3>
                             <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:20px; line-height:1.5;">Stealth Marketing Engine: Force a movie to #1 trending or inject custom platform metrics instantly.</p>
                             
                             <div style="margin-bottom:15px;">
                                 <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; text-transform:uppercase;">Campaign Target Zone</label>
-                                <select id="promoType" class="admin-input" style="width:100%; padding:10px; margin-top:5px;">
+                                <select id="promoType" class="admin-input">
                                     <option value="hashtag">Force #1 Trending Hashtag (Arena)</option>
                                     <option value="box_office">Force Top Banner (Index Box Office)</option>
                                     <option value="bot_post">Inject Organic Highlight (Arena Feed)</option>
@@ -249,17 +238,17 @@
                             
                             <div style="margin-bottom:15px;">
                                 <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; text-transform:uppercase;">Target Keyword / Movie Name</label>
-                                <input type="text" id="promoTarget" class="admin-input" placeholder="e.g., #Devara2 or The Raja Saab" style="width:100%; padding:10px; margin-top:5px;">
+                                <input type="text" id="promoTarget" class="admin-input" placeholder="e.g., #Devara2 or The Raja Saab">
                             </div>
                             
                             <div style="margin-bottom:20px;">
                                 <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; text-transform:uppercase;">Artificial Metric / Subtitle</label>
-                                <input type="text" id="promoMetrics" class="admin-input" placeholder="e.g., '142K posts' or '₹150 Cr Advance'" style="width:100%; padding:10px; margin-top:5px;">
+                                <input type="text" id="promoMetrics" class="admin-input" placeholder="e.g., '142K posts' or '₹150 Cr Advance'">
                             </div>
                             
-                            <button class="btn-lock" onclick="engagePromoOverride()" style="width:100%; margin-bottom: 20px;"><i class="fa-solid fa-bolt"></i> Engage Global Override</button>
+                            <button class="btn-lock" style="background:linear-gradient(135deg, var(--cyan-accent), #0284c7); color:#FFF;" onclick="engagePromoOverride()"><i class="fa-solid fa-bolt"></i> Engage Global Override</button>
 
-                            <div style="border-top: 1px dashed var(--border-glass); padding-top: 15px;">
+                            <div style="border-top: 1px dashed var(--border-glass); padding-top: 15px; margin-top: 20px;">
                                 <h4 style="font-size:0.8rem; color:#FFF; margin-bottom:10px;">Active Campaign Telemetry</h4>
                                 <div id="activeOverridesList">
                                     <span style="font-size:0.75rem; color:var(--text-muted);">Scanning for active overrides...</span>
@@ -294,8 +283,13 @@
                 pollData = { option1: opt1, option2: opt2, votes1: 0, votes2: 0 };
             }
 
+            const btn = document.querySelector('.broadcaster-module .btn-lock');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Broadcasting...`;
+            btn.disabled = true;
+
             try {
-                // Clear previously featured posts to ensure this is the active one
+                // Clear any previously featured posts so only the newest one sticks
                 await db.from('fan_posts').update({ is_featured: false }).eq('is_featured', true);
 
                 const { error } = await db.from('fan_posts').insert({
@@ -310,17 +304,20 @@
                     streak: 99,
                     is_poll: isPoll,
                     poll_data: pollData,
-                    is_featured: true // Flagged for 24-hr pinning logic
+                    is_featured: true // THIS IS THE MAGIC KEY
                 });
 
                 if (error) throw error;
                 
-                alert("Official Intel Broadcasted! It is now pinned to the top of the Arena for 24 hours.");
+                alert("Official Intel Broadcasted! It is now pinned to the top of the Arena.");
                 document.getElementById('adminPostContent').value = '';
                 document.getElementById('adminPoll1').value = '';
                 document.getElementById('adminPoll2').value = '';
             } catch (err) {
                 alert("Broadcast failed: " + err.message);
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
             }
         }
 
@@ -356,11 +353,8 @@
         }
 
         async function updateStudioStatus(recordId, newStatus) {
-            try {
-                const { error } = await db.from('studio_approvals').update({ status: newStatus }).eq('id', recordId);
-                if (error) throw error;
-                fetchApprovals();
-            } catch (err) { alert("Security authorization failed: " + err.message); }
+            await db.from('studio_approvals').update({ status: newStatus }).eq('id', recordId);
+            fetchApprovals();
         }
 
         /* -----------------------------------------------------
@@ -368,55 +362,40 @@
         ----------------------------------------------------- */
         async function fetchPendingPitches() {
             const container = document.getElementById('pendingPitchesFeed');
-            try {
-                const { data, error } = await db.from('producer_pitches').select('*').eq('status', 'Pending Review').order('created_at', { ascending: true });
-                
-                if (error || !data || data.length === 0) {
-                    container.innerHTML = `<div style="text-align:center; padding:2rem; color:var(--text-muted); background:rgba(0,0,0,0.2); border-radius:12px; border:1px dashed var(--border-glass);">No pending pitches. The queue is clean.</div>`;
-                    return;
-                }
+            const { data, error } = await db.from('producer_pitches').select('*').eq('status', 'Pending Review').order('created_at', { ascending: true });
+            
+            if (error || !data || data.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding:2rem; color:var(--text-muted); background:rgba(0,0,0,0.2); border-radius:12px; border:1px dashed var(--border-glass);">No pending pitches. The queue is clean.</div>`;
+                return;
+            }
 
-                let html = '';
-                data.forEach(p => {
-                    html += `
-                        <div class="pitch-card" id="pitch-${p.id}">
-                            <div class="p-header">
-                                <div>
-                                    <div class="p-title">${p.title || 'Untitled'}</div>
-                                    <div class="p-meta">Format: ${p.format} • Author: ${p.legal_name} • Contact: ${p.contact}</div>
-                                </div>
-                            </div>
-                            <div class="p-logline">${p.logline || 'No logline provided.'}</div>
-                            
-                            <div class="section-title">Act 1: Setup</div>
-                            <div class="section-content">${p.act_1 || 'N/A'}</div>
-
-                            <div class="section-title">Act 2: Journey</div>
-                            <div class="section-content">${p.act_2 || 'N/A'}</div>
-
-                            <div class="section-title">Act 3: Resolution</div>
-                            <div class="section-content">${p.act_3 || 'N/A'}</div>
-
-                            <div class="pitch-actions">
-                                <button class="action-btn btn-reject" style="flex:1; text-align:center; margin:0;" onclick="updatePitchStatus('${p.id}', 'Rejected')"><i class="fa-solid fa-xmark"></i> Reject</button>
-                                <button class="action-btn btn-approve" style="flex:2; text-align:center; margin:0;" onclick="updatePitchStatus('${p.id}', 'Approved')"><i class="fa-solid fa-check-double"></i> Approve to Boardroom</button>
+            let html = '';
+            data.forEach(p => {
+                html += `
+                    <div class="pitch-card" id="pitch-${p.id}">
+                        <div class="p-header">
+                            <div>
+                                <div class="p-title">${p.title || 'Untitled'}</div>
+                                <div class="p-meta">Format: ${p.format} • Author: ${p.legal_name} • Contact: ${p.contact}</div>
                             </div>
                         </div>
-                    `;
-                });
-                container.innerHTML = html;
-            } catch (err) {
-                container.innerHTML = `<p style="color:var(--danger)">Error fetching pitches: ${err.message}</p>`;
-            }
+                        <div class="p-logline">${p.logline || 'No logline provided.'}</div>
+                        <div class="section-title">Act 1: Setup</div><div class="section-content">${p.act_1 || 'N/A'}</div>
+                        <div class="section-title">Act 2: Journey</div><div class="section-content">${p.act_2 || 'N/A'}</div>
+                        <div class="section-title">Act 3: Resolution</div><div class="section-content">${p.act_3 || 'N/A'}</div>
+                        <div class="pitch-actions">
+                            <button class="action-btn btn-reject" style="flex:1; text-align:center; margin:0;" onclick="updatePitchStatus('${p.id}', 'Rejected')"><i class="fa-solid fa-xmark"></i> Reject</button>
+                            <button class="action-btn btn-approve" style="flex:2; text-align:center; margin:0;" onclick="updatePitchStatus('${p.id}', 'Approved')"><i class="fa-solid fa-check-double"></i> Approve to Boardroom</button>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
         }
 
         async function updatePitchStatus(pitchId, newStatus) {
-            try {
-                const { error } = await db.from('producer_pitches').update({ status: newStatus }).eq('id', pitchId);
-                if (error) throw error;
-                
-                document.getElementById(`pitch-${pitchId}`).style.display = 'none';
-            } catch (err) { alert("Failed to update status: " + err.message); }
+            await db.from('producer_pitches').update({ status: newStatus }).eq('id', pitchId);
+            document.getElementById(`pitch-${pitchId}`).style.display = 'none';
         }
 
         /* -----------------------------------------------------
@@ -429,56 +408,43 @@
 
             if(!target) return alert("Target keyword required!");
 
-            try {
-                await db.from('executive_overrides').update({ is_active: false }).eq('campaign_type', type);
-                await db.from('executive_overrides').insert({
-                    campaign_type: type,
-                    target_keyword: target,
-                    fake_metrics: metrics || 'Trending Now',
-                    is_active: true
-                });
-                
-                alert(`SUCCESS: Platform telemetry updated. ${target} is now forced to #1.`);
-                document.getElementById('promoTarget').value = '';
-                document.getElementById('promoMetrics').value = '';
-                fetchActiveOverrides();
-            } catch(err) {
-                alert("Override failed: Make sure you ran the SQL setup script. " + err.message);
-            }
+            await db.from('executive_overrides').update({ is_active: false }).eq('campaign_type', type);
+            await db.from('executive_overrides').insert({ campaign_type: type, target_keyword: target, fake_metrics: metrics || 'Trending Now', is_active: true });
+            
+            alert(`SUCCESS: Platform telemetry updated. ${target} is now forced to #1.`);
+            document.getElementById('promoTarget').value = '';
+            document.getElementById('promoMetrics').value = '';
+            fetchActiveOverrides();
         }
 
         async function fetchActiveOverrides() {
             const container = document.getElementById('activeOverridesList');
-            try {
-                const { data, error } = await db.from('executive_overrides').select('*').eq('is_active', true);
-                
-                if (error || !data || data.length === 0) {
-                    container.innerHTML = '<p style="font-size:0.75rem; color:var(--success); font-weight:700;"><i class="fa-solid fa-check"></i> Platform running on pure organic metrics.</p>';
-                    return;
-                }
-
-                let html = '';
-                data.forEach(promo => {
-                    let icon = promo.campaign_type === 'hashtag' ? 'fa-hashtag' : 'fa-chart-pie';
-                    html += `
-                        <div style="background:rgba(56,189,248,0.1); border:1px solid var(--cyan-accent); padding:12px; border-radius:10px; margin-bottom:10px;">
-                            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                                <div>
-                                    <strong style="color:var(--cyan-accent); font-size:0.9rem;"><i class="fa-solid ${icon}"></i> ${promo.target_keyword}</strong><br>
-                                    <span style="font-size:0.75rem; color:var(--text-main);">${promo.fake_metrics}</span><br>
-                                    <span style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase;">Zone: ${promo.campaign_type}</span>
-                                </div>
-                                <button onclick="killOverride('${promo.id}')" title="Terminate Campaign" style="background:rgba(239,68,68,0.2); border:1px solid var(--danger); color:var(--danger); border-radius:6px; padding:4px 8px; cursor:pointer; font-size:0.7rem; transition:all 0.2s;">
-                                    <i class="fa-solid fa-power-off"></i> KILL
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                });
-                container.innerHTML = html;
-            } catch (err) {
-                container.innerHTML = `<span style="color:var(--danger); font-size:0.7rem;">Database connection error.</span>`;
+            const { data, error } = await db.from('executive_overrides').select('*').eq('is_active', true);
+            
+            if (error || !data || data.length === 0) {
+                container.innerHTML = '<p style="font-size:0.75rem; color:var(--success); font-weight:700;"><i class="fa-solid fa-check"></i> Platform running on pure organic metrics.</p>';
+                return;
             }
+
+            let html = '';
+            data.forEach(promo => {
+                let icon = promo.campaign_type === 'hashtag' ? 'fa-hashtag' : 'fa-chart-pie';
+                html += `
+                    <div style="background:rgba(56,189,248,0.1); border:1px solid var(--cyan-accent); padding:12px; border-radius:10px; margin-bottom:10px;">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                            <div>
+                                <strong style="color:var(--cyan-accent); font-size:0.9rem;"><i class="fa-solid ${icon}"></i> ${promo.target_keyword}</strong><br>
+                                <span style="font-size:0.75rem; color:var(--text-main);">${promo.fake_metrics}</span><br>
+                                <span style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase;">Zone: ${promo.campaign_type}</span>
+                            </div>
+                            <button onclick="killOverride('${promo.id}')" title="Terminate Campaign" style="background:rgba(239,68,68,0.2); border:1px solid var(--danger); color:var(--danger); border-radius:6px; padding:4px 8px; cursor:pointer; font-size:0.7rem; transition:all 0.2s;">
+                                <i class="fa-solid fa-power-off"></i> KILL
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
         }
 
         async function killOverride(id) {
