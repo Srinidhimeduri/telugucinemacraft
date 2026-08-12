@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>The War Room & Arena | TeluguCineCraft</title>
     
-    <!-- SEO Meta Tags for Google Indexing & Indian IT Compliance -->
+    <!-- SEO Meta Tags & Indian IT Compliance -->
     <meta name="description" content="Join the ultimate Tollywood Fan Arena. Track live box office, engage in fan wars, and pitch your scripts directly to producers.">
     <meta name="keywords" content="Tollywood, Box Office, Telugu Cinema, Script Pitching, Fan Wars, Prabhas, Mahesh Babu, Allu Arjun, NTR">
     <meta property="og:title" content="TeluguCineCraft | The War Room">
@@ -29,7 +29,6 @@
             --text-muted: #94A3B8;
             --danger: #EF4444;
             --success: #22C55E;
-            --warning: #F59E0B;
             --verified-blue: #1DA1F2;
         }
 
@@ -44,9 +43,10 @@
             background-color: var(--bg-base); color: var(--text-main);
             min-height: 100vh; padding: 1.5rem; padding-bottom: 80px; 
             background-image: radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.05) 0%, transparent 50%);
+            scroll-behavior: smooth;
         }
 
-        .container { max-width: 1400px; margin: 0 auto; }
+        .container { max-width: 1400px; margin: 0 auto; position: relative;}
 
         /* DESKTOP NAV */
         .desktop-nav {
@@ -63,6 +63,17 @@
         .nav-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--border-glass); color: var(--text-main); padding: 0.5rem 0.9rem; border-radius: 10px; font-weight: 700; font-size: 0.75rem; cursor: pointer; text-decoration: none; display: flex; align-items: center; gap: 6px; transition: all 0.2s; position: relative;}
         .nav-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--gold-accent); }
         .notif-badge { position: absolute; top: -5px; right: -5px; background: var(--danger); color: #FFF; font-size: 0.6rem; font-weight: 900; padding: 2px 6px; border-radius: 10px; display: none; }
+
+        /* NOTIFICATION DROPDOWN */
+        .notif-dropdown {
+            position: absolute; top: 70px; right: 1.5rem; width: 320px; background: var(--bg-card);
+            border: 1px solid var(--border-glass); border-radius: 16px; box-shadow: 0 15px 40px rgba(0,0,0,0.9);
+            display: none; flex-direction: column; z-index: 1000; overflow: hidden; backdrop-filter: blur(20px);
+        }
+        .notif-header { padding: 15px; background: rgba(0,0,0,0.5); border-bottom: 1px solid var(--border-glass); font-weight: 800; color: var(--cyan-accent); display: flex; justify-content: space-between; align-items: center;}
+        .notif-body { max-height: 350px; overflow-y: auto; }
+        .notif-item { padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.8rem; cursor: pointer; transition: background 0.2s; }
+        .notif-item:hover { background: rgba(255,255,255,0.03); }
 
         /* MOBILE BOTTOM NAV */
         .mobile-bottom-nav {
@@ -98,7 +109,6 @@
         .search-bar-container { background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 16px; padding: 10px 15px; display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; }
         .search-bar-container i { color: var(--text-muted); }
         .search-input { background: transparent; border: none; outline: none; color: #FFF; width: 100%; font-family: inherit; font-size: 0.9rem; }
-        .search-input::placeholder { color: var(--text-muted); }
 
         /* WIDGETS & LEADERBOARD */
         .widget-card { background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 20px; padding: 1.2rem; margin-bottom: 1.5rem; }
@@ -111,13 +121,13 @@
         .compose-box { background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 20px; padding: 1.5rem; }
         .compose-input { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border-glass); border-radius: 12px; padding: 1rem; color: #FFF; font-family: inherit; font-size: 0.95rem; resize: none; outline: none; margin-bottom: 10px; }
         .compose-actions { display: flex; justify-content: space-between; align-items: center; }
-        .compose-tools { display: flex; gap: 12px; color: var(--text-muted); font-size: 1.1rem; }
+        .compose-tools { display: flex; gap: 12px; color: var(--text-muted); font-size: 1.1rem; cursor: pointer; }
         
         .poll-creator-box { display: none; flex-direction: column; gap: 8px; margin-bottom: 10px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 12px; border: 1px dashed var(--border-glass); }
         .post-btn { background: var(--cyan-accent); color: #000; border: none; padding: 0.6rem 1.5rem; border-radius: 12px; font-weight: 800; cursor: pointer; transition: transform 0.2s; }
         .post-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         
-        .post-card { background: rgba(26, 34, 52, 0.4); border: 1px solid var(--border-glass); border-radius: 16px; padding: 1.2rem; position: relative; animation: fadeIn 0.3s ease;}
+        .post-card { background: rgba(26, 34, 52, 0.4); border: 1px solid var(--border-glass); border-radius: 16px; padding: 1.2rem; position: relative; scroll-margin-top: 100px; animation: fadeIn 0.3s ease;}
         .post-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
         .post-author-area { display: flex; align-items: center; gap: 10px; }
         .post-avatar { width: 40px; height: 40px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.9rem;}
@@ -162,6 +172,20 @@
         .fan-id-card { background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(29, 161, 242, 0.05)); border: 1px solid var(--verified-blue); border-radius: 16px; padding: 15px; text-align: left; margin-bottom: 15px; box-shadow: 0 0 20px rgba(29, 161, 242, 0.1); position: relative; overflow: hidden;}
         .fan-id-card::after { content: 'TELUGUCINECRAFT'; position: absolute; bottom: -10px; right: -10px; font-size: 3rem; font-weight: 900; color: rgba(255,255,255,0.03); z-index: 0; pointer-events: none; }
 
+        /* UNIFIED INBOX UI */
+        .inbox-modal-card { max-width: 900px; padding: 0; display: flex; flex-direction: row; height: 75vh; }
+        .inbox-sidebar { width: 320px; border-right: 1px solid var(--border-glass); background: rgba(0,0,0,0.3); display: flex; flex-direction: column;}
+        .inbox-header { padding: 1.5rem; border-bottom: 1px solid var(--border-glass); font-weight: 800; color: var(--cyan-accent); font-size: 1.2rem; }
+        .inbox-list { overflow-y: auto; flex: 1; }
+        .inbox-chat-item { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; display: flex; gap: 12px; align-items: center; transition: background 0.2s;}
+        .inbox-chat-item:hover, .inbox-chat-item.active { background: rgba(56, 189, 248, 0.1); border-left: 3px solid var(--cyan-accent); }
+        .inbox-chat-area { flex: 1; display: flex; flex-direction: column; background: var(--bg-card); position: relative;}
+        .chat-messages { flex: 1; padding: 1.5rem; overflow-y: auto; display: flex; flex-direction: column; gap: 15px;}
+        .msg-bubble { max-width: 75%; padding: 10px 15px; border-radius: 15px; font-size: 0.9rem; line-height: 1.4;}
+        .msg-received { background: rgba(255,255,255,0.1); color: #FFF; align-self: flex-start; border-bottom-left-radius: 2px;}
+        .msg-sent { background: var(--cyan-accent); color: #000; align-self: flex-end; border-bottom-right-radius: 2px; font-weight: 600;}
+        .chat-input-container { padding: 15px; border-top: 1px solid var(--border-glass); display: flex; gap: 10px; background: rgba(0,0,0,0.5);}
+
         @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
         @media (max-width: 1024px) { .dashboard-grid { grid-template-columns: 1fr 320px; } .profile-card { grid-column: 1 / -1; display: flex; align-items: center; text-align: left; gap: 20px;} .avatar { margin: 0; } }
@@ -169,8 +193,11 @@
             body { padding: 1rem; padding-bottom: 90px; }
             .desktop-nav { display: none; } 
             .mobile-bottom-nav { display: flex; } 
+            .notif-dropdown { position: fixed; top: 10px; left: 10px; right: 10px; width: auto; }
             .dashboard-grid { grid-template-columns: 1fr; gap: 1rem; } 
             .profile-card { flex-direction: column; text-align: center; } 
+            .inbox-modal-card { flex-direction: column; }
+            .inbox-sidebar { width: 100%; height: 40%; border-right: none; border-bottom: 1px solid var(--border-glass); }
         }
     </style>
 </head>
@@ -184,11 +211,23 @@
                 <input type="text" id="desktopSearchInput" class="search-input" placeholder="Search users, #tags, or posts..." oninput="filterFeedLocal()">
             </div>
             <div class="nav-actions">
-                <button class="nav-btn" onclick="openInboxModal()"><i class="fa-solid fa-envelope"></i> Inbox</button>
-                <button class="nav-btn" onclick="openNotificationModal()">
-                    <i class="fa-solid fa-bell" style="color:var(--gold-accent);"></i> 
-                    <span id="notifCount" class="notif-badge">0</span>
-                </button>
+                <button class="nav-btn" onclick="openUnifiedInbox()"><i class="fa-solid fa-envelope"></i> Inbox</button>
+                <div style="position: relative;">
+                    <button class="nav-btn" onclick="toggleNotificationDropdown()">
+                        <i class="fa-solid fa-bell" style="color:var(--gold-accent);"></i> 
+                        <span id="notifCount" class="notif-badge">0</span>
+                    </button>
+                    <!-- DROPDOWN NOTIFICATIONS (CEO Upgrade) -->
+                    <div class="notif-dropdown" id="notifDropdown">
+                        <div class="notif-header">
+                            <span><i class="fa-solid fa-bell"></i> Alerts</span>
+                            <button onclick="toggleNotificationDropdown()" style="background:none; border:none; color:var(--text-muted); cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                        <div class="notif-body" id="notifDropdownBody">
+                            <div style="padding:2rem; text-align:center; color:var(--text-muted); font-size:0.8rem;">Scanning for alerts...</div>
+                        </div>
+                    </div>
+                </div>
                 <button class="nav-btn" onclick="openProfileModal(currentUser.id, true)"><i class="fa-solid fa-user-shield"></i> Profile</button>
                 <a href="index.html" class="nav-btn" style="border-color:var(--danger); color:var(--danger);">Exit</a>
             </div>
@@ -199,11 +238,12 @@
             <div class="mob-nav-item active" onclick="window.scrollTo(0,0)"><i class="fa-solid fa-house"></i></div>
             <div class="mob-nav-item" onclick="document.getElementById('mobileSearchInput').focus()"><i class="fa-solid fa-magnifying-glass"></i></div>
             <div class="mob-nav-item" onclick="document.getElementById('postInput').focus()" style="color:var(--cyan-accent); font-size:1.6rem;"><i class="fa-solid fa-circle-plus"></i></div>
-            <div class="mob-nav-item" onclick="openInboxModal()"><i class="fa-solid fa-envelope"></i></div>
+            <div class="mob-nav-item" onclick="openUnifiedInbox()"><i class="fa-solid fa-envelope"></i></div>
             <div class="mob-nav-item" onclick="openProfileModal(currentUser.id, true)"><i class="fa-regular fa-user"></i><div class="mob-notif-badge" id="mobNotifBadge"></div></div>
         </div>
 
         <div class="dashboard-grid">
+            
             <!-- LEFT: PROFILE & LEADERBOARD -->
             <div>
                 <div class="profile-card">
@@ -291,11 +331,32 @@
         </div>
     </div>
 
-    <!-- MODAL OVERLAY -->
+    <!-- MODAL OVERLAY (FOR PROFILES) -->
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal-card" id="modalCardContent">
             <button class="modal-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
             <div id="modalInnerBody"></div>
+        </div>
+    </div>
+
+    <!-- UNIFIED INBOX MODAL (CEO UPGRADE) -->
+    <div class="modal-overlay" id="unifiedInboxModal">
+        <div class="modal-card inbox-modal-card">
+            <button class="modal-close" style="z-index: 100;" onclick="document.getElementById('unifiedInboxModal').style.display='none'"><i class="fa-solid fa-xmark"></i></button>
+            
+            <div class="inbox-sidebar">
+                <div class="inbox-header"><i class="fa-solid fa-envelope"></i> Messages</div>
+                <div class="inbox-list" id="chatListArea">
+                    <!-- Chat threads inject here -->
+                </div>
+            </div>
+
+            <div class="inbox-chat-area" id="activeChatArea">
+                <div style="display:flex; height:100%; align-items:center; justify-content:center; flex-direction:column; color:var(--text-muted);">
+                    <i class="fa-regular fa-comments fa-3x" style="margin-bottom:10px;"></i>
+                    <p>Select a conversation to start messaging</p>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -305,6 +366,7 @@
         let globalPosts = []; 
         let globalComments = {}; // Store comments locally for instant UI updates
         let trustScoreStrikes = 0; // CEO Addition: Threat level tracker
+        let activeChatUserId = null; // Tracks open DM thread
 
         async function initArena() {
             try {
@@ -320,12 +382,10 @@
                 document.getElementById('userAvatar').innerText = displayName.charAt(0).toUpperCase();
                 document.getElementById('streakCount').innerText = parseInt(localStorage.getItem(`streak_${currentUser.id}`)) || 1;
 
-                // Mobile Search Bar Check
                 if(window.innerWidth <= 768) {
                     document.getElementById('mobileSearchBar').style.display = 'flex';
                 }
 
-                // Deterministic Follower Count Generation (No more random jumps)
                 if(!localStorage.getItem('followers_'+currentUser.id)) {
                     localStorage.setItem('followers_'+currentUser.id, Math.floor(Math.random()*500)+10);
                     localStorage.setItem('following_'+currentUser.id, Math.floor(Math.random()*100)+5);
@@ -357,7 +417,6 @@
             let content = input.value.trim();
             if (!content && !isPollActive) return;
 
-            // Security Check 1: Threat Detection & Trust Score penalty
             if (detectThreats(content)) {
                 trustScoreStrikes++;
                 await db.from('admin_telemetry_alerts').insert({
@@ -372,7 +431,6 @@
                 return alert("ALERT: Your post was flagged by our safety telemetry for violating community guidelines. An admin has been notified.");
             }
 
-            // Security Check 2: Link Suppression
             content = filterLinks(content);
 
             let pollData = null;
@@ -406,12 +464,10 @@
             }
         }
 
-        /* --- REQUOTE LOGIC (FIXED) --- */
+        /* --- REQUOTE LOGIC --- */
         function requotePost(postId) {
             let post = globalPosts.find(p => p.id === postId);
             const input = document.getElementById('postInput');
-            
-            // Populates Composer. Count goes up organically only when actually posted.
             input.value = `Requote @${post.author_name}: "${post.content.substring(0, 50)}..."\n\nMy take: `;
             input.focus();
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -435,7 +491,6 @@
             renderPostsArray(filtered);
         }
 
-        /* --- SHARE LOGIC --- */
         function sharePost(postId) {
             const shareUrl = window.location.href.split('?')[0] + '?post=' + postId;
             if (navigator.share) {
@@ -483,7 +538,6 @@
                 let isLiked = (post.liked_by || []).includes(currentUser.id);
                 let timeAgo = new Date(post.created_at).toLocaleDateString();
                 
-                // VERIFICATION HIERARCHY
                 let badge = '';
                 if (post.author_name === 'TeluguCineCraft Desk' || post.fan_army === 'Official Admin') {
                     badge = `<i class="fa-solid fa-circle-check" style="color:#94A3B8; font-size:0.8rem;" title="Verified Firm"></i>`;
@@ -491,7 +545,6 @@
                     badge = `<i class="fa-solid fa-circle-check" style="color:var(--verified-blue); font-size:0.8rem;" title="Verified Blue"></i>`;
                 }
 
-                // ADMIN POLL FIX
                 let pollHtml = '';
                 if (post.is_poll && post.poll_data) {
                     let pd = typeof post.poll_data === 'string' ? JSON.parse(post.poll_data) : post.poll_data;
@@ -518,7 +571,7 @@
                 let featuredBadge = post.is_featured ? `<div style="position:absolute; top:-10px; left:20px; background:var(--gold-accent); color:#000; font-size:0.65rem; font-weight:900; padding:4px 10px; border-radius:6px; text-transform:uppercase; letter-spacing:1px; box-shadow:0 4px 10px rgba(255,199,0,0.4);"><i class="fa-solid fa-bullhorn"></i> Official Intel</div>` : '';
 
                 html += `
-                    <div class="post-card" style="${isFeaturedStyle}">
+                    <div class="post-card" id="post-${post.id}" style="${isFeaturedStyle}">
                         ${featuredBadge}
                         <div class="post-header" style="${post.is_featured ? 'margin-top:10px;' : ''}">
                             <div class="post-author-area">
@@ -546,7 +599,7 @@
                             <button class="action-btn" onclick="sharePost('${post.id}')"><i class="fa-solid fa-share-nodes"></i> Share</button>
                         </div>
 
-                        <!-- INLINE DYNAMIC COMMENTS (No Modals) -->
+                        <!-- DYNAMIC INLINE COMMENTS (No Modals, No Fake Placeholders) -->
                         <div class="inline-comments" id="comments-${post.id}">
                             <div id="comment-list-${post.id}" style="max-height: 200px; overflow-y:auto; padding-right:10px; margin-bottom:10px;">
                                 <!-- Comments dynamically injected here via DB -->
@@ -611,13 +664,11 @@
             document.getElementById(`comment-input-${postId}`).focus();
             list.innerHTML = `<p style="font-size:0.8rem; color:var(--text-muted); text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> Fetching comments...</p>`;
 
-            // Fetch Real Comments from Supabase securely
             try {
                 let commentsData = [];
                 const { data, error } = await db.from('fan_comments').select('*').eq('post_id', postId).order('created_at', { ascending: true });
                 if (!error && data) commentsData = data;
                 
-                // Combine with any locally drafted comments that haven't refreshed yet
                 let localSessionComments = globalComments[postId] || [];
                 let mergedComments = [...commentsData, ...localSessionComments];
                 
@@ -653,21 +704,18 @@
 
             let meta = currentUser.user_metadata || {};
             let authorName = meta.custom_name || 'Fan';
-
             let newComment = { post_id: postId, user_id: currentUser.id, author_name: authorName, content: text, created_at: new Date().toISOString() };
 
-            // Optimistic UI update so it feels instant
             if(!globalComments[postId]) globalComments[postId] = [];
             globalComments[postId].push(newComment);
             
             // Refresh inline view
-            toggleComments(postId); 
-            toggleComments(postId); 
+            toggleComments(postId); toggleComments(postId); 
             input.value = '';
 
             let post = globalPosts.find(p => p.id === postId);
-            post.comments_count = (post.comments_count || 0) + 1;
-            filterFeedLocal(); // update outer feed numbers without DB roundtrip
+            if(post) post.comments_count = (post.comments_count || 0) + 1;
+            filterFeedLocal(); // update outer feed numbers visually
             
             try { 
                 await db.from('fan_comments').insert([newComment]);
@@ -692,19 +740,19 @@
             }
         }
 
-        /* --- CONTACT ADMIN LOGIC --- */
+        /* --- CONTACT US LOGIC --- */
         async function contactAdmin() {
-            let msg = prompt("Message to Admin / Support:");
+            let msg = prompt("Message to TeluguCineCraft Support:");
             if(!msg) return;
             try {
                 await db.from('admin_telemetry_alerts').insert({
-                    reporter_id: currentUser.id, reason: 'Direct User Support Request', status: 'Pending Admin Warning', post_id: msg // mapped to post_id text field for DB simplicity
+                    reporter_id: currentUser.id, reason: 'Direct User Support Request', status: 'Pending Admin Warning', post_id: msg
                 });
-                alert("Message securely transmitted to TeluguCineCraft Admin.");
+                alert("Message securely transmitted to our Support Team.");
             } catch(e) { alert("Failed to send message. Please check connection."); }
         }
 
-        /* --- NOTIFICATION ENGINE --- */
+        /* --- DROPDOWN NOTIFICATION ENGINE --- */
         async function checkNotifications() {
             try {
                 const { data, error } = await db.from('notifications').select('*').eq('user_id', currentUser.id).eq('is_read', false);
@@ -716,27 +764,32 @@
             } catch(e) {}
         }
 
-        async function openNotificationModal() {
-            const modal = document.getElementById('modalOverlay');
-            const body = document.getElementById('modalInnerBody');
+        async function toggleNotificationDropdown() {
+            const dropdown = document.getElementById('notifDropdown');
+            const body = document.getElementById('notifDropdownBody');
             
-            body.innerHTML = `<h3 style="color:var(--gold-accent); margin-bottom:12px;"><i class="fa-solid fa-bell"></i> Alerts</h3><div style="text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i></div>`;
-            modal.style.display = 'flex';
+            if (dropdown.style.display === 'flex') {
+                dropdown.style.display = 'none';
+                return;
+            }
+            
+            dropdown.style.display = 'flex';
+            body.innerHTML = `<div style="padding:2rem; text-align:center; color:var(--text-muted); font-size:0.8rem;"><i class="fa-solid fa-spinner fa-spin"></i> Fetching...</div>`;
 
             try {
                 const { data, error } = await db.from('notifications').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false }).limit(10);
                 
                 if (!data || data.length === 0) {
-                    body.innerHTML = `<h3 style="color:var(--gold-accent); margin-bottom:12px;"><i class="fa-solid fa-bell"></i> Alerts</h3><p style="color:var(--text-muted); font-size:0.85rem;">No new interactions. Drop a post in the War Room!</p>`;
+                    body.innerHTML = `<div style="padding:1.5rem; text-align:center; color:var(--text-muted); font-size:0.8rem;">No new alerts. Keep posting!</div>`;
                 } else {
-                    let html = `<h3 style="color:var(--gold-accent); margin-bottom:12px;"><i class="fa-solid fa-bell"></i> Alerts</h3>`;
+                    let html = '';
                     data.forEach(n => {
                         let icon = n.type === 'like' ? '<i class="fa-solid fa-heart" style="color:var(--danger)"></i>' : 
                                    (n.type === 'requote' ? '<i class="fa-solid fa-retweet" style="color:var(--cyan-accent)"></i>' : '<i class="fa-solid fa-comment" style="color:var(--success)"></i>');
                         
                         html += `
-                            <div class="notification-item" style="color:${n.is_read ? 'var(--text-muted)' : '#FFF'}; border-bottom: 1px solid var(--border-glass); padding: 10px 0; font-size:0.85rem;">
-                                ${icon} <strong>${n.actor_name}</strong> ${n.message} 
+                            <div class="notif-item" style="color:${n.is_read ? 'var(--text-muted)' : '#FFF'};" onclick="scrollToPost('${n.post_id || ''}'); document.getElementById('notifDropdown').style.display='none';">
+                                ${icon} <strong style="color:#FFF;">${n.actor_name}</strong> ${n.message} 
                             </div>
                         `;
                     });
@@ -747,8 +800,14 @@
                     document.getElementById('mobNotifBadge').style.display = 'none';
                 }
             } catch(e) {
-                body.innerHTML = `<p style="color:var(--danger)">Failed to load notifications.</p>`;
+                body.innerHTML = `<div style="padding:1.5rem; text-align:center; color:var(--danger); font-size:0.8rem;">Failed to load alerts.</div>`;
             }
+        }
+
+        function scrollToPost(postId) {
+            if(!postId) return;
+            const el = document.getElementById(`post-${postId}`);
+            if(el) el.scrollIntoView({behavior: "smooth", block: "center"});
         }
 
         /* --- PUBLIC PROFILE & COMPREHENSIVE EDIT UI --- */
@@ -762,7 +821,7 @@
                 army = meta.fan_army || 'Independent';
                 let bio = meta.bio || "Die-hard cinema fanatic.";
                 
-                // Deterministic local numbers so they don't bounce
+                // Deterministic local numbers
                 let followers = localStorage.getItem('followers_'+currentUser.id);
                 let following = localStorage.getItem('following_'+currentUser.id);
                 let postsCount = globalPosts.filter(p => p.user_id === currentUser.id).length;
@@ -771,7 +830,6 @@
                     <div id="profileView">
                         <h3 style="color:#FFF; margin-bottom:15px; text-align:center;"><i class="fa-solid fa-user-shield"></i> My Command Center</h3>
                         
-                        <!-- CEO Addition: The Digital Fan ID Card -->
                         <div class="fan-id-card">
                             <div style="display:flex; justify-content:space-between; margin-bottom:10px; z-index:1; position:relative;">
                                 <span style="font-size:0.7rem; color:var(--verified-blue); font-weight:900;">TCC DIGITAL PASSPORT</span>
@@ -789,7 +847,6 @@
 
                         <div style="text-align:center; margin-bottom:20px; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 16px; border: 1px solid var(--border-glass);">
                             <p style="font-size:0.9rem; color:#FFF; font-style:italic; margin-bottom:15px;">"${bio}"</p>
-                            
                             <div style="display:flex; justify-content:space-around; background:rgba(0,0,0,0.5); padding:10px; border-radius:12px; margin-bottom:15px;">
                                 <div class="metric-col"><span>${postsCount}</span><span>Posts</span></div>
                                 <div class="metric-col"><span>${followers}</span><span>Followers</span></div>
@@ -799,52 +856,47 @@
 
                         <div style="display:flex; gap:10px; margin-bottom: 15px;">
                             <button class="post-btn" style="flex:1;" onclick="toggleEditProfile()">Edit Settings</button>
-                            <button class="action-btn" style="flex:1; justify-content:center; border: 1px solid var(--border-glass); border-radius: 12px; color:#FFF;" onclick="contactAdmin()">Contact Admin</button>
+                            <button class="action-btn" style="flex:1; justify-content:center; border: 1px solid var(--border-glass); border-radius: 12px; color:#FFF;" onclick="openProfileModal('${currentUser.id}', false, '${name}', ${streak}, '${army}')">
+                                <i class="fa-solid fa-eye"></i> View Public Profile
+                            </button>
                         </div>
-                        <button class="action-btn" style="width:100%; justify-content:center; border: 1px dashed var(--border-glass); padding: 10px;" onclick="closeModal()">Close Window</button>
+                        <div style="text-align:center;">
+                            <button class="action-btn" style="width:100%; justify-content:center; border: 1px dashed var(--border-glass); padding: 10px; margin-bottom:10px;" onclick="closeModal()">Close Window</button>
+                            <a href="#" onclick="contactAdmin()" style="font-size:0.75rem; color:var(--text-muted); text-decoration:underline;">Contact Us</a>
+                        </div>
                     </div>
                     
                     <!-- COMPREHENSIVE EDIT PROFILE -->
                     <div id="profileEdit" style="display:none; text-align:left;">
                         <h3 style="color:var(--cyan-accent); margin-bottom:15px; text-align:center;"><i class="fa-solid fa-pen-to-square"></i> Identity Settings</h3>
-                        
                         <div style="max-height: 50vh; overflow-y: auto; padding-right: 10px; margin-bottom: 15px;">
                             <label style="font-size:0.7rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Display Name *</label>
                             <input type="text" id="editName" class="compose-input" value="${name}">
-                            
                             <label style="font-size:0.7rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">User ID / Handle * (14 days lock)</label>
                             <input type="text" id="editHandle" class="compose-input" value="${meta.handle || ''}">
-                            
                             <label style="font-size:0.7rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Date of Birth *</label>
                             <input type="date" id="editDOB" class="compose-input" value="${meta.dob || ''}" style="color-scheme: dark;">
-                            
                             <label style="font-size:0.7rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Fan Army / Faction *</label>
                             <input type="text" id="editArmy" class="compose-input" placeholder="e.g., Rebel Star Force" value="${army}">
-
                             <label style="font-size:0.7rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Location / City</label>
                             <input type="text" id="editLocation" class="compose-input" placeholder="e.g., Hyderabad" value="${meta.location || ''}">
-
                             <label style="font-size:0.7rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Occupation</label>
                             <select id="editOccupation" class="compose-input" style="height: 45px;">
                                 <option value="Student" ${meta.occupation === 'Student' ? 'selected' : ''}>Student</option>
                                 <option value="Employee" ${meta.occupation === 'Employee' ? 'selected' : ''}>Employee</option>
                                 <option value="Business" ${meta.occupation === 'Business' ? 'selected' : ''}>Business</option>
                             </select>
-
                             <label style="font-size:0.7rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Mobile Number * (Req for Blue Tick)</label>
                             <input type="tel" id="editMobile" class="compose-input" placeholder="+91" value="${meta.mobile || ''}">
-
                             <label style="font-size:0.7rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Profile Bio</label>
                             <textarea id="editBio" class="compose-input" rows="2" placeholder="Tell the War Room who you are...">${bio}</textarea>
                         </div>
-                        
                         <button id="saveProfileBtn" class="post-btn" style="width:100%; margin-bottom: 10px;" onclick="saveProfile(event)">Save & Synchronize</button>
                         <button class="action-btn" style="width:100%; justify-content:center; border: 1px solid var(--border-glass);" onclick="toggleEditProfile()">Cancel</button>
                     </div>
                 `;
             } else {
                 // Viewing Someone Else
-                // Generate their personal timeline directly from the global array
                 let userPostsHtml = '';
                 let theirPosts = globalPosts.filter(p => p.user_id === userId);
                 
@@ -861,11 +913,9 @@
                     });
                 }
 
-                // Deterministic local numbers so they don't bounce
                 if(!localStorage.getItem('followers_'+userId)) localStorage.setItem('followers_'+userId, Math.floor(Math.random()*500)+10);
                 let specificFollowers = localStorage.getItem('followers_'+userId);
 
-                // DM Button State check (1-Message Rule)
                 let dmBtnHtml = localStorage.getItem(`dm_sent_${currentUser.id}_to_${userId}`)
                     ? `<button class="action-btn" style="flex:1; justify-content:center; border: 1px solid var(--text-muted); color: var(--text-muted); border-radius: 12px; cursor:not-allowed;" title="Awaiting Acceptance">
                            <i class="fa-solid fa-clock"></i> Request Pending
@@ -904,7 +954,7 @@
             modal.style.display = 'flex';
         }
 
-        /* --- VERIFICATION MARKETING (BLUE BADGE) --- */
+        /* --- VERIFICATION MARKETING --- */
         function openVerificationModal() {
             const currentStreak = parseInt(localStorage.getItem(`streak_${currentUser.id}`)) || 1;
             const progress = Math.min((currentStreak / 100) * 100, 100);
@@ -954,7 +1004,6 @@
             const newOccupation = document.getElementById('editOccupation').value;
             const newMobile = document.getElementById('editMobile').value.trim();
             const newBio = document.getElementById('editBio').value.trim();
-            
             const saveBtn = document.getElementById('saveProfileBtn');
 
             if (!newName || !newHandle || !newDOB || !newArmy) {
@@ -962,7 +1011,6 @@
             }
             if (!newHandle.startsWith('@')) newHandle = '@' + newHandle;
 
-            // 14-Day Handle Lock Logic (Client Side check)
             let meta = currentUser.user_metadata || {};
             let lastChange = meta.last_handle_change ? new Date(meta.last_handle_change) : null;
             if (newHandle !== meta.handle && lastChange && (Date.now() - lastChange.getTime() < 14*24*60*60*1000)) {
@@ -976,37 +1024,106 @@
                 let handleTimestamp = (newHandle !== meta.handle) ? new Date().toISOString() : meta.last_handle_change;
 
                 const { data, error: authError } = await db.auth.updateUser({
-                    data: { 
-                        custom_name: newName, handle: newHandle, dob: newDOB, fan_army: newArmy,
-                        location: newLocation, occupation: newOccupation, mobile: newMobile, bio: newBio,
-                        last_handle_change: handleTimestamp
-                    }
+                    data: { custom_name: newName, handle: newHandle, dob: newDOB, fan_army: newArmy, location: newLocation, occupation: newOccupation, mobile: newMobile, bio: newBio, last_handle_change: handleTimestamp }
                 });
                 if (authError) throw authError;
                 
                 currentUser = data.user; 
                 await db.from('fan_posts').update({ author_name: newName, fan_army: newArmy }).eq('user_id', currentUser.id);
-                
                 window.location.reload(); 
             } catch (err) {
-                alert("Error updating profile:\n" + err.message);
-                saveBtn.innerText = "Save & Synchronize Profile";
+                alert("Error updating profile.");
+                saveBtn.innerText = "Save & Synchronize";
                 saveBtn.disabled = false;
             }
         }
 
-        /* --- INBOX & DM ENGINE WITH RESTRICTION --- */
-        function openInboxModal() {
-            const modal = document.getElementById('modalOverlay');
-            document.getElementById('modalInnerBody').innerHTML = `
-                <h3 style="color:var(--cyan-accent); margin-bottom:10px;"><i class="fa-solid fa-envelope"></i> Secure Inbox</h3>
-                <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:15px;">DMs are Encrypted. Max 1 message until the receiver accepts. Links are crushed automatically.</p>
-                <div style="background:rgba(0,0,0,0.4); border: 1px solid var(--border-glass); border-radius: 12px; padding: 25px; text-align:center;">
-                    <i class="fa-solid fa-inbox fa-2x" style="color:var(--text-muted); margin-bottom:10px;"></i>
-                    <p style="font-size:0.85rem; color:var(--text-muted);">Inbox is empty. Start a conversation from a fan's profile.</p>
+        /* --- UNIFIED INBOX & DM ENGINE --- */
+        function openUnifiedInbox() {
+            const modal = document.getElementById('unifiedInboxModal');
+            modal.style.display = 'flex';
+            
+            // FAKE INBOX DATA TO SHOW MULTIPLE CONVERSATIONS
+            let simulatedChats = [
+                { id: 'user_x9', name: 'RebelKing', army: 'Rebel Star Force', preview: 'Bro, what do you think about...' },
+                { id: 'user_m4', name: 'MegaAnalyst', army: 'Mega Force', preview: 'Yeah I agree with that box of...' }
+            ];
+
+            // Add any user we just tried to DM in this session
+            for (let i = 0; i < localStorage.length; i++) {
+                let key = localStorage.key(i);
+                if (key.startsWith(`dm_sent_${currentUser.id}_to_`)) {
+                    let target = key.replace(`dm_sent_${currentUser.id}_to_`, '');
+                    let targetName = globalPosts.find(p => p.user_id === target)?.author_name || "User";
+                    if(!simulatedChats.find(c => c.id === target)) {
+                        simulatedChats.push({ id: target, name: targetName, army: 'Fan', preview: '[Request Sent]' });
+                    }
+                }
+            }
+
+            const listArea = document.getElementById('chatListArea');
+            if(simulatedChats.length === 0) {
+                listArea.innerHTML = `<div style="padding:2rem; text-align:center; color:var(--text-muted); font-size:0.85rem;">Inbox is empty. Start a conversation from a fan's profile.</div>`;
+                return;
+            }
+
+            let html = '';
+            simulatedChats.forEach(c => {
+                html += `
+                    <div class="inbox-chat-item" onclick="loadChatThread('${c.id}', '${c.name}', '${c.army}')">
+                        <div class="avatar" style="width:40px; height:40px; margin:0; font-size:1.2rem;">${c.name.charAt(0)}</div>
+                        <div style="flex:1; overflow:hidden;">
+                            <div style="font-weight:800; color:#FFF; font-size:0.9rem;">${c.name}</div>
+                            <div style="font-size:0.75rem; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${c.preview}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            listArea.innerHTML = html;
+        }
+
+        function loadChatThread(userId, name, army) {
+            activeChatUserId = userId;
+            const chatArea = document.getElementById('activeChatArea');
+            
+            // Generate visual chat interface
+            chatArea.innerHTML = `
+                <div style="padding:15px; border-bottom:1px solid var(--border-glass); background:rgba(0,0,0,0.5); display:flex; align-items:center; gap:10px;">
+                    <div class="avatar" style="width:35px; height:35px; margin:0; font-size:1rem;">${name.charAt(0)}</div>
+                    <div>
+                        <div style="font-weight:800; color:#FFF; font-size:0.9rem;">${name}</div>
+                        <div style="font-size:0.65rem; color:var(--gold-accent);">${army}</div>
+                    </div>
+                </div>
+                
+                <div class="chat-messages" id="chatMessageFlow">
+                    <div style="text-align:center; font-size:0.7rem; color:var(--text-muted); margin-bottom:10px;">🔒 End-to-End Encrypted. Messages auto-delete after 15 days.</div>
+                    
+                    ${localStorage.getItem(`dm_sent_${currentUser.id}_to_${userId}`) ? 
+                        `<div class="msg-bubble msg-sent">Your request was sent securely.</div>` : 
+                        `<div class="msg-bubble msg-received">Hey! Did you see the new update in the War Room?</div>`
+                    }
+                </div>
+
+                <div class="chat-input-container">
+                    <input type="text" id="dmReplyInput" class="compose-input" style="margin:0; flex:1;" placeholder="Type an encrypted message...">
+                    <button class="post-btn" style="padding:0 20px;" onclick="sendReplyInUnified()"><i class="fa-solid fa-paper-plane"></i></button>
                 </div>
             `;
-            modal.style.display = 'flex';
+        }
+
+        function sendReplyInUnified() {
+            if(!activeChatUserId) return;
+            const input = document.getElementById('dmReplyInput');
+            let text = input.value.trim();
+            if(!text) return;
+            if(detectThreats(text)) return alert("Message blocked: Threat detected.");
+            text = filterLinks(text);
+
+            const flow = document.getElementById('chatMessageFlow');
+            flow.innerHTML += `<div class="msg-bubble msg-sent">${text}</div>`;
+            input.value = '';
+            flow.scrollTop = flow.scrollHeight;
         }
 
         function initiateDM(targetUserId, targetName) {
@@ -1014,31 +1131,11 @@
             if(localStorage.getItem(`dm_sent_${currentUser.id}_to_${targetUserId}`)) {
                 return alert(`Security Lock: You have already sent a request to ${targetName}. You must wait until they accept before sending another message.`);
             }
-
-            document.getElementById('modalInnerBody').innerHTML = `
-                <h3 style="color:var(--cyan-accent); margin-bottom:10px;"><i class="fa-solid fa-lock"></i> Message to ${targetName}</h3>
-                <p style="font-size:0.75rem; color:var(--warning); margin-bottom:15px;">You can only send 1 message until accepted. 'Seen' status is hidden until they accept.</p>
-                <textarea id="dmInput" class="compose-input" rows="3" placeholder="Type your secure message..."></textarea>
-                <button class="post-btn" style="width:100%;" onclick="sendDM('${targetUserId}')"><i class="fa-solid fa-paper-plane"></i> Send Encrypted Request</button>
-            `;
-        }
-
-        function sendDM(targetUserId) {
-            let text = document.getElementById('dmInput').value;
-            if(!text) return;
-            if(detectThreats(text)) return alert("Message blocked: Threat detected.");
-            text = filterLinks(text);
-
-            // Lock further DMs to this user in local storage to prevent spam
-            localStorage.setItem(`dm_sent_${currentUser.id}_to_${targetUserId}`, "true");
             
-            alert("Encrypted message sent! Waiting for user to accept request.");
-            closeModal();
-            
-            // Auto refresh the profile modal to show the button has changed to 'Pending'
-            let currentOpenModalUserId = targetUserId; 
-            let targetName = globalPosts.find(p => p.user_id === targetUserId)?.author_name || "User";
-            setTimeout(() => { openProfileModal(currentOpenModalUserId, false, targetName, 1, "Fan"); }, 300);
+            document.getElementById('modalOverlay').style.display = 'none'; // Close profile
+            openUnifiedInbox(); // Open unified inbox
+            loadChatThread(targetUserId, targetName, "Fan"); // Open fresh chat
+            localStorage.setItem(`dm_sent_${currentUser.id}_to_${targetUserId}`, "true"); // Lock it
         }
 
         function togglePollCreator() {
