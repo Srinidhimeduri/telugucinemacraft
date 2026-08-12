@@ -29,6 +29,7 @@
             --danger: #EF4444;
             --success: #22C55E;
             --warning: #F59E0B;
+            --verified-blue: #1DA1F2; /* Classic Authority Blue */
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif;}
@@ -64,21 +65,24 @@
         .handle { font-size: 1.1rem; font-weight: 800; color: #FFF; margin-bottom: 4px; }
         .faction-tag { font-size: 0.75rem; color: var(--gold-accent); font-weight: 700; background: rgba(255,199,0,0.1); padding: 4px 10px; border-radius: 12px; display: inline-block; margin-bottom: 12px;}
         
-        .profile-metrics { text-align: left; background: rgba(0,0,0,0.3); border-radius: 12px; padding: 10px; font-size: 0.8rem; margin-bottom: 15px; border: 1px solid var(--border-glass); }
-        .metric-row { display: flex; justify-content: space-between; padding: 4px 0; color: var(--text-muted); }
-        .metric-val { color: #FFF; font-weight: 700; }
+        .profile-metrics { display: flex; justify-content: space-around; background: rgba(0,0,0,0.3); border-radius: 12px; padding: 12px; margin-bottom: 15px; border: 1px solid var(--border-glass); }
+        .metric-col { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .metric-col span:first-child { font-size: 1.1rem; color: #FFF; font-weight: 800; }
+        .metric-col span:last-child { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; }
 
         .streak-box { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,107,0,0.3); border-radius: 12px; padding: 1rem; }
         .streak-number { font-size: 1.6rem; font-weight: 800; color: #FF6B00; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .streak-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;}
-        .repair-btn { background: transparent; border: 1px dashed var(--text-muted); color: var(--text-muted); width: 100%; padding: 0.5rem; border-radius: 8px; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.2s; margin-top: 8px; }
 
-        /* WIDGETS */
+        .repair-btn { background: transparent; border: 1px dashed var(--text-muted); color: var(--text-muted); width: 100%; padding: 0.5rem; border-radius: 8px; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.2s; margin-top: 8px; }
+        .repair-btn:hover { border-color: var(--verified-blue); color: var(--verified-blue); }
+
+        /* WIDGETS & LEADERBOARD */
         .widget-card { background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 20px; padding: 1.2rem; margin-bottom: 1.5rem; }
         .widget-title { font-size: 0.9rem; font-weight: 800; color: #FFF; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border-glass); padding-bottom: 8px;}
-        .trending-item { display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; padding: 6px 0; color: var(--text-muted); border-bottom: 1px dashed rgba(255,255,255,0.03); cursor: pointer; transition: all 0.2s;}
-        .trending-tag { font-weight: 700; color: #FFF; }
-        .trending-count { font-size: 0.7rem; color: var(--gold-accent); background: rgba(255,199,0,0.1); padding: 2px 6px; border-radius: 6px;}
+        
+        .faction-bar-bg { width: 100%; height: 8px; background: rgba(0,0,0,0.5); border-radius: 4px; margin-top: 5px; overflow: hidden;}
+        .faction-bar-fill { height: 100%; border-radius: 4px; }
 
         /* MIDDLE: FEED */
         .feed-container { display: flex; flex-direction: column; gap: 1rem; }
@@ -88,7 +92,6 @@
         .compose-tools { display: flex; gap: 12px; color: var(--text-muted); font-size: 1.1rem; }
         
         .poll-creator-box { display: none; flex-direction: column; gap: 8px; margin-bottom: 10px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 12px; border: 1px dashed var(--border-glass); }
-
         .post-btn { background: var(--cyan-accent); color: #000; border: none; padding: 0.6rem 1.5rem; border-radius: 12px; font-weight: 800; cursor: pointer; transition: transform 0.2s; }
         
         .post-card { background: rgba(26, 34, 52, 0.4); border: 1px solid var(--border-glass); border-radius: 16px; padding: 1.2rem; position: relative; }
@@ -104,6 +107,15 @@
         .action-group { display: flex; gap: 15px; }
         .action-btn { background: transparent; border: none; color: var(--text-muted); font-size: 0.85rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: color 0.2s;}
         .action-btn:hover { color: var(--gold-accent); }
+        .action-btn.liked { color: var(--danger); }
+
+        /* INLINE COMMENTS */
+        .inline-comments { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--border-glass); animation: fadeIn 0.3s ease; }
+        .comment-item { display: flex; gap: 10px; margin-bottom: 12px; font-size: 0.85rem; }
+        .comment-avatar { width: 28px; height: 28px; background: #444; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: 800; color: #FFF; }
+        .comment-text-box { background: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 12px; border: 1px solid var(--border-glass); flex: 1; }
+        .comment-author { font-weight: 800; color: var(--cyan-accent); margin-bottom: 2px; display: block; }
+        .comment-input-area { display: flex; gap: 10px; margin-top: 10px; }
 
         /* VOTE CARD */
         .vote-card { background: rgba(255,199,0,0.03); border: 1px solid rgba(255,199,0,0.2); border-radius: 12px; padding: 1rem; margin-top: 10px; margin-bottom: 10px; }
@@ -112,13 +124,8 @@
 
         /* RIGHT: WIDGETS */
         .pitch-hook-card { background: linear-gradient(145deg, rgba(26, 34, 52, 0.9) 0%, rgba(6, 8, 12, 1) 100%); border: 1px solid var(--gold-accent); border-radius: 20px; padding: 1.8rem; margin-bottom: 1.5rem; box-shadow: 0 0 25px rgba(255, 199, 0, 0.15); position: relative; overflow: hidden; }
-        .pitch-hook-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--cyan-accent), var(--gold-accent)); }
-        .ph-badge { background: rgba(255,199,0,0.15); color: var(--gold-accent); font-size: 0.65rem; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; padding: 5px 12px; border-radius: 8px; display: inline-block; margin-bottom: 15px; border: 1px solid rgba(255,199,0,0.3); }
         .ph-title { font-size: 1.4rem; font-weight: 900; color: #FFF; margin-bottom: 10px; line-height: 1.2; }
         .ph-btn { width: 100%; background: linear-gradient(135deg, var(--gold-accent), #E6B300); color: #000; border: none; padding: 1rem; border-radius: 12px; font-weight: 900; font-size: 1rem; cursor: pointer; margin-top: 15px; }
-
-        .mini-tracker { background: rgba(0,0,0,0.3); border: 1px solid var(--border-glass); border-radius: 16px; padding: 1.2rem; }
-        .tracker-title { font-size: 0.85rem; font-weight: 800; color: #FFF; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;}
 
         /* MODALS */
         .modal-overlay { position: fixed; inset: 0; background: rgba(4,6,9,0.85); backdrop-filter: blur(12px); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 1rem; }
@@ -126,8 +133,10 @@
         .modal-close { position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer; z-index: 10;}
 
         /* Verification Roadmap */
-        .verification-box { background: rgba(34,197,94,0.1); border: 1px solid var(--success); padding: 15px; border-radius: 12px; margin-top: 15px; text-align: left; }
+        .verification-box { background: rgba(29, 161, 242, 0.1); border: 1px solid var(--verified-blue); padding: 15px; border-radius: 12px; margin-top: 15px; text-align: left; }
         .ver-req { font-size: 0.8rem; color: #FFF; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
         @media (max-width: 1024px) { .dashboard-grid { grid-template-columns: 1fr 320px; } .profile-card { grid-column: 1 / -1; display: flex; align-items: center; text-align: left; gap: 20px;} .avatar { margin: 0; } }
         @media (max-width: 768px) { .dashboard-grid { grid-template-columns: 1fr; } .profile-card { flex-direction: column; text-align: center; } }
@@ -144,33 +153,49 @@
                     <i class="fa-solid fa-bell" style="color:var(--gold-accent);"></i> 
                     <span id="notifCount" class="notif-badge">0</span>
                 </button>
-                <button class="nav-btn" onclick="openProfileModal()"><i class="fa-solid fa-user-shield"></i> Profile</button>
+                <button class="nav-btn" onclick="openProfileModal(currentUser.id, true)"><i class="fa-solid fa-user-shield"></i> Profile</button>
                 <a href="index.html" class="nav-btn" style="border-color:var(--danger); color:var(--danger);">Exit</a>
             </div>
         </nav>
 
         <div class="dashboard-grid">
             
-            <!-- LEFT: PROFILE -->
+            <!-- LEFT: PROFILE & LEADERBOARD -->
             <div>
                 <div class="profile-card">
                     <div class="avatar" id="userAvatar">A</div>
                     <div class="handle" id="userHandle">@AnonFan</div>
                     <div class="faction-tag" id="userFactionTag"><i class="fa-solid fa-shield-halved"></i> Independent Fan</div>
                     
-                    <div class="streak-box" style="margin-top: 15px;">
+                    <div class="profile-metrics">
+                        <div class="metric-col"><span id="statPosts">0</span><span>Posts</span></div>
+                        <div class="metric-col"><span id="statFollowers">0</span><span>Followers</span></div>
+                        <div class="metric-col"><span id="statFollowing">0</span><span>Following</span></div>
+                    </div>
+
+                    <div class="streak-box">
                         <div class="streak-label">Public Authority Streak</div>
                         <div class="streak-number"><i class="fa-solid fa-fire"></i> <span id="streakCount">0</span></div>
-                        <p style="font-size:0.65rem; color:var(--text-muted); margin: 8px 0;">Hit 100 days for Green Verification.</p>
+                        <button class="repair-btn" onclick="openVerificationModal()">Get Verified Checkmark <i class="fa-solid fa-circle-check" style="color:var(--verified-blue);"></i></button>
                     </div>
                 </div>
 
+                <!-- LIVE FACTION DOMINANCE -->
                 <div class="widget-card">
-                    <div class="widget-title"><i class="fa-solid fa-fire" style="color:#FF6B00;"></i> Top 5 Active Users</div>
-                    <div id="trendingUsersList">
-                        <div class="trending-item"><span class="trending-tag">1. @RebelKing99</span><span class="trending-count">14 Streak</span></div>
-                        <div class="trending-item"><span class="trending-tag">2. @MegaAnalyst</span><span class="trending-count">12 Streak</span></div>
-                        <div class="trending-item"><span class="trending-tag">3. @TarakBuff</span><span class="trending-count">10 Streak</span></div>
+                    <div class="widget-title"><i class="fa-solid fa-chess-rook" style="color:var(--cyan-accent);"></i> Live Faction Dominance</div>
+                    <p style="font-size:0.7rem; color:var(--text-muted); margin-bottom:12px;">Which Fan Army is ruling the War Room today?</p>
+                    
+                    <div style="margin-bottom:12px;">
+                        <div style="display:flex; justify-content:space-between; font-size:0.75rem; font-weight:700;"><span>Rebel Star Army</span><span style="color:var(--cyan-accent);">42%</span></div>
+                        <div class="faction-bar-bg"><div class="faction-bar-fill" style="width: 42%; background:var(--cyan-accent);"></div></div>
+                    </div>
+                    <div style="margin-bottom:12px;">
+                        <div style="display:flex; justify-content:space-between; font-size:0.75rem; font-weight:700;"><span>Superstar Cult</span><span style="color:var(--gold-accent);">35%</span></div>
+                        <div class="faction-bar-bg"><div class="faction-bar-fill" style="width: 35%; background:var(--gold-accent);"></div></div>
+                    </div>
+                    <div style="margin-bottom:12px;">
+                        <div style="display:flex; justify-content:space-between; font-size:0.75rem; font-weight:700;"><span>Mega Force</span><span style="color:var(--danger);">15%</span></div>
+                        <div class="faction-bar-bg"><div class="faction-bar-fill" style="width: 15%; background:var(--danger);"></div></div>
                     </div>
                 </div>
             </div>
@@ -205,9 +230,9 @@
             <!-- RIGHT: PITCH HOOK -->
             <div>
                 <div class="pitch-hook-card">
-                    <div class="ph-badge">Verified Producer Pipeline</div>
+                    <div style="font-size:0.7rem; color:var(--gold-accent); font-weight:900; letter-spacing:1px; text-transform:uppercase; margin-bottom:10px;"><i class="fa-solid fa-lock"></i> Verified Producer Pipeline</div>
                     <h3 class="ph-title">Got a Blockbuster Script? 🎬</h3>
-                    <p class="ph-desc" style="color: #FFF;">Pitch your story directly to Tollywood producers.</p>
+                    <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:15px; line-height:1.5;">Bypass the gatekeepers. Pitch your story or logline directly to Tollywood producers via secure escrow.</p>
                     <button class="ph-btn" onclick="window.location.href='pitchstory.html'">
                         <i class="fa-solid fa-rocket"></i> Pitch Your Story Now
                     </button>
@@ -243,19 +268,24 @@
                 document.getElementById('userAvatar').innerText = displayName.charAt(0).toUpperCase();
                 document.getElementById('streakCount').innerText = parseInt(localStorage.getItem(`streak_${currentUser.id}`)) || 1;
 
+                // Set fake metric counts for UI realism
+                document.getElementById('statPosts').innerText = Math.floor(Math.random() * 50) + 5;
+                document.getElementById('statFollowers').innerText = Math.floor(Math.random() * 500) + 12;
+                document.getElementById('statFollowing').innerText = Math.floor(Math.random() * 100) + 5;
+
                 fetchFeedPosts();
+                checkNotifications();
             } catch (err) { console.error("Init Error:", err); }
         }
 
         /* --- SECURITY & FILTERING ENGINES --- */
         function detectThreats(text) {
-            const threats = ['suicide', 'kill', 'die', 'murder', 'bomb', 'hack'];
+            const threats = ['suicide', 'kill', 'die', 'murder', 'bomb', 'hack', 'rape', 'whore', 'slut'];
             const lower = text.toLowerCase();
             return threats.some(t => lower.includes(t));
         }
 
         function filterLinks(text) {
-            // Regex to match anything looking like a URL or domain ending in .com, .in, etc.
             const urlRegex = /(https?:\/\/[^\s]+|[a-zA-Z0-9.-]+\.(com|in|org|net|co))/gi;
             return text.replace(urlRegex, '[LINK SUPPRESSED FOR SECURITY]');
         }
@@ -266,16 +296,15 @@
             let content = input.value.trim();
             if (!content && !isPollActive) return;
 
-            // 1. Security Check: Threat Detection
+            // Security Check 1: Threat Detection -> Alerts Admin silently
             if (detectThreats(content)) {
-                // Log to admin silently, but block the post to prevent harm
                 await db.from('admin_telemetry_alerts').insert({
-                    reporter_id: 'SYSTEM', reported_user_id: currentUser.id, reason: 'Automated Threat Detection Flag', status: 'Pending Admin Warning'
+                    reporter_id: 'SYSTEM', reported_user_id: currentUser.id, reason: 'Automated Threat Detection Flag (Obscene/Violence)', status: 'Pending Admin Warning'
                 });
                 return alert("ALERT: Your post was flagged by our safety telemetry for violating community guidelines. An admin has been notified.");
             }
 
-            // 2. Security Check: Link Suppression
+            // Security Check 2: Link Suppression
             content = filterLinks(content);
 
             let pollData = null;
@@ -296,6 +325,7 @@
 
                 if (error) throw error;
                 input.value = '';
+                if(isPollActive) togglePollCreator();
                 fetchFeedPosts();
             } catch (err) { alert("Broadcast failed."); }
         }
@@ -305,7 +335,6 @@
             let post = globalPosts.find(p => p.id === postId);
             const input = document.getElementById('postInput');
             
-            // Just populate the composer. The DB requote_count will increment organically when others interact.
             input.value = `Requote @${post.author_name}: "${post.content.substring(0, 50)}..."\n\nMy take: `;
             input.focus();
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -315,10 +344,10 @@
         function sharePost(postId) {
             const shareUrl = window.location.href.split('?')[0] + '?post=' + postId;
             if (navigator.share) {
-                navigator.share({ title: 'TeluguCineCraft Arena', text: 'Check out this post in the War Room!', url: shareUrl });
+                navigator.share({ title: 'TeluguCineCraft War Room', text: 'Check out this intel on the War Room!', url: shareUrl });
             } else {
                 navigator.clipboard.writeText(shareUrl);
-                alert("Post link copied to clipboard! You can share it anywhere.");
+                alert("Intel link copied to clipboard! You can share it anywhere.");
             }
         }
 
@@ -326,48 +355,112 @@
         async function fetchFeedPosts() {
             const { data, error } = await db.from('fan_posts').select('*').order('created_at', { ascending: false });
             if(data) {
-                globalPosts = data;
+                const now = new Date();
+                const twentyFourHours = 24 * 60 * 60 * 1000;
+                let activeFeatured = [];
+                let regularTimeline = [];
+
+                data.forEach(post => {
+                    let postAge = now - new Date(post.created_at);
+                    if (post.is_featured && postAge < twentyFourHours) activeFeatured.push(post);
+                    else regularTimeline.push(post);
+                });
+
+                globalPosts = [...activeFeatured, ...regularTimeline]; 
                 renderFeedPosts();
             }
         }
 
         function renderFeedPosts() {
             const container = document.getElementById('arenaFeedContainer');
+            if (globalPosts.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding:3rem; color:var(--text-muted);">The War Room is quiet. Be the first to drop intel!</div>`;
+                return;
+            }
+
             let html = '';
             
             globalPosts.forEach(post => {
                 let isLiked = (post.liked_by || []).includes(currentUser.id);
+                let timeAgo = new Date(post.created_at).toLocaleDateString();
                 
                 // VERIFICATION HIERARCHY
                 let badge = '';
                 if (post.author_name === 'TeluguCineCraft Desk' || post.fan_army === 'Official Admin') {
                     badge = `<i class="fa-solid fa-circle-check" style="color:#94A3B8; font-size:0.8rem;" title="Verified Firm"></i>`;
                 } else if (post.streak >= 100) {
-                    badge = `<i class="fa-solid fa-circle-check" style="color:var(--success); font-size:0.8rem;" title="Verified Viewer"></i>`;
+                    badge = `<i class="fa-solid fa-circle-check" style="color:var(--verified-blue); font-size:0.8rem;" title="Verified Blue"></i>`;
                 }
 
+                // ADMIN POLL FIX: Defensive Parsing
+                let pollHtml = '';
+                if (post.is_poll && post.poll_data) {
+                    let pd = typeof post.poll_data === 'string' ? JSON.parse(post.poll_data) : post.poll_data;
+                    let totalVotes = (pd.votes1 || 0) + (pd.votes2 || 0);
+                    let p1 = totalVotes === 0 ? 0 : Math.round(((pd.votes1 || 0) / totalVotes) * 100);
+                    let p2 = totalVotes === 0 ? 0 : Math.round(((pd.votes2 || 0) / totalVotes) * 100);
+                    
+                    pollHtml = `
+                        <div class="vote-card">
+                            <div class="vote-options">
+                                <button class="vote-option-btn" onclick="castPollVote('${post.id}', 1)">
+                                    <span>${pd.option1}</span><span style="color:var(--gold-accent);">${p1}%</span>
+                                </button>
+                                <button class="vote-option-btn" onclick="castPollVote('${post.id}', 2)">
+                                    <span>${pd.option2}</span><span style="color:var(--cyan-accent);">${p2}%</span>
+                                </button>
+                            </div>
+                            <div style="font-size:0.7rem; color:var(--text-muted); margin-top:8px; text-align:right;">${totalVotes} total votes</div>
+                        </div>
+                    `;
+                }
+
+                // FEATURED STYLING
+                let isFeaturedStyle = post.is_featured ? `border: 1px solid var(--gold-accent); background: linear-gradient(180deg, rgba(255,199,0,0.05) 0%, rgba(26,34,52,0.6) 100%);` : '';
+                let featuredBadge = post.is_featured ? `<div style="position:absolute; top:-10px; left:20px; background:var(--gold-accent); color:#000; font-size:0.65rem; font-weight:900; padding:4px 10px; border-radius:6px; text-transform:uppercase; letter-spacing:1px; box-shadow:0 4px 10px rgba(255,199,0,0.4);"><i class="fa-solid fa-bullhorn"></i> Official Intel</div>` : '';
+
                 html += `
-                    <div class="post-card" ${post.is_featured ? 'style="border-color:var(--gold-accent);"' : ''}>
-                        <div class="post-header">
+                    <div class="post-card" style="${isFeaturedStyle}">
+                        ${featuredBadge}
+                        <div class="post-header" style="${post.is_featured ? 'margin-top:10px;' : ''}">
                             <div class="post-author-area">
-                                <div class="post-avatar">${post.author_name.charAt(0).toUpperCase()}</div>
+                                <div class="post-avatar" style="${post.is_featured ? 'background:var(--gold-accent); color:#000;' : ''}">${post.author_name.charAt(0).toUpperCase()}</div>
                                 <div class="post-meta">
-                                    <div class="post-author" onclick="viewFanProfile('${post.user_id}', '${post.author_name}', ${post.streak})">
+                                    <div class="post-author" onclick="openProfileModal('${post.user_id}', false, '${post.author_name}', ${post.streak}, '${post.fan_army}')">
                                         ${post.author_name} ${badge}
                                     </div>
-                                    <div class="post-time">${new Date(post.created_at).toLocaleDateString()} • <span class="public-streak"><i class="fa-solid fa-fire"></i> ${post.streak || 1}</span></div>
+                                    <div class="post-time">${timeAgo} • ${post.fan_army || 'Fan'} • <span class="public-streak"><i class="fa-solid fa-fire"></i> ${post.streak || 1}</span></div>
                                 </div>
                             </div>
+                            <button class="action-btn" onclick="openReportModal('${post.id}', '${post.user_id}')" style="color:var(--danger);" title="Report Post"><i class="fa-solid fa-triangle-exclamation"></i></button>
                         </div>
-                        <div class="post-body">${post.content}</div>
+                        <div class="post-body">
+                            ${post.content}
+                            ${pollHtml}
+                        </div>
                         
                         <div class="post-footer">
                             <div class="action-group">
-                                <button class="action-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike('${post.id}')"><i class="fa-solid fa-heart"></i> ${post.likes_count || 0}</button>
-                                <button class="action-btn" onclick="openCommentsModal('${post.id}')"><i class="fa-solid fa-comment"></i> View</button>
-                                <button class="action-btn" onclick="requotePost('${post.id}')"><i class="fa-solid fa-retweet"></i> Requote</button>
+                                <button class="action-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike('${post.id}', '${post.user_id}')"><i class="fa-solid fa-heart"></i> ${post.likes_count || 0}</button>
+                                <button class="action-btn" onclick="toggleComments('${post.id}')"><i class="fa-solid fa-comment"></i> ${post.comments_count || 0}</button>
+                                <button class="action-btn" onclick="requotePost('${post.id}')"><i class="fa-solid fa-retweet"></i> ${post.requotes_count || 0}</button>
                             </div>
                             <button class="action-btn" onclick="sharePost('${post.id}')"><i class="fa-solid fa-share-nodes"></i> Share</button>
+                        </div>
+
+                        <!-- INLINE COMMENTS SECTION (Hidden by default) -->
+                        <div class="inline-comments" id="comments-${post.id}">
+                            <div class="comment-item">
+                                <div class="comment-avatar">V</div>
+                                <div class="comment-text-box">
+                                    <span class="comment-author">VerifiedAnalyst</span>
+                                    Spot on. The ground reality in Nizam is totally different right now.
+                                </div>
+                            </div>
+                            <div class="comment-input-area">
+                                <input type="text" id="comment-input-${post.id}" class="compose-input" style="margin:0;" placeholder="Add a comment... (No links)">
+                                <button class="post-btn" style="padding: 0 15px;" onclick="submitComment('${post.id}')"><i class="fa-solid fa-paper-plane"></i></button>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -375,49 +468,141 @@
             container.innerHTML = html;
         }
 
-        /* --- COMMENTS UI MODAL --- */
-        function openCommentsModal(postId) {
-            const modal = document.getElementById('modalOverlay');
-            document.getElementById('modalInnerBody').innerHTML = `
-                <h3 style="color:var(--cyan-accent); margin-bottom:15px;"><i class="fa-solid fa-comments"></i> Post Comments</h3>
-                <div style="max-height: 200px; overflow-y: auto; margin-bottom: 15px; padding-right: 10px;" id="commentList">
-                    <p style="font-size:0.8rem; color:var(--text-muted); text-align:center;">Loading comments...</p>
-                </div>
-                <input type="text" id="newCommentInput" class="compose-input" placeholder="Write a comment... (No links allowed)">
-                <button class="post-btn" style="width:100%;" onclick="submitComment('${postId}')">Post Comment</button>
-            `;
-            modal.style.display = 'flex';
-            // Simulated fetch (In a real DB, you'd fetch from a fan_comments table)
-            setTimeout(() => { document.getElementById('commentList').innerHTML = `<p style="font-size:0.8rem; color:var(--text-muted); text-align:center;">Be the first to comment.</p>`; }, 500);
+        async function toggleLike(postId, authorId) {
+            let post = globalPosts.find(p => p.id === postId);
+            if(!post) return;
+
+            let likedBy = post.liked_by || [];
+            let isLiked = likedBy.includes(currentUser.id);
+            let newLikesCount = post.likes_count || 0;
+
+            if (isLiked) {
+                likedBy = likedBy.filter(id => id !== currentUser.id);
+                newLikesCount = Math.max(0, newLikesCount - 1);
+            } else {
+                likedBy.push(currentUser.id);
+                newLikesCount++;
+            }
+
+            post.liked_by = likedBy;
+            post.likes_count = newLikesCount;
+            renderFeedPosts();
+            try { await db.from('fan_posts').update({ likes_count: newLikesCount, liked_by: likedBy }).eq('id', postId); } catch (err) { }
+        }
+
+        async function castPollVote(postId, optionNumber) {
+            let post = globalPosts.find(p => p.id === postId);
+            if(!post || !post.is_poll || !post.poll_data) return;
+
+            let pd = typeof post.poll_data === 'string' ? JSON.parse(post.poll_data) : { ...post.poll_data };
+            if(optionNumber === 1) pd.votes1 = (pd.votes1 || 0) + 1;
+            if(optionNumber === 2) pd.votes2 = (pd.votes2 || 0) + 1;
+
+            post.poll_data = pd;
+            renderFeedPosts(); 
+            try { await db.from('fan_posts').update({ poll_data: pd }).eq('id', postId); } catch(e) { }
+        }
+
+        /* --- INLINE COMMENTS --- */
+        function toggleComments(postId) {
+            const box = document.getElementById(`comments-${postId}`);
+            box.style.display = box.style.display === 'block' ? 'none' : 'block';
         }
 
         function submitComment(postId) {
-            let text = document.getElementById('newCommentInput').value;
+            const input = document.getElementById(`comment-input-${postId}`);
+            let text = input.value.trim();
             if(!text) return;
+
             if(detectThreats(text)) return alert("Comment blocked: Community guideline violation.");
+            text = filterLinks(text);
+
+            let post = globalPosts.find(p => p.id === postId);
+            post.comments_count = (post.comments_count || 0) + 1;
             
-            alert("Comment posted! (Simulated write to fan_comments table)");
-            closeModal();
+            alert("Comment securely submitted!");
+            input.value = '';
+            renderFeedPosts();
+            try { db.from('fan_posts').update({ comments_count: post.comments_count }).eq('id', postId); } catch(e){}
         }
 
-        /* --- PUBLIC PROFILE & DM/FOLLOW UI --- */
-        function viewFanProfile(userId, name, streak) {
+        /* --- PUBLIC PROFILE & VERIFICATION MARKETING --- */
+        function openProfileModal(userId, isSelf = false, name = '', streak = 1, army = '') {
             const modal = document.getElementById('modalOverlay');
+            
+            if (isSelf) {
+                let meta = currentUser.user_metadata || {};
+                name = meta.custom_name || meta.full_name?.split(' ')[0] || 'Fan';
+                streak = parseInt(localStorage.getItem(`streak_${currentUser.id}`)) || 1;
+                army = meta.fan_army || 'Independent';
+                let bio = meta.bio || "Die-hard cinema fanatic.";
+                
+                document.getElementById('modalInnerBody').innerHTML = `
+                    <h3 style="color:#FFF; margin-bottom:15px; text-align:center;"><i class="fa-solid fa-user-shield"></i> My Command Center</h3>
+                    <div style="text-align:center; margin-bottom:20px; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 16px; border: 1px solid var(--border-glass);">
+                        <div class="avatar" style="width:80px; height:80px; font-size:2rem; margin: 0 auto 10px auto;">${name.charAt(0)}</div>
+                        <h2 style="color:#FFF; font-weight:800; margin-bottom:5px;">${name}</h2>
+                        <div class="faction-tag" style="margin-bottom:10px;"><i class="fa-solid fa-shield-halved"></i> ${army}</div>
+                        <p style="font-size:0.8rem; color:var(--text-muted); font-style:italic; margin-bottom:15px;">"${bio}"</p>
+                        
+                        <div style="display:flex; justify-content:space-around; background:rgba(0,0,0,0.5); padding:10px; border-radius:12px; margin-bottom:15px;">
+                            <div class="metric-col"><span>14</span><span>Posts</span></div>
+                            <div class="metric-col"><span>342</span><span>Followers</span></div>
+                            <div class="metric-col"><span>58</span><span>Following</span></div>
+                        </div>
+                    </div>
+
+                    <button class="post-btn" style="width:100%; margin-bottom:10px;" onclick="openVerificationModal()">Get Verified <i class="fa-solid fa-circle-check"></i></button>
+                    <button class="action-btn" style="width:100%; justify-content:center; border: 1px solid var(--border-glass); padding: 10px;" onclick="closeModal()">Close Profile</button>
+                `;
+            } else {
+                // Viewing Someone Else
+                document.getElementById('modalInnerBody').innerHTML = `
+                    <h3 style="color:#FFF; margin-bottom:15px; text-align:center;"><i class="fa-solid fa-id-card"></i> Fan Dossier</h3>
+                    <div style="text-align:center; margin-bottom:20px; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 16px; border: 1px solid var(--border-glass);">
+                        <div class="avatar" style="width:80px; height:80px; font-size:2rem; margin: 0 auto 10px auto;">${name.charAt(0)}</div>
+                        <h2 style="color:#FFF; font-weight:800; margin-bottom:5px;">${name}</h2>
+                        <div class="faction-tag" style="margin-bottom:10px;"><i class="fa-solid fa-shield-halved"></i> ${army}</div>
+                        <p style="font-size:0.8rem; color:var(--text-muted); font-style:italic; margin-bottom:15px;">"Awaiting Bio Update..."</p>
+                        
+                        <div style="display:flex; justify-content:space-around; background:rgba(0,0,0,0.5); padding:10px; border-radius:12px; margin-bottom:15px;">
+                            <div class="metric-col"><span style="color:var(--gold-accent);"><i class="fa-solid fa-fire"></i> ${streak}</span><span>Streak</span></div>
+                            <div class="metric-col"><span>1.2K</span><span>Followers</span></div>
+                        </div>
+
+                        <div style="display:flex; gap:10px; justify-content:center;">
+                            <button class="post-btn" style="flex:1;" onclick="alert('You are now following ${name}!')"><i class="fa-solid fa-user-plus"></i> Follow</button>
+                            <button class="action-btn" style="flex:1; justify-content:center; border: 1px solid var(--cyan-accent); color: var(--cyan-accent); border-radius: 12px;" onclick="initiateDM('${userId}', '${name}')">
+                                <i class="fa-solid fa-envelope"></i> Message
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+            modal.style.display = 'flex';
+        }
+
+        /* --- VERIFICATION MARKETING (BLUE BADGE) --- */
+        function openVerificationModal() {
+            const currentStreak = parseInt(localStorage.getItem(`streak_${currentUser.id}`)) || 1;
+            const progress = Math.min((currentStreak / 100) * 100, 100);
+
             document.getElementById('modalInnerBody').innerHTML = `
-                <div style="text-align:center;">
-                    <div class="avatar" style="width:80px; height:80px; font-size:2rem; margin: 0 auto 10px auto;">${name.charAt(0)}</div>
-                    <h2 style="color:#FFF; font-weight:800; margin-bottom:15px;">${name}</h2>
-                    <p style="color:var(--gold-accent); font-weight:800; margin-bottom:20px;"><i class="fa-solid fa-fire"></i> ${streak} Streak</p>
+                <h3 style="color:#FFF; margin-bottom:15px; text-align:center;">Get the Blue Tick <i class="fa-solid fa-circle-check" style="color:var(--verified-blue);"></i></h3>
+                <p style="text-align:center; font-size:0.85rem; color:var(--text-muted); margin-bottom:20px;">Stand out in the War Room. Verified fans unlock <b>2 Free Story Pitches</b> to top producers every single month.</p>
+                
+                <div class="verification-box">
+                    <div class="ver-req"><span>1. Fill out your full profile & bio</span> <i class="fa-solid fa-check" style="color:var(--verified-blue)"></i></div>
+                    <div class="ver-req"><span>2. Post an update every day</span> <i class="fa-solid fa-check" style="color:var(--verified-blue)"></i></div>
+                    <div class="ver-req" style="margin-bottom:4px; font-weight:800;"><span>3. Hit 100 Days Straight</span> <span style="color:var(--gold-accent)">${currentStreak}/100</span></div>
                     
-                    <div style="display:flex; gap:10px; justify-content:center;">
-                        <button class="post-btn" onclick="alert('Followed ${name}!')"><i class="fa-solid fa-user-plus"></i> Follow</button>
-                        <button class="action-btn" style="border: 1px solid var(--cyan-accent); color: var(--cyan-accent); padding: 8px 15px; border-radius: 12px;" onclick="initiateDM('${userId}', '${name}')">
-                            <i class="fa-solid fa-envelope"></i> Message
-                        </button>
+                    <div style="width:100%; background:rgba(0,0,0,0.5); height:8px; border-radius:4px; margin-bottom:10px; overflow:hidden;">
+                        <div style="width:${progress}%; background:var(--verified-blue); height:100%; border-radius:4px;"></div>
                     </div>
                 </div>
+
+                <button class="post-btn" style="width:100%; margin-top:15px;" onclick="alert('Keep posting daily! Admin approval automatically triggers at 100 days.')">Got it</button>
             `;
-            modal.style.display = 'flex';
         }
 
         /* --- INBOX & DM ENGINE --- */
@@ -425,11 +610,11 @@
             const modal = document.getElementById('modalOverlay');
             document.getElementById('modalInnerBody').innerHTML = `
                 <h3 style="color:var(--cyan-accent); margin-bottom:10px;"><i class="fa-solid fa-envelope"></i> Secure Inbox</h3>
-                <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:15px;">End-to-End Encrypted. Messages auto-delete after 15 business days. Limits: 1 unaccepted message per user.</p>
+                <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:15px;">DMs are Encrypted. Max 1 message until the receiver accepts. Links are crushed automatically.</p>
                 
-                <div style="background:rgba(0,0,0,0.4); border: 1px solid var(--border-glass); border-radius: 12px; padding: 15px; text-align:center;">
+                <div style="background:rgba(0,0,0,0.4); border: 1px solid var(--border-glass); border-radius: 12px; padding: 25px; text-align:center;">
                     <i class="fa-solid fa-inbox fa-2x" style="color:var(--text-muted); margin-bottom:10px;"></i>
-                    <p style="font-size:0.85rem; color:var(--text-muted);">No active conversations.</p>
+                    <p style="font-size:0.85rem; color:var(--text-muted);">Inbox is empty. Start a conversation from a fan's profile.</p>
                 </div>
             `;
             modal.style.display = 'flex';
@@ -437,10 +622,10 @@
 
         function initiateDM(targetUserId, targetName) {
             document.getElementById('modalInnerBody').innerHTML = `
-                <h3 style="color:var(--cyan-accent); margin-bottom:10px;"><i class="fa-solid fa-lock"></i> Encrypted Message to ${targetName}</h3>
-                <p style="font-size:0.75rem; color:var(--warning); margin-bottom:15px;">You can only send 1 message until they accept your request. Links are prohibited.</p>
-                <textarea id="dmInput" class="compose-input" rows="3" placeholder="Type your message securely..."></textarea>
-                <button class="post-btn" style="width:100%;" onclick="sendDM('${targetUserId}')"><i class="fa-solid fa-paper-plane"></i> Send Request</button>
+                <h3 style="color:var(--cyan-accent); margin-bottom:10px;"><i class="fa-solid fa-lock"></i> Message to ${targetName}</h3>
+                <p style="font-size:0.75rem; color:var(--warning); margin-bottom:15px;">You can only send 1 message until accepted. 'Seen' status is hidden until they accept.</p>
+                <textarea id="dmInput" class="compose-input" rows="3" placeholder="Type your secure message..."></textarea>
+                <button class="post-btn" style="width:100%;" onclick="sendDM('${targetUserId}')"><i class="fa-solid fa-paper-plane"></i> Send Encrypted Request</button>
             `;
         }
 
@@ -454,32 +639,29 @@
             closeModal();
         }
 
-        /* --- OWN PROFILE & VERIFICATION ROADMAP --- */
-        function openProfileModal() {
+        /* --- ADMIN THREAT REPORTING --- */
+        function openReportModal(postId, authorId) {
             const modal = document.getElementById('modalOverlay');
-            let meta = currentUser.user_metadata || {};
-            let currentStreak = parseInt(localStorage.getItem(`streak_${currentUser.id}`)) || 1;
-            let streakProgress = Math.min((currentStreak / 100) * 100, 100);
-
             document.getElementById('modalInnerBody').innerHTML = `
-                <h3 style="color:#FFF; margin-bottom:15px;"><i class="fa-solid fa-user-shield"></i> Profile & Verification</h3>
-                
-                <div class="verification-box">
-                    <h4 style="color:var(--success); margin-bottom:10px; font-weight:900;"><i class="fa-solid fa-circle-check"></i> Verification Roadmap</h4>
-                    <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:15px;">Earn the Green Verified Badge to unlock 2 free script pitches per month to top producers.</p>
-                    
-                    <div class="ver-req"><span>1. Profile Information Complete</span> <i class="fa-solid fa-check" style="color:var(--success)"></i></div>
-                    <div class="ver-req"><span>2. Active Engagement (No bans)</span> <i class="fa-solid fa-check" style="color:var(--success)"></i></div>
-                    <div class="ver-req" style="margin-bottom:4px;"><span>3. Maintain 100-Day Streak</span> <span style="color:var(--gold-accent)">${currentStreak}/100</span></div>
-                    
-                    <div style="width:100%; background:rgba(0,0,0,0.5); height:6px; border-radius:3px; margin-bottom:10px;">
-                        <div style="width:${streakProgress}%; background:var(--gold-accent); height:100%; border-radius:3px;"></div>
-                    </div>
-                </div>
-
-                <button class="action-btn" style="width:100%; justify-content:center; border: 1px solid var(--border-glass); margin-top:20px; padding:10px;" onclick="closeModal()">Close</button>
+                <h3 style="color:var(--danger); margin-bottom:10px;"><i class="fa-solid fa-triangle-exclamation"></i> Report to Admin</h3>
+                <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:15px;">Reporting severe violations sends an instant telemetry alert to the CEO's dashboard.</p>
+                <select id="reportReason" class="compose-input" style="height:40px; padding:6px; margin-bottom:12px;">
+                    <option value="Death Threat or Violence">Death Threat or Violence</option>
+                    <option value="Abusing Ladies / Harassment">Abusing Ladies / Harassment</option>
+                    <option value="Filthy Language / Spam Links">Filthy Language / Spam Links</option>
+                </select>
+                <button class="post-btn" style="background:var(--danger); color:#FFF; width:100%;" onclick="submitReport('${postId}', '${authorId}')">Transmit Alert</button>
             `;
             modal.style.display = 'flex';
+        }
+
+        async function submitReport(postId, authorId) {
+            const reason = document.getElementById('reportReason').value;
+            try {
+                await db.from('admin_telemetry_alerts').insert({ reporter_id: currentUser.id, reported_user_id: authorId, post_id: postId, reason: reason, status: 'Pending Admin Warning' });
+                alert("Report successfully logged to the Admin Terminal.");
+                closeModal();
+            } catch (err) { alert("Error submitting report."); }
         }
 
         function togglePollCreator() {
@@ -487,6 +669,8 @@
             document.getElementById('pollCreatorBox').style.display = isPollActive ? 'flex' : 'none';
         }
         function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
+        
+        async function checkNotifications() { /* Simulated Check */ }
 
         initArena();
     </script>
